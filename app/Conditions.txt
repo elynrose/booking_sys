@@ -1,0 +1,33 @@
+Here are all the conditions for booking a class in plain English:
+
+Same Child, Same Schedule Check:
+If the same child already has a booking for this schedule:
+If they have an active check-in (not checked out), they cannot book again
+If they still have remaining sessions, they cannot book again
+If they've used all their sessions, they can book again
+
+Different Child Check:
+A parent can book the same schedule for different children
+Each child can have their own booking record
+Each child's sessions are tracked separately
+
+Active Check-in Check:
+If any child has an active check-in (not checked out), the parent must check out first before making any new bookings
+
+General Booking Conditions:
+The schedule must be active
+The class must not be full (capacity check)
+The parent must be logged in
+The child must be registered in the system
+The payment method must be specified
+So in summary:
+You can have multiple bookings for the same schedule if they're for different children
+You can't have two active bookings for the same child in the same schedule
+You can book again for the same child once all their sessions are used
+You must check out before making new bookings if there's an active check-in
+
+When a user tries to book a full class, they're automatically added to the waitlist
+The system checks hourly for available spots
+When a spot becomes available, the next person on the waitlist is notified
+Users have 24 hours to book after being notified
+The waitlist is processed in order of when people joined
