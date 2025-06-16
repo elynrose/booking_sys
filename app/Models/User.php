@@ -16,10 +16,11 @@ use Illuminate\Support\Str;
 use Laravel\Cashier\Billable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
 {
-    use SoftDeletes, Notifiable, HasFactory, Billable, InteractsWithMedia;
+    use SoftDeletes, Notifiable, HasFactory, Billable, InteractsWithMedia, HasRoles;
 
     public $table = 'users';
 
@@ -147,19 +148,19 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Payment::class);
     }
 
-    public function isParent()
+    public function getIsAdminAttribute()
     {
-        return $this->roles()->where('title', 'User')->exists();
+        return $this->roles()->where('id', 1)->exists();
     }
 
-    public function isTrainer()
+    public function getIsUserAttribute()
     {
-        return $this->roles()->where('title', 'Trainer')->exists();
+        return $this->roles()->where('id', 2)->exists();
     }
 
-    public function isAdmin()
+    public function getIsTrainerAttribute()
     {
-        return $this->roles()->where('title', 'Admin')->exists();
+        return $this->roles()->where('id', 3)->exists();
     }
 
     public function schedules()
@@ -186,11 +187,20 @@ class User extends Authenticatable implements HasMedia
 
     public function hasRole($role)
     {
+        \Log::info('hasRole input:', ['role' => $role, 'type' => gettype($role)]);
+        
+        if (is_object($role)) {
+            \Log::info('Role object:', ['class' => get_class($role)]);
+            if (method_exists($role, 'first')) {
+                $role = $role->first();
+            }
+            $role = $role->title ?? null;
+        } elseif (is_array($role)) {
+            $role = $role['title'] ?? null;
+        }
+        
+        \Log::info('Processed role:', ['role' => $role]);
+        
         return $this->roles()->where('title', $role)->exists();
-    }
-
-    public function isUser()
-    {
-        return $this->roles()->where('title', 'User')->exists();
     }
 }

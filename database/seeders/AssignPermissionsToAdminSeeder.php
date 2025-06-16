@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use App\Models\Role;
+use App\Models\Permission;
 
 class AssignPermissionsToAdminSeeder extends Seeder
 {
@@ -32,31 +32,23 @@ class AssignPermissionsToAdminSeeder extends Seeder
             return;
         }
 
-        // Ensure the guard_name is 'web'
-        $adminRole->guard_name = 'web';
-        $adminRole->save();
-        $trainerRole->guard_name = 'web';
-        $trainerRole->save();
-        $userRole->guard_name = 'web';
-        $userRole->save();
-
         // Get all permissions
         $permissions = Permission::all();
 
         // Assign all permissions to admin role
-        $adminRole->syncPermissions($permissions);
+        $adminRole->permissions()->sync($permissions->pluck('id'));
 
         // Assign permissions to trainer role (all except user management)
         $trainerPermissions = $permissions->filter(function($perm) {
-            return !str_starts_with($perm->name, 'user_');
+            return !str_starts_with($perm->title, 'user_');
         });
-        $trainerRole->syncPermissions($trainerPermissions);
+        $trainerRole->permissions()->sync($trainerPermissions->pluck('id'));
 
         // Assign permissions to user role (only booking, schedule, payment, profile, child, checkin, home, user_alert)
         $userPermissions = $permissions->filter(function($perm) {
-            return preg_match('/^(booking|schedule|payment|profile|child|checkin|home|user_alert)_/', $perm->name);
+            return preg_match('/^(booking|schedule|payment|profile|child|checkin|home|user_alert)_/', $perm->title);
         });
-        $userRole->syncPermissions($userPermissions);
+        $userRole->permissions()->sync($userPermissions->pluck('id'));
 
         $this->command->info('Permissions have been assigned to admin, trainer, and user roles.');
     }

@@ -14,7 +14,6 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->datetime('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role')->default('parent'); // parent, trainer, admin
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->boolean('verified')->default(0)->nullable();

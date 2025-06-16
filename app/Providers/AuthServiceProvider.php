@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Log;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,20 @@ class AuthServiceProvider extends ServiceProvider
 
         // Register permission gates
         Gate::before(function ($user, $ability) {
+            Log::info('Gate before check:', [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'ability' => $ability
+            ]);
+            
+            // Log user's roles
+            $userRoles = $user->roles()->get();
+            Log::info('User roles:', [
+                'roles' => $userRoles->pluck('title')->toArray()
+            ]);
+            
             if ($user->hasRole('Admin')) {
+                Log::info('Admin access granted');
                 return true;
             }
         });
@@ -33,15 +47,30 @@ class AuthServiceProvider extends ServiceProvider
         // Register all permissions as gates
         foreach (config('permissions.permissions') as $permission) {
             Gate::define($permission, function ($user) use ($permission) {
-                // Check if user has the role that corresponds to this permission
-                $role = str_replace('_access', '', $permission);
-                $role = str_replace('_create', '', $role);
-                $role = str_replace('_edit', '', $role);
-                $role = str_replace('_show', '', $role);
-                $role = str_replace('_delete', '', $role);
-                $role = ucfirst($role);
+                Log::info('Checking permission:', [
+                    'permission' => $permission,
+                    'user_id' => $user->id,
+                    'user_email' => $user->email
+                ]);
+
+                // Get the role name from the permission (e.g., 'booking_access' -> 'Booking')
+                $roleName = str_replace(['_access', '_create', '_edit', '_show', '_delete'], '', $permission);
+                $roleName = ucfirst($roleName);
                 
-                return $user->hasRole($role);
+                Log::info('Looking for role:', [
+                    'role_name' => $roleName,
+                    'permission' => $permission
+                ]);
+
+                // Check if user has the role
+                $hasRole = $user->roles()->where('title', $roleName)->exists();
+                
+                Log::info('Role check result:', [
+                    'has_role' => $hasRole,
+                    'role_name' => $roleName
+                ]);
+
+                return $hasRole;
             });
         }
     }
