@@ -123,6 +123,12 @@
                                     </form>
                                 </div>
                             </li>
+                            @if(auth()->check())
+                                <!-- DEBUG: Show user roles -->
+                                <li class="nav-item">
+                                    <span class="nav-link text-danger">Roles: {{ implode(', ', auth()->user()->roles->pluck('title')->toArray()) }}</span>
+                                </li>
+                            @endif
                         @endguest
                     </ul>
                 </div>

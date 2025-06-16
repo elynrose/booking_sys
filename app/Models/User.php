@@ -187,19 +187,11 @@ class User extends Authenticatable implements HasMedia
 
     public function hasRole($role)
     {
-        \Log::info('hasRole input:', ['role' => $role, 'type' => gettype($role)]);
-        
-        if (is_object($role)) {
-            \Log::info('Role object:', ['class' => get_class($role)]);
-            if (method_exists($role, 'first')) {
-                $role = $role->first();
-            }
-            $role = $role->title ?? null;
-        } elseif (is_array($role)) {
-            $role = $role['title'] ?? null;
-        }
-        
-        \Log::info('Processed role:', ['role' => $role]);
+        \Log::info('hasRole method:', [
+            'input_role' => $role,
+            'user_roles' => $this->roles->pluck('title'),
+            'check_result' => $this->roles()->where('title', $role)->exists()
+        ]);
         
         return $this->roles()->where('title', $role)->exists();
     }
