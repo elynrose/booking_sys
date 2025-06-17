@@ -27,6 +27,17 @@
                 <div class="card-body">
                     <form action="{{ route('frontend.schedules.index') }}" method="GET" class="row g-3 align-items-end">
                         <div class="col-md-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select name="category" id="category" class="form-control">
+                                <option value="">All Categories</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->slug }}" {{ request('category') == $category->slug ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label for="age_group" class="form-label">Age Group</label>
                             <select name="age_group" id="age_group" class="form-control">
                                 <option value="">All Ages</option>
@@ -46,15 +57,6 @@
                                 <option value="friday">Friday</option>
                                 <option value="saturday">Saturday</option>
                                 <option value="sunday">Sunday</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="time" class="form-label">Time</label>
-                            <select name="time" id="time" class="form-control">
-                                <option value="">Any Time</option>
-                                <option value="morning">Morning (8AM-12PM)</option>
-                                <option value="afternoon">Afternoon (12PM-4PM)</option>
-                                <option value="evening">Evening (4PM-8PM)</option>
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -118,7 +120,18 @@
                         <span class="badge" style="background-color: #2ecc71;">${{ number_format($schedule->price, 2) }}</span>
                         <span class="badge bg-primary text-white">{{ $schedule->max_participants - $schedule->bookings_count }} spots left</span>
                     </div>
-                    <a href="{{ route('frontend.bookings.create', $schedule) }}" class="btn btn-primary btn-block mt-3">Book Now</a>
+                    @php
+                        $hasExistingBooking = auth()->user()->bookings()->where('schedule_id', $schedule->id)->exists();
+                    @endphp
+                    @if($hasExistingBooking)
+                        <button class="btn btn-secondary btn-block mt-3" disabled>
+                            <i class="fas fa-check-circle me-2"></i> Already Booked
+                        </button>
+                    @else
+                        <a href="{{ route('bookings.create', $schedule) }}" class="btn btn-primary btn-block mt-3">
+                            <i class="fas fa-calendar-plus me-2"></i> Book Now
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>

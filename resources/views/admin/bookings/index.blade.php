@@ -124,75 +124,84 @@
                         </div>
                     </form>
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>User</th>
-                                    <th>Schedule</th>
-                                    <th>Trainer</th>
-                                    <th>Start Date</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
-                                    <th>Price</th>
-                                    <th>Status</th>
-                                    <th>Payment Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($bookings as $booking)
-                                    <tr>
-                                        <td>{{ $booking->id }}</td>
-                                        <td>{{ $booking->user->name }}</td>
-                                        <td>{{ $booking->schedule->title }}</td>
-                                        <td>
-                                            @if($booking->schedule && $booking->schedule->trainer)
-                                                {{ optional($booking->schedule->trainer->user)->name ?? 'Unnamed Trainer' }}
-                                            @else
-                                                No Trainer
-                                            @endif
-                                        </td>
-                                        <td>{{ $booking->schedule->start_date->format('M d, Y') }}</td>
-                                        <td>{{ $booking->schedule->start_time->format('h:i A') }}</td>
-                                        <td>{{ $booking->schedule->end_time->format('h:i A') }}</td>
-                                        <td>{{ $booking->schedule->price }}</td>
-                                        <td>
-                                            <span class="badge badge-{{ $booking->status === 'confirmed' ? 'success' : ($booking->status === 'cancelled' ? 'danger' : 'warning') }}">
-                                                {{ ucfirst($booking->status) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-{{ $booking->is_paid ? 'success' : 'warning' }}">
-                                                {{ $booking->is_paid ? 'Paid' : 'Unpaid' }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('admin.bookings.show', $booking) }}" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('admin.bookings.edit', $booking) }}" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('admin.bookings.destroy', $booking) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this booking?')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
+                    <!-- Bookings List -->
+                    <div class="list-group">
+                        @forelse($bookings as $booking)
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="mb-1">Booking #{{ $booking->id }}</h5>
+                                            <div>
+                                                <span class="badge badge-{{ $booking->status === 'confirmed' ? 'success' : ($booking->status === 'cancelled' ? 'danger' : 'warning') }} mr-2">
+                                                    {{ ucfirst($booking->status) }}
+                                                </span>
+                                                <span class="badge badge-{{ $booking->is_paid ? 'success' : 'warning' }}">
+                                                    {{ $booking->is_paid ? 'Paid' : 'Unpaid' }}
+                                                </span>
                                             </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center">No bookings found.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p class="mb-1">
+                                                    <i class="fas fa-user mr-2"></i>
+                                                    <strong>User:</strong> {{ $booking->user->name }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-calendar mr-2"></i>
+                                                    <strong>Schedule:</strong> {{ $booking->schedule->title }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-user-tie mr-2"></i>
+                                                    <strong>Trainer:</strong> 
+                                                    @if($booking->schedule && $booking->schedule->trainer)
+                                                        {{ optional($booking->schedule->trainer->user)->name ?? 'Unnamed Trainer' }}
+                                                    @else
+                                                        No Trainer
+                                                    @endif
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p class="mb-1">
+                                                    <i class="fas fa-calendar-day mr-2"></i>
+                                                    <strong>Date:</strong> {{ $booking->schedule->start_date->format('M d, Y') }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-clock mr-2"></i>
+                                                    <strong>Time:</strong> {{ $booking->schedule->start_time->format('h:i A') }} - 
+                                                    {{ $booking->schedule->end_time->format('h:i A') }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-dollar-sign mr-2"></i>
+                                                    <strong>Price:</strong> ${{ number_format($booking->schedule->price, 2) }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="btn-group">
+                                            <a href="{{ route('admin.bookings.show', $booking) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            <a href="{{ route('admin.bookings.edit', $booking) }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="{{ route('admin.bookings.destroy', $booking) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this booking?')">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="list-group-item">
+                                <div class="text-center">No bookings found.</div>
+                            </div>
+                        @endforelse
                     </div>
 
                     <div class="mt-4">

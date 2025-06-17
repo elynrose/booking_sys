@@ -120,54 +120,62 @@
                         </div>
                     </form>
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Booking</th>
-                                    <th>Amount</th>
-                                    <th>Payment Method</th>
-                                    <th>Status</th>
-                                    <th>Created At</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($payments as $payment)
-                                    <tr>
-                                        <td>{{ $payment->id }}</td>
-                                        <td>{{ $payment->booking->schedule->title ?? 'N/A' }}</td>
-                                        <td>${{ number_format($payment->amount, 2) }}</td>
-                                        <td>{{ $payment->booking->payment_method ?? 'N/A' }}</td>
-                                        <td>
+                    <!-- Payments List -->
+                    <div class="list-group">
+                        @forelse($payments as $payment)
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="mb-1">Payment #{{ $payment->id }}</h5>
                                             <span class="badge badge-{{ $payment->status === 'completed' ? 'success' : ($payment->status === 'pending' ? 'warning' : 'danger') }}">
                                                 {{ ucfirst($payment->status) }}
                                             </span>
-                                        </td>
-                                        <td>{{ $payment->created_at->format('M d, Y H:i') }}</td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <a href="{{ route('admin.payments.edit', $payment) }}" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this payment?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p class="mb-1">
+                                                    <i class="fas fa-calendar mr-2"></i>
+                                                    <strong>Booking:</strong> {{ $payment->booking->schedule->title ?? 'N/A' }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-money-bill mr-2"></i>
+                                                    <strong>Amount:</strong> ${{ number_format($payment->amount, 2) }}
+                                                </p>
                                             </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center">No payments found.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                            <div class="col-md-6">
+                                                <p class="mb-1">
+                                                    <i class="fas fa-credit-card mr-2"></i>
+                                                    <strong>Payment Method:</strong> {{ $payment->booking->payment_method ?? 'N/A' }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-clock mr-2"></i>
+                                                    <strong>Created:</strong> {{ $payment->created_at->format('M d, Y H:i') }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="btn-group">
+                                            <a href="{{ route('admin.payments.edit', $payment) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this payment?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="list-group-item">
+                                <div class="text-center">No payments found.</div>
+                            </div>
+                        @endforelse
                     </div>
 
                     <div class="mt-4">

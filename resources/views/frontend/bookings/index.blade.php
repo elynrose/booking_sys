@@ -126,7 +126,7 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a href="{{ route('frontend.bookings.show', $booking) }}" 
+                                                    <a href="{{ route('bookings.show', $booking) }}" 
                                                        class="btn btn-sm btn-light" 
                                                        title="View Details">
                                                         <i class="fas fa-eye"></i>
@@ -139,7 +139,7 @@
                                                         </a>
                                                     @endif
                                                     @if($booking->status === 'pending' && !$booking->is_paid)
-                                                        <form action="{{ route('frontend.bookings.destroy', $booking) }}" 
+                                                        <form action="{{ route('bookings.destroy', $booking) }}" 
                                                               method="POST" 
                                                               class="d-inline"
                                                               onsubmit="return confirm('Are you sure you want to cancel this booking?')">

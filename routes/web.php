@@ -90,12 +90,8 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::post('frontend/profile/password', 'ProfileController@password')->name('profile.password');
     Route::post('profile/toggle-two-factor', 'ProfileController@toggleTwoFactor')->name('profile.toggle-two-factor');
 
-    // Booking routes
-    Route::get('/bookings/create/{schedule}', [App\Http\Controllers\Frontend\BookingController::class, 'create'])->name('bookings.create');
-    Route::post('/bookings', [App\Http\Controllers\Frontend\BookingController::class, 'store'])->name('bookings.store');
-    Route::get('/bookings', [App\Http\Controllers\Frontend\BookingController::class, 'index'])->name('bookings.index');
-    Route::get('/bookings/{booking}', [App\Http\Controllers\Frontend\BookingController::class, 'show'])->name('bookings.show');
-    Route::delete('/bookings/{booking}', [App\Http\Controllers\Frontend\BookingController::class, 'destroy'])->name('bookings.destroy');
+    // Children routes
+    Route::resource('children', App\Http\Controllers\Frontend\ChildController::class);
 
     // Payment routes
     Route::get('/payments', [App\Http\Controllers\Frontend\PaymentController::class, 'index'])->name('payments.index');
@@ -113,6 +109,16 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
         Route::post('/trainer/payments/{payment}/confirm', [App\Http\Controllers\Frontend\TrainerController::class, 'confirmPayment'])->name('trainer.confirm-payment');
     });
 });
+
+// Booking routes (moved outside the frontend group)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/bookings/create/{schedule}', [App\Http\Controllers\Frontend\BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings', [App\Http\Controllers\Frontend\BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings', [App\Http\Controllers\Frontend\BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/{booking}', [App\Http\Controllers\Frontend\BookingController::class, 'show'])->name('bookings.show');
+    Route::delete('/bookings/{booking}', [App\Http\Controllers\Frontend\BookingController::class, 'destroy'])->name('bookings.destroy');
+});
+
 Route::group(['namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function () {
     // Two Factor Authentication
     if (file_exists(app_path('Http/Controllers/Auth/TwoFactorController.php'))) {
@@ -123,7 +129,7 @@ Route::group(['namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function 
 });
 
 // Admin Routes
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     
     // Schedule Routes

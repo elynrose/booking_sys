@@ -33,8 +33,19 @@ class BookingController extends Controller
 
         // Check if schedule is available
         if (!$schedule->isAvailable()) {
+            $status = $schedule->getAvailabilityStatus();
+            $errorMessage = 'This schedule is not available for booking because: ';
+            
+            if (!$status['is_available_for_booking']) {
+                $errorMessage .= 'The class has ended (End date: ' . $status['end_date'] . '). ';
+            }
+            if (!$status['has_spots_available']) {
+                $errorMessage .= 'The class is full (Max participants: ' . $status['max_participants'] . 
+                                ', Current bookings: ' . $status['current_bookings'] . '). ';
+            }
+            
             return redirect()->route('frontend.schedules.show', $schedule)
-                ->with('error', 'This schedule is not available for booking.');
+                ->with('error', $errorMessage);
         }
 
         // Check if user already has a booking for this schedule
@@ -44,10 +55,14 @@ class BookingController extends Controller
 
         if ($existingBooking) {
             return redirect()->route('frontend.schedules.show', $schedule)
-                ->with('error', 'You already have a booking for this schedule.');
+                ->with('error', 'You already have a booking for this schedule (Booking ID: ' . $existingBooking->id . ').');
         }
 
-        return view('frontend.bookings.create', compact('schedule'));
+        // Get the authenticated user's children
+        $children = auth()->user()->children;
+        $totalDays = $schedule->start_date->diffInDays($schedule->end_date) + 1;
+
+        return view('frontend.bookings.create', compact('schedule', 'children', 'totalDays'));
     }
 
     public function store(Request $request, Schedule $schedule)

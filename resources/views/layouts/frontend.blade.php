@@ -65,8 +65,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('frontend.bookings.index') }}">
+                                <a class="nav-link" href="{{ route('bookings.index') }}">
                                     <i class="fas fa-book"></i> My Bookings
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('frontend.children.index') }}">
+                                    <i class="fas fa-child"></i> My Children
                                 </a>
                             </li>
                         @endguest

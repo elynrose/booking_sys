@@ -18,7 +18,7 @@
                     <x-nav-link :href="route('frontend.schedules.index')" :active="request()->routeIs('frontend.schedules.index')">
                         {{ __('Classes') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('frontend.bookings.index')" :active="request()->routeIs('frontend.bookings.index')">
+                    <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.index')">
                         {{ __('My Bookings') }}
                     </x-nav-link>
                     @if(auth()->user()->hasRole('trainer'))
@@ -85,7 +85,7 @@
             <x-responsive-nav-link :href="route('frontend.schedules.index')" :active="request()->routeIs('frontend.schedules.index')">
                 {{ __('Classes') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('frontend.bookings.index')" :active="request()->routeIs('frontend.bookings.index')">
+            <x-responsive-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.index')">
                 {{ __('My Bookings') }}
             </x-responsive-nav-link>
             @if(auth()->user()->hasRole('trainer'))

@@ -12,7 +12,9 @@
             </nav>
 
             <div class="card shadow-sm mb-4">
-                <img src="{{ $schedule->image_url ?? asset('images/default-class.jpg') }}" class="card-img-top" alt="{{ $schedule->title }}">
+                @if($schedule->photo)
+                    <img src="{{ Storage::url($schedule->photo) }}" class="card-img-top" alt="{{ $schedule->title }}" style="height: 300px; object-fit: cover;">
+                @endif
                 <div class="card-body">
                     <h1 class="card-title h2 mb-3">{{ $schedule->title }}</h1>
                     <p class="card-text">{{ $schedule->description }}</p>
@@ -42,7 +44,7 @@
                                 <h5 class="text-muted mb-2">Capacity</h5>
                                 <p class="mb-1">
                                     <i class="fas fa-users text-primary me-2"></i>
-                                    {{ $schedule->capacity - $schedule->bookings_count }} spots available
+                                    {{ $schedule->max_participants - $schedule->bookings->count() }} spots available
                                 </p>
                                 <p class="mb-1">
                                     <i class="fas fa-dollar-sign text-primary me-2"></i>
@@ -53,25 +55,60 @@
                     </div>
                 </div>
             </div>
-
-          
         </div>
 
         <div class="col-md-4">
-        @if($schedule->trainer)
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm sticky-top" style="top: 2rem;">
                 <div class="card-body">
-                    <h3 class="h4 mb-4">Trainer</h3>
-                    <div class="d-flex align-items-center">
-                        <img src="{{ $schedule->trainer->profile_photo_url }}" class="rounded-circle me-3" width="64" height="64" alt="{{ $schedule->trainer->name }}">
+                    <div class="text-center mb-4">
+                        <h4 class="card-title">Book This Class</h4>
+                        <div class="h2 text-primary mb-2">${{ number_format($schedule->price, 2) }}</div>
+                        <div class="text-muted">per session</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h5 class="mb-1">{{ $schedule->trainer->name }}</h5>
-                            <p class="text-muted mb-0">{{ $schedule->trainer->bio ?? 'Certified trainer specializing in children\'s fitness.' }}</p>
+                            <div class="h5 mb-1">{{ $schedule->max_participants - $schedule->bookings->count() }}</div>
+                            <div class="text-muted small">spots remaining</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="h5 mb-1">{{ $schedule->bookings->count() }}</div>
+                            <div class="text-muted small">booked</div>
+                        </div>
+                    </div>
+
+                    @if($schedule->isAvailable() && $schedule->max_participants > $schedule->bookings->count())
+                        <a href="{{ route('bookings.create', $schedule) }}" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-calendar-plus me-2"></i> Book Now
+                        </a>
+                    @else
+                        <button class="btn btn-secondary btn-lg w-100 mb-4" disabled>
+                            <i class="fas fa-calendar-times me-2"></i> {{ $schedule->isAvailable() ? 'Class Full' : 'Not Available' }}
+                        </button>
+                    @endif
+
+                    <div class="border-top pt-4">
+                        <h5 class="text-muted mb-3">Trainer</h5>
+                        <div class="d-flex align-items-center">
+                            @if($schedule->trainer->user->profile_photo_path)
+                                <img src="{{ Storage::url($schedule->trainer->user->profile_photo_path) }}" 
+                                     alt="{{ $schedule->trainer->user->name }}" 
+                                     class="rounded-circle me-3"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                            @else
+                                <div class="rounded-circle bg-secondary me-3 d-flex align-items-center justify-content-center"
+                                     style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                            @endif
+                            <div>
+                                <h6 class="mb-1">{{ $schedule->trainer->user->name }}</h6>
+                                <small class="text-muted">Professional Trainer</small>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            @endif
         </div>
     </div>
 </div>

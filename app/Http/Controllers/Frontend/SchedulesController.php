@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use App\Models\Trainer;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Gate;
@@ -19,7 +20,7 @@ class SchedulesController extends Controller
     {
         abort_if(Gate::denies('schedule_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $query = Schedule::with(['trainer.user', 'bookings'])
+        $query = Schedule::with(['trainer.user', 'bookings', 'category'])
             ->where('status', 'active')
             ->where('start_date', '>=', Carbon::now());
 
@@ -36,6 +37,13 @@ class SchedulesController extends Controller
             $query->where('trainer_id', $request->trainer_id);
         }
 
+        // Apply category filter if provided
+        if ($request->filled('category')) {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
+        }
+
         $schedules = $query->latest()->paginate(10);
 
         // Get trainers for filter
@@ -43,7 +51,10 @@ class SchedulesController extends Controller
             ->where('is_active', true)
             ->get();
 
-        return view('frontend.schedules.index', compact('schedules', 'trainers'));
+        // Get categories for filter
+        $categories = Category::all();
+
+        return view('frontend.schedules.index', compact('schedules', 'trainers', 'categories'));
     }
 
     /**

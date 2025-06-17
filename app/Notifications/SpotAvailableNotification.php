@@ -44,7 +44,7 @@ class SpotAvailableNotification extends Notification implements ShouldQueue
             ->line('Class: ' . $this->waitlist->schedule->title)
             ->line('Child: ' . $this->waitlist->child->name)
             ->line('You have 24 hours to book this spot before it\'s offered to the next person on the waitlist.')
-            ->action('Book Now', route('frontend.bookings.create', $this->waitlist->schedule))
+            ->action('Book Now', route('bookings.create', $this->waitlist->schedule))
             ->line('Thank you for your patience!');
     }
 
@@ -59,7 +59,7 @@ class SpotAvailableNotification extends Notification implements ShouldQueue
             'message' => 'A spot is available in ' . $this->waitlist->schedule->title,
             'waitlist_id' => $this->waitlist->id,
             'schedule_id' => $this->waitlist->schedule_id,
-            'action_url' => route('frontend.bookings.create', $this->waitlist->schedule)
+            'action_url' => route('bookings.create', $this->waitlist->schedule)
         ];
     }
 }

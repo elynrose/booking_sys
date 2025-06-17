@@ -8,7 +8,7 @@
 
             <div class="card shadow">
                 <div class="card-body">
-                    <form action="{{ route('frontend.bookings.store') }}" method="POST">
+                    <form action="{{ route('bookings.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
                         <input type="hidden" name="price_per_session" value="{{ $schedule->price }}">

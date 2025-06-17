@@ -14,6 +14,7 @@ class Schedule extends Model
     protected $fillable = [
         'title',
         'slug',
+        'type',
         'description',
         'photo',
         'trainer_id',
@@ -145,6 +146,30 @@ class Schedule extends Model
 
     public function isAvailable()
     {
-        return $this->status === 'active' || $this->status === 'published';
+        $now = Carbon::now();
+        $startDate = Carbon::parse($this->start_date);
+        $endDate = Carbon::parse($this->end_date);
+        
+        // Check each condition separately
+        $isAvailableForBooking = $now->lte($endDate);
+        $hasSpotsAvailable = $this->max_participants > $this->bookings->count();
+        
+        // Store the status for debugging
+        $this->availabilityStatus = [
+            'is_available_for_booking' => $isAvailableForBooking,
+            'has_spots_available' => $hasSpotsAvailable,
+            'current_time' => $now->format('Y-m-d H:i:s'),
+            'end_date' => $endDate->format('Y-m-d H:i:s'),
+            'max_participants' => $this->max_participants,
+            'current_bookings' => $this->bookings->count(),
+            'remaining_spots' => $this->max_participants - $this->bookings->count()
+        ];
+        
+        return $isAvailableForBooking && $hasSpotsAvailable;
+    }
+
+    public function getAvailabilityStatus()
+    {
+        return $this->availabilityStatus ?? [];
     }
 }

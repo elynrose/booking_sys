@@ -47,7 +47,7 @@ class ChildController extends Controller
             'notes' => $validated['notes'],
         ]);
 
-        return redirect()->route('frontend.children.show', $child)
+        return redirect()->route('frontend.children.index')
             ->with('success', 'Child added successfully.');
     }
 
@@ -93,7 +93,7 @@ class ChildController extends Controller
 
         $child->update($validated);
 
-        return redirect()->route('frontend.children.show', $child)
+        return redirect()->route('frontend.children.index')
             ->with('success', 'Child updated successfully.');
     }
 

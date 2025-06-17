@@ -12,8 +12,13 @@ class Child extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'age',
-        'gender'
+        'date_of_birth',
+        'gender',
+        'notes'
+    ];
+
+    protected $casts = [
+        'date_of_birth' => 'date'
     ];
 
     public function user()

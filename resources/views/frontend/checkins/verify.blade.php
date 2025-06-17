@@ -55,7 +55,7 @@
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle me-2"></i>
                             You have {{ $unpaidBookings }} {{ Str::plural('class', $unpaidBookings) }} that need payment.
-                            <a href="{{ route('frontend.bookings.index') }}" class="alert-link">View and pay for your classes</a>
+                            <a href="{{ route('bookings.index') }}" class="alert-link">View and pay for your classes</a>
                         </div>
                     @endif
 

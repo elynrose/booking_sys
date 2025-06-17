@@ -53,7 +53,7 @@
                                 <span>Zumba & Dance</span>
                             </li>
                         </ul>
-                        <a href="{{ route('frontend.schedules.index', ['type' => 'group']) }}" class="btn btn-primary w-100">
+                        <a href="{{ route('frontend.schedules.index', ['category' => 'group']) }}" class="btn btn-primary w-100">
                             <i class="fas fa-calendar-check me-2"></i>View Group Schedule
                         </a>
                     </div>
@@ -85,7 +85,7 @@
                                 <span>Progress Tracking</span>
                             </li>
                         </ul>
-                        <a href="{{ route('frontend.schedules.index', ['type' => 'individual']) }}" class="btn btn-primary w-100">
+                        <a href="{{ route('frontend.schedules.index', ['category' => 'individual']) }}" class="btn btn-primary w-100">
                             <i class="fas fa-calendar-check me-2"></i>View Individual Schedule
                         </a>
                     </div>

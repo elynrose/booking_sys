@@ -127,11 +127,11 @@
                     @endif
 
                     <div class="text-end">
-                        <a href="{{ route('frontend.bookings.index') }}" class="btn btn-light me-2">
+                        <a href="{{ route('bookings.index') }}" class="btn btn-light me-2">
                             <i class="fas fa-arrow-left me-2"></i> Back to Bookings
                         </a>
                         @if($booking->status === 'pending' && !$booking->is_paid)
-                            <form action="{{ route('frontend.bookings.destroy', $booking->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('bookings.destroy', $booking->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">

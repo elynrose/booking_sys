@@ -8,11 +8,15 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }} - Admin</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
 
     <!-- Styles -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" />
@@ -28,7 +32,61 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.5.0/css/perfect-scrollbar.min.css" rel="stylesheet" />
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
-    @yield('styles')
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    <style>
+        :root {
+            --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: #2d3748;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-family-base);
+            font-weight: 600;
+            line-height: 1.25;
+            color: #1a202c;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .btn {
+            font-weight: 500;
+        }
+
+        .badge {
+            font-weight: 500;
+        }
+
+        .list-group-item {
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            font-family: var(--font-family-base);
+        }
+
+        .table {
+            font-size: 0.875rem;
+        }
+
+        .nav-link {
+            font-weight: 500;
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 
 <body>
@@ -177,7 +235,14 @@
                     </div>
                 </div>
             @endif
-            @yield('content')
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                    @yield('content')
+
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 

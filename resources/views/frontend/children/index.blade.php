@@ -42,7 +42,13 @@
                                     @foreach($children as $child)
                                         <tr>
                                             <td>{{ $child->name }}</td>
-                                            <td>{{ $child->age }} years</td>
+                                            <td>
+                                                @if($child->date_of_birth)
+                                                    {{ \Carbon\Carbon::parse($child->date_of_birth)->age }} years
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
                                             <td>{{ ucfirst($child->gender) }}</td>
                                             <td>
                                                 <div class="btn-group">

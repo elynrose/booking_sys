@@ -14,38 +14,41 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Schedules</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($categories as $category)
-                                <tr>
-                                    <td>{{ $category->name }}</td>
-                                    <td>{{ $category->description }}</td>
-                                    <td>{{ $category->schedules_count }}</td>
-                                    <td>
-                                        <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-info btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this category?')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <!-- Categories List -->
+                    <div class="list-group">
+                        @foreach($categories as $category)
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="mb-1">{{ $category->name }}</h5>
+                                            <span class="badge badge-info">
+                                                <i class="fas fa-calendar mr-1"></i>
+                                                {{ $category->schedules_count }} Schedules
+                                            </span>
+                                        </div>
+                                        <p class="mb-1 text-muted">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            {{ $category->description ?: 'No description available' }}
+                                        </p>
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="btn-group">
+                                            <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this category?')">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
