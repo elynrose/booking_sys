@@ -11,7 +11,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('admin.schedules.store') }}" method="POST">
+            <form action="{{ route('admin.schedules.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
@@ -42,8 +42,21 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="photo" class="form-label">Schedule Photo</label>
+                            <input type="file" 
+                                   class="form-control @error('photo') is-invalid @enderror" 
+                                   id="photo" 
+                                   name="photo"
+                                   accept="image/*">
+                            <div class="form-text">Upload a photo for this schedule (max 2MB, jpeg, png, jpg, gif)</div>
+                            @error('photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="trainer_id" class="form-label">Trainer</label>
-                            <select class="form-select @error('trainer_id') is-invalid @enderror" 
+                            <select class="form-select form-control @error('trainer_id') is-invalid @enderror" 
                                     id="trainer_id" 
                                     name="trainer_id" 
                                     required>
@@ -56,6 +69,25 @@
                                 @endforeach
                             </select>
                             @error('trainer_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">Category</label>
+                            <select class="form-select form-control @error('category_id') is-invalid @enderror" 
+                                    id="category_id" 
+                                    name="category_id" 
+                                    required>
+                                <option value="">Select Category</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" 
+                                            {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('category_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -166,7 +198,7 @@
 
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
-                            <select class="form-select @error('status') is-invalid @enderror" 
+                            <select class="form-select form-control @error('status') is-invalid @enderror" 
                                     id="status" 
                                     name="status" 
                                     required>

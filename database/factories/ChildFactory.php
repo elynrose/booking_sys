@@ -15,7 +15,7 @@ class ChildFactory extends Factory
         return [
             'user_id' => User::factory(),
             'name' => $this->faker->name,
-            'age' => $this->faker->numberBetween(1, 18),
+            'date_of_birth' => $this->faker->date(),
             'gender' => $this->faker->randomElement(['male', 'female', 'other']),
         ];
     }

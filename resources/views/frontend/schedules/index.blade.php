@@ -74,8 +74,8 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100 mb-4">
                 <div class="position-relative">
-                    @if($schedule->image)
-                        <img src="{{ asset('storage/' . $schedule->image) }}" alt="{{ $schedule->title }}" class="card-img-top">
+                    @if($schedule->photo)
+                        <img src="{{ $schedule->photo_url }}" alt="{{ $schedule->title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     @else
                         <svg class="card-img-top" width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
                             <rect width="100%" height="100%" fill="#f8f9fa"/>

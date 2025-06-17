@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Models\Trainer;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -59,7 +60,8 @@ class ScheduleController extends Controller
     public function create()
     {
         $trainers = Trainer::with('user')->where('is_active', true)->get();
-        return view('admin.schedules.create', compact('trainers'));
+        $categories = Category::all();
+        return view('admin.schedules.create', compact('trainers', 'categories'));
     }
 
     public function store(Request $request)
@@ -83,8 +85,6 @@ class ScheduleController extends Controller
             $validated['photo'] = $request->file('photo')->store('schedules', 'public');
         }
 
-        $validated['slug'] = Str::slug($validated['title']);
-
         Schedule::create($validated);
 
         return redirect()->route('admin.schedules.index')
@@ -94,7 +94,8 @@ class ScheduleController extends Controller
     public function edit(Schedule $schedule)
     {
         $trainers = Trainer::with('user')->where('is_active', true)->get();
-        return view('admin.schedules.edit', compact('schedule', 'trainers'));
+        $categories = Category::all();
+        return view('admin.schedules.edit', compact('schedule', 'trainers', 'categories'));
     }
 
     public function update(Request $request, Schedule $schedule)
@@ -121,8 +122,6 @@ class ScheduleController extends Controller
             }
             $validated['photo'] = $request->file('photo')->store('schedules', 'public');
         }
-
-        $validated['slug'] = Str::slug($validated['title']);
 
         $schedule->update($validated);
 

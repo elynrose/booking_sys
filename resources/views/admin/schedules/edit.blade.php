@@ -11,7 +11,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('admin.schedules.update', $schedule) }}" method="POST">
+            <form action="{{ route('admin.schedules.update', $schedule) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -43,6 +43,24 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="photo" class="form-label">Schedule Photo</label>
+                            <input type="file" 
+                                   class="form-control @error('photo') is-invalid @enderror" 
+                                   id="photo" 
+                                   name="photo"
+                                   accept="image/*">
+                            <div class="form-text">Upload a photo for this schedule (max 2MB, jpeg, png, jpg, gif)</div>
+                            @error('photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @if($schedule->photo)
+                                <div class="mt-2">
+                                    <img src="{{ $schedule->photo_url }}" alt="Current photo" class="img-thumbnail" style="max-height: 200px">
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="mb-3">
                             <label for="trainer_id" class="form-label">Trainer</label>
                             <select class="form-select @error('trainer_id') is-invalid @enderror" 
                                     id="trainer_id" 
@@ -57,6 +75,25 @@
                                 @endforeach
                             </select>
                             @error('trainer_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">Category</label>
+                            <select class="form-select form-control @error('category_id') is-invalid @enderror" 
+                                    id="category_id" 
+                                    name="category_id" 
+                                    required>
+                                <option value="">Select Category</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" 
+                                            {{ old('category_id', $schedule->category_id) == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('category_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
