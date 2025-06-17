@@ -23,7 +23,22 @@
 
                     <div class="timer-container mb-4">
                         <h5>Time Elapsed</h5>
-                        <div id="countdown" class="simply-countdown"></div>
+                        <div class="timer-display">
+                            <div class="timer-box">
+                                <span id="hours">00</span>
+                                <span class="timer-label">Hours</span>
+                            </div>
+                            <span class="timer-separator">:</span>
+                            <div class="timer-box">
+                                <span id="minutes">00</span>
+                                <span class="timer-label">Minutes</span>
+                            </div>
+                            <span class="timer-separator">:</span>
+                            <div class="timer-box">
+                                <span id="seconds">00</span>
+                                <span class="timer-label">Seconds</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-center gap-3">
@@ -44,9 +59,9 @@
         </div>
     </div>
 </div>
+@endsection
 
-@push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplycountdown.js@3.0.1/dist/themes/default.css">
+@section('styles')
 <style>
     .timer-container {
         background: #f8f9fa;
@@ -58,60 +73,62 @@
         padding: 20px;
         border-radius: 10px;
     }
-    .simply-countdown {
+    .timer-display {
         display: flex;
         justify-content: center;
-        gap: 20px;
+        align-items: center;
+        gap: 10px;
     }
-    .simply-countdown > .simply-section {
+    .timer-box {
         background: #fff;
         padding: 15px;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        min-width: 80px;
+        text-align: center;
     }
-    .simply-countdown > .simply-section .simply-amount {
+    .timer-box span:first-child {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        display: block;
+    }
+    .timer-label {
+        font-size: 14px;
+        color: #666;
+    }
+    .timer-separator {
         font-size: 24px;
         font-weight: bold;
         color: #333;
     }
-    .simply-countdown > .simply-section .simply-word {
-        font-size: 14px;
-        color: #666;
-    }
 </style>
-@endpush
+@endsection
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/simplycountdown.js@3.0.1/dist/simplyCountdown.min.js"></script>
+@section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Get the check-in time from the server
     const checkinTime = new Date('{{ ($checkin ?? $existingCheckin)->created_at }}');
-    
-    // Initialize the countdown
-    simplyCountdown('#countdown', {
-        year: checkinTime.getFullYear(),
-        month: checkinTime.getMonth() + 1,
-        day: checkinTime.getDate(),
-        hours: checkinTime.getHours(),
-        minutes: checkinTime.getMinutes(),
-        seconds: checkinTime.getSeconds(),
-        words: {
-            days: { root: 'day', lambda: (root, n) => n > 1 ? root + 's' : root },
-            hours: { root: 'hr', lambda: (root, n) => n > 1 ? root + 's' : root },
-            minutes: { root: 'min', lambda: (root, n) => n > 1 ? root + 's' : root },
-            seconds: { root: 'sec', lambda: (root, n) => n > 1 ? root + 's' : root }
-        },
-        countUp: true,
-        zeroPad: true,
-        refresh: 1000,
-        inline: false,
-        enableUtc: false,
-        onEnd: function() {
-            // Optional: Handle when countdown ends
-        }
-    });
+    console.log('Check-in time:', checkinTime.toISOString());
+
+    function updateTimer() {
+        const now = new Date();
+        const diff = Math.floor((now - checkinTime) / 1000); // Convert to seconds
+        
+        // Calculate hours, minutes, and seconds
+        const hours = Math.floor(diff / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = diff % 60;
+        
+        // Update the display
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+    }
+
+    // Update the timer immediately and then every second
+    updateTimer();
+    setInterval(updateTimer, 1000);
 });
 </script>
-@endpush
 @endsection 

@@ -38,8 +38,8 @@ class CheckinController extends Controller
         abort_if(Gate::denies('checkin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         // If it's a GET request, show the form
-        if ($request->isMethod('get')) {
-            return view('frontend.checkins.index');
+        if ($request->method() === 'GET') {
+            return view('frontend.checkins.verify');
         }
 
         // Handle POST request
@@ -77,6 +77,11 @@ class CheckinController extends Controller
         if ($activeCheckin) {
             // Format the check-in time for JavaScript with timezone offset
             $activeCheckin->formatted_checkin_time = $activeCheckin->checkin_time->toIso8601String();
+            \Log::info('Active check-in time:', [
+                'raw_time' => $activeCheckin->checkin_time,
+                'formatted_time' => $activeCheckin->formatted_checkin_time,
+                'timezone' => config('app.timezone')
+            ]);
         }
 
         // Get all paid and confirmed bookings for this user

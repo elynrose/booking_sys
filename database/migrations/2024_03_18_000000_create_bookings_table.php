@@ -17,10 +17,11 @@ return new class extends Migration
             $table->foreignId('schedule_id')->constrained();
             $table->string('child_name');
             $table->integer('child_age');
-            $table->integer('sessions_remaining')->default(0);
+            $table->integer('sessions_remaining')->nullable();
             $table->string('status')->default('pending'); // pending, confirmed, cancelled, completed
             $table->string('check_in_code')->unique(); // QR code for check-in
             $table->boolean('is_paid')->default(false);
+            $table->decimal('total_cost', 10, 2)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

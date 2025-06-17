@@ -122,17 +122,12 @@ class BookingController extends Controller
 
             $booking = auth()->user()->bookings()->create([
                 'schedule_id' => $schedule->id,
+                'child_id' => $request->child_id,
                 'status' => 'pending',
-                'booking_date' => now(),
+                'sessions_remaining' => $request->sessions,
+                'total_cost' => $schedule->price * $request->sessions
             ]);
-
-            \Log::info('Successfully created booking:', [
-                'booking_id' => $booking->id,
-                'user_id' => auth()->id(),
-                'schedule_id' => $schedule->id,
-                'status' => 'pending'
-            ]);
-
+         
             DB::commit();
 
             return redirect()->route('bookings.show', $booking)
@@ -186,5 +181,47 @@ class BookingController extends Controller
 
         return redirect()->route('bookings.show', $booking)
             ->with('success', 'Booking cancelled successfully.');
+    }
+
+    public function destroy(Booking $booking)
+    {
+        abort_if(Gate::denies('booking_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        // Check if user owns this booking
+        if ($booking->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Check if booking can be deleted
+        if (!$booking->canBeDeleted()) {
+            return redirect()->route('bookings.show', $booking)
+                ->with('error', 'This booking cannot be deleted.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Delete any associated check-ins
+            $booking->checkins()->delete();
+
+            // Delete the booking
+            $booking->delete();
+
+            DB::commit();
+
+            return redirect()->route('bookings.index')
+                ->with('success', 'Booking deleted successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Failed to delete booking:', [
+                'error' => $e->getMessage(),
+                'booking_id' => $booking->id,
+                'user_id' => auth()->id()
+            ]);
+
+            return redirect()->route('bookings.show', $booking)
+                ->with('error', 'Failed to delete booking. Please try again.');
+        }
     }
 } 

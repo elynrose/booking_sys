@@ -24,13 +24,15 @@ class Booking extends Model
         'checkin_code',
         'checkout_code',
         'checkin_time',
-        'checkout_time'
+        'checkout_time',
+        'total_cost',
     ];
 
     protected $casts = [
         'is_paid' => 'boolean',
         'checkin_time' => 'datetime',
-        'checkout_time' => 'datetime'
+        'checkout_time' => 'datetime',
+        'total_cost' => 'decimal:2',
     ];
 
     protected static function boot()
@@ -85,5 +87,41 @@ class Booking extends Model
     public function isLastSession()
     {
         return $this->sessions_remaining === 1;
+    }
+
+    public function canBeCancelled()
+    {
+        // Can't cancel if already cancelled
+        if ($this->status === 'cancelled') {
+            return false;
+        }
+
+        // Can't cancel if already checked in
+        if ($this->checkins()->exists()) {
+            return false;
+        }
+
+        // Can't cancel if the schedule has started
+        if ($this->schedule->start_date->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function canBeDeleted()
+    {
+        // Can't delete if already checked in
+        if ($this->checkins()->exists()) {
+            return false;
+        }
+
+        // Can't delete if the schedule has started
+        if ($this->schedule->start_date->isPast()) {
+            return false;
+        }
+
+        // Can delete if cancelled or pending
+        return in_array($this->status, ['cancelled', 'pending']);
     }
 }

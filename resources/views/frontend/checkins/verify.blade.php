@@ -181,49 +181,75 @@
 </style>
 @endsection
 
-@push('scripts')
+@section('scripts')
 @if(isset($activeCheckin))
 <script>
-// Get the check-in time from the server
-const checkinTimeStr = '{{ $activeCheckin->formatted_checkin_time }}';
-const userTimezone = '{{ $user->timezone ?? "UTC" }}';
-
-// Parse the check-in time
-const checkinTime = new Date(checkinTimeStr);
-console.log('Check-in time:', checkinTimeStr);
-console.log('User timezone:', userTimezone);
-console.log('Local time:', checkinTime.toLocaleString());
-
-function updateTimer() {
-    const now = new Date();
-    const diff = now.getTime() - checkinTime.getTime();
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
     
-    if (diff < 0) {
-        console.error('Negative time difference detected:', diff);
-        return;
+    // Get the check-in time in UTC
+    const checkinTimeStr = '{{ $activeCheckin->created_at }}';
+    console.log('Raw check-in time:', checkinTimeStr);
+    
+    // Create a date object in the local timezone
+    const checkinTime = new Date(checkinTimeStr + 'Z'); // Add Z to interpret as UTC
+    console.log('Check-in time (UTC):', checkinTime.toISOString());
+    console.log('Check-in time (local):', checkinTime.toLocaleString());
+
+    function updateTimer() {
+        const now = new Date();
+        console.log('Current time (local):', now.toLocaleString());
+        
+        // Calculate difference in milliseconds
+        const diff = now.getTime() - checkinTime.getTime();
+        console.log('Time difference in milliseconds:', diff);
+        
+        // Convert to seconds
+        const totalSeconds = Math.floor(diff / 1000);
+        console.log('Time difference in seconds:', totalSeconds);
+        
+        if (totalSeconds < 0) {
+            console.error('Negative time difference detected:', totalSeconds);
+            return;
+        }
+        
+        // Calculate hours, minutes, and seconds
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        console.log('Calculated time:', { hours, minutes, seconds });
+        
+        // Update the display
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        
+        if (hoursElement && minutesElement && secondsElement) {
+            hoursElement.textContent = Math.abs(hours).toString().padStart(2, '0');
+            minutesElement.textContent = Math.abs(minutes).toString().padStart(2, '0');
+            secondsElement.textContent = Math.abs(seconds).toString().padStart(2, '0');
+        } else {
+            console.error('Timer elements not found in the DOM');
+        }
     }
-    
-    // Calculate hours, minutes, seconds
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    // Update the display
-    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-}
 
-// Update immediately
-updateTimer();
+    // Update the timer immediately and then every second
+    console.log('Starting timer updates');
+    updateTimer();
+    const timerInterval = setInterval(updateTimer, 1000);
+    console.log('Timer interval set:', timerInterval);
 
-// Update every second
-const timerInterval = setInterval(updateTimer, 1000);
-
-// Clean up interval when page is unloaded
-window.addEventListener('beforeunload', function() {
-    clearInterval(timerInterval);
+    // Clean up interval when page is unloaded
+    window.addEventListener('beforeunload', function() {
+        console.log('Cleaning up timer interval');
+        clearInterval(timerInterval);
+    });
 });
 </script>
+@else
+<script>
+console.log('No active check-in found');
+</script>
 @endif
-@endpush 
+@endsection 

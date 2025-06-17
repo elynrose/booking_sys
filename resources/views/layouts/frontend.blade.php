@@ -59,6 +59,7 @@
                                 </a>
                             </li>
                             @endif
+                            @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('user'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('frontend.schedules.index') }}">
                                     <i class="fas fa-calendar-alt"></i> Classes
@@ -74,6 +75,7 @@
                                     <i class="fas fa-child"></i> My Children
                                 </a>
                             </li>
+                            @endif
                         @endguest
                     </ul>
 
@@ -97,8 +99,9 @@
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('frontend.profile.index') }}">{{ __('My profile') }}</a>
-
-                                  <a class="dropdown-item" href="/admin">{{ __('Admin') }}</a>
+                                    @if(auth()->user()->hasRole('admin'))
+                                        <a class="dropdown-item" href="/admin">{{ __('Admin') }}</a>
+                                    @endif
 
                                    <!--   @can('user_management_access')
                                         <a class="dropdown-item disabled" href="#">
