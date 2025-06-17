@@ -8,7 +8,7 @@
 
             <div class="card shadow">
                 <div class="card-body">
-                    <form action="{{ route('bookings.store') }}" method="POST">
+                    <form action="{{ route('bookings.store', $schedule) }}" method="POST">
                         @csrf
                         <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
                         <input type="hidden" name="price_per_session" value="{{ $schedule->price }}">
@@ -92,7 +92,7 @@
                                                     <ul class="mb-0">
                                                         <li><strong>Email:</strong> your-zelle-email@example.com</li>
                                                         <li><strong>Name:</strong> Your Business Name</li>
-                                                        <li><strong>Amount:</strong> RM <span id="zelle-amount">{{ number_format($schedule->price, 2) }}</span></li>
+                                                        <li><strong>Amount:</strong> $<span id="zelle-amount">{{ number_format($schedule->price, 2) }}</span></li>
                                                     </ul>
                                                     <hr>
                                                     <p class="mb-0"><small>Please include your name and booking reference <strong>username</strong> in the memo field.</small></p>
@@ -119,7 +119,7 @@
                             <div class="card border-0 bg-light mb-3">
                                 <div class="card-body">
                                     <h6 class="card-title text-muted mb-3">Total Cost</h6>
-                                    <h3 class="mb-0" id="totalCost">RM {{ number_format($schedule->price, 2) }}</h3>
+                                    <h3 class="mb-0" id="totalCost">$ {{ number_format($schedule->price, 2) }}</h3>
                                 </div>
                             </div>
 

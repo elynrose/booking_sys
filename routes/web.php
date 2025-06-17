@@ -113,7 +113,7 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
 // Booking routes (moved outside the frontend group)
 Route::middleware(['auth'])->group(function () {
     Route::get('/bookings/create/{schedule}', [App\Http\Controllers\Frontend\BookingController::class, 'create'])->name('bookings.create');
-    Route::post('/bookings', [App\Http\Controllers\Frontend\BookingController::class, 'store'])->name('bookings.store');
+    Route::post('/bookings/{schedule}', [App\Http\Controllers\Frontend\BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings', [App\Http\Controllers\Frontend\BookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [App\Http\Controllers\Frontend\BookingController::class, 'show'])->name('bookings.show');
     Route::delete('/bookings/{booking}', [App\Http\Controllers\Frontend\BookingController::class, 'destroy'])->name('bookings.destroy');

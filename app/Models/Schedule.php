@@ -150,20 +150,42 @@ class Schedule extends Model
         $startDate = Carbon::parse($this->start_date);
         $endDate = Carbon::parse($this->end_date);
         
+        // Count only active bookings (not cancelled)
+        $activeBookings = $this->bookings()->where('status', '!=', 'cancelled')->count();
+        
+        // Debug information
+        \Log::info('Schedule #' . $this->id . ' Availability Check:', [
+            'now' => $now->format('Y-m-d H:i:s'),
+            'start_date' => $startDate->format('Y-m-d H:i:s'),
+            'end_date' => $endDate->format('Y-m-d H:i:s'),
+            'max_participants' => $this->max_participants,
+            'active_bookings' => $activeBookings,
+            'total_bookings' => $this->bookings->count(),
+            'current_participants' => $this->current_participants
+        ]);
+        
         // Check each condition separately
         $isAvailableForBooking = $now->lte($endDate);
-        $hasSpotsAvailable = $this->max_participants > $this->bookings->count();
+        $hasSpotsAvailable = $this->max_participants > $activeBookings;
         
         // Store the status for debugging
         $this->availabilityStatus = [
             'is_available_for_booking' => $isAvailableForBooking,
             'has_spots_available' => $hasSpotsAvailable,
             'current_time' => $now->format('Y-m-d H:i:s'),
+            'start_date' => $startDate->format('Y-m-d H:i:s'),
             'end_date' => $endDate->format('Y-m-d H:i:s'),
             'max_participants' => $this->max_participants,
-            'current_bookings' => $this->bookings->count(),
-            'remaining_spots' => $this->max_participants - $this->bookings->count()
+            'active_bookings' => $activeBookings,
+            'remaining_spots' => $this->max_participants - $activeBookings
         ];
+        
+        \Log::info('Schedule #' . $this->id . ' Availability Result:', [
+            'isAvailableForBooking' => $isAvailableForBooking,
+            'hasSpotsAvailable' => $hasSpotsAvailable,
+            'final_result' => $isAvailableForBooking && $hasSpotsAvailable,
+            'reason' => !$isAvailableForBooking ? 'Schedule has ended' : (!$hasSpotsAvailable ? 'No spots available' : 'Available')
+        ]);
         
         return $isAvailableForBooking && $hasSpotsAvailable;
     }

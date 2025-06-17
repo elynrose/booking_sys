@@ -121,11 +121,16 @@
                         <span class="badge bg-primary text-white">{{ $schedule->max_participants - $schedule->bookings_count }} spots left</span>
                     </div>
                     @php
-                        $hasExistingBooking = auth()->user()->bookings()->where('schedule_id', $schedule->id)->exists();
+                        $hasActiveBooking = auth()->user()->bookings()
+                            ->where('schedule_id', $schedule->id)
+                            ->whereDoesntHave('checkins', function($query) {
+                                $query->whereNotNull('checkout_time');
+                            })
+                            ->exists();
                     @endphp
-                    @if($hasExistingBooking)
+                    @if($hasActiveBooking)
                         <button class="btn btn-secondary btn-block mt-3" disabled>
-                            <i class="fas fa-check-circle me-2"></i> Already Booked
+                            <i class="fas fa-check-circle me-2"></i> Currently Booked
                         </button>
                     @else
                         <a href="{{ route('bookings.create', $schedule) }}" class="btn btn-primary btn-block mt-3">

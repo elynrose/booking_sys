@@ -44,7 +44,7 @@
                                 <h5 class="text-muted mb-2">Capacity</h5>
                                 <p class="mb-1">
                                     <i class="fas fa-users text-primary me-2"></i>
-                                    {{ $schedule->max_participants - $schedule->bookings->count() }} spots available
+                                    {{ $schedule->max_participants - $schedule->bookings()->where('status', '!=', 'cancelled')->count() }} spots available
                                 </p>
                                 <p class="mb-1">
                                     <i class="fas fa-dollar-sign text-primary me-2"></i>
@@ -68,16 +68,16 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <div class="h5 mb-1">{{ $schedule->max_participants - $schedule->bookings->count() }}</div>
+                            <div class="h5 mb-1">{{ $schedule->max_participants - $schedule->bookings()->where('status', '!=', 'cancelled')->count() }}</div>
                             <div class="text-muted small">spots remaining</div>
                         </div>
                         <div class="text-end">
-                            <div class="h5 mb-1">{{ $schedule->bookings->count() }}</div>
+                            <div class="h5 mb-1">{{ $schedule->bookings()->where('status', '!=', 'cancelled')->count() }}</div>
                             <div class="text-muted small">booked</div>
                         </div>
                     </div>
 
-                    @if($schedule->isAvailable() && $schedule->max_participants > $schedule->bookings->count())
+                    @if($schedule->isAvailable())
                         <a href="{{ route('bookings.create', $schedule) }}" class="btn btn-primary btn-lg w-100">
                             <i class="fas fa-calendar-plus me-2"></i> Book Now
                         </a>
