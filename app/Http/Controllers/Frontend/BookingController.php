@@ -12,6 +12,7 @@ use App\Models\Checkin;
 use App\Models\Waitlist;
 use Gate;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -31,6 +32,12 @@ class BookingController extends Controller
     {
         abort_if(Gate::denies('booking_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        // Debug information
+        \Log::info('Attempting to create booking for Schedule #' . $schedule->id, [
+            'schedule' => $schedule->toArray(),
+            'availability_status' => $schedule->getAvailabilityStatus()
+        ]);
+
         // Check if schedule is available
         if (!$schedule->isAvailable()) {
             $status = $schedule->getAvailabilityStatus();
@@ -41,10 +48,15 @@ class BookingController extends Controller
             }
             if (!$status['has_spots_available']) {
                 $errorMessage .= 'The class is full (Max participants: ' . $status['max_participants'] . 
-                                ', Current bookings: ' . $status['current_bookings'] . '). ';
+                                ', Active bookings: ' . $status['active_bookings'] . '). ';
             }
             
-            return redirect()->route('frontend.schedules.show', $schedule)
+            \Log::info('Schedule #' . $schedule->id . ' is not available', [
+                'error_message' => $errorMessage,
+                'status' => $status
+            ]);
+            
+            return redirect()->route('bookings.index')
                 ->with('error', $errorMessage);
         }
 
@@ -54,7 +66,7 @@ class BookingController extends Controller
             ->first();
 
         if ($existingBooking) {
-            return redirect()->route('frontend.schedules.show', $schedule)
+            return redirect()->route('bookings.index')
                 ->with('error', 'You already have a booking for this schedule (Booking ID: ' . $existingBooking->id . ').');
         }
 
@@ -67,33 +79,76 @@ class BookingController extends Controller
 
     public function store(Request $request, Schedule $schedule)
     {
-        abort_if(Gate::denies('booking_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        \Log::info('Attempting to create booking for Schedule #' . $schedule->id, [
+            'user_id' => auth()->id(),
+            'schedule_id' => $schedule->id,
+            'schedule_details' => [
+                'title' => $schedule->title,
+                'start_date' => $schedule->start_date,
+                'end_date' => $schedule->end_date,
+                'max_participants' => $schedule->max_participants,
+                'active_bookings' => $schedule->bookings()->where('status', '!=', 'cancelled')->count()
+            ]
+        ]);
 
         // Check if schedule is available
         if (!$schedule->isAvailable()) {
-            return redirect()->route('frontend.schedules.show', $schedule)
+            $availabilityStatus = $schedule->getAvailabilityStatus();
+            \Log::info('Schedule #' . $schedule->id . ' is not available:', $availabilityStatus);
+            
+            return redirect()->route('bookings.index')
                 ->with('error', 'This schedule is not available for booking.');
         }
 
-        // Check if user already has a booking for this schedule
-        $existingBooking = Booking::where('user_id', auth()->id())
+        // Check if user already has a booking
+        $existingBooking = auth()->user()->bookings()
             ->where('schedule_id', $schedule->id)
+            ->where('status', '!=', 'cancelled')
             ->first();
 
         if ($existingBooking) {
-            return redirect()->route('frontend.schedules.show', $schedule)
+            \Log::info('User already has an active booking for Schedule #' . $schedule->id, [
+                'user_id' => auth()->id(),
+                'booking_id' => $existingBooking->id,
+                'booking_status' => $existingBooking->status
+            ]);
+            
+            return redirect()->route('bookings.index')
                 ->with('error', 'You already have a booking for this schedule.');
         }
 
-        $booking = Booking::create([
-            'user_id' => auth()->id(),
-            'schedule_id' => $schedule->id,
-            'status' => 'pending',
-            'payment_status' => 'pending',
-        ]);
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('frontend.bookings.show', $booking)
-            ->with('success', 'Booking created successfully. Please complete the payment to confirm your booking.');
+            $booking = auth()->user()->bookings()->create([
+                'schedule_id' => $schedule->id,
+                'status' => 'pending',
+                'booking_date' => now(),
+            ]);
+
+            \Log::info('Successfully created booking:', [
+                'booking_id' => $booking->id,
+                'user_id' => auth()->id(),
+                'schedule_id' => $schedule->id,
+                'status' => 'pending'
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('bookings.show', $booking)
+                ->with('success', 'Booking created successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Failed to create booking:', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'schedule_id' => $schedule->id
+            ]);
+            
+            return redirect()->route('bookings.index')
+                ->with('error', 'Failed to create booking. Please try again.');
+        }
     }
 
     public function show(Booking $booking)
@@ -121,7 +176,7 @@ class BookingController extends Controller
 
         // Check if booking can be cancelled
         if (!$booking->canBeCancelled()) {
-            return redirect()->route('frontend.bookings.show', $booking)
+            return redirect()->route('bookings.show', $booking)
                 ->with('error', 'This booking cannot be cancelled.');
         }
 
@@ -129,7 +184,7 @@ class BookingController extends Controller
             'status' => 'cancelled',
         ]);
 
-        return redirect()->route('frontend.bookings.show', $booking)
+        return redirect()->route('bookings.show', $booking)
             ->with('success', 'Booking cancelled successfully.');
     }
 } 
