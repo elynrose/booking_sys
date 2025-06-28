@@ -97,6 +97,20 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Class Type</label>
+                            <select class="form-select form-control @error('type') is-invalid @enderror" 
+                                    id="type" 
+                                    name="type" 
+                                    required>
+                                <option value="group" {{ old('type', $schedule->type) == 'group' ? 'selected' : '' }}>Group Class</option>
+                                <option value="private" {{ old('type', $schedule->type) == 'private' ? 'selected' : '' }}>Private/Individual Training</option>
+                            </select>
+                            @error('type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -108,7 +122,7 @@
                                            class="form-control @error('start_date') is-invalid @enderror" 
                                            id="start_date" 
                                            name="start_date" 
-                                           value="{{ old('start_date', $schedule->start_date->format('Y-m-d')) }}" 
+                                           value="{{ old('start_date', $schedule->start_date ? $schedule->start_date->format('Y-m-d') : '') }}" 
                                            required>
                                     @error('start_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -123,7 +137,7 @@
                                            class="form-control @error('end_date') is-invalid @enderror" 
                                            id="end_date" 
                                            name="end_date" 
-                                           value="{{ old('end_date', $schedule->end_date->format('Y-m-d')) }}" 
+                                           value="{{ old('end_date', $schedule->end_date ? $schedule->end_date->format('Y-m-d') : '') }}" 
                                            required>
                                     @error('end_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -140,7 +154,7 @@
                                            class="form-control @error('start_time') is-invalid @enderror" 
                                            id="start_time" 
                                            name="start_time" 
-                                           value="{{ old('start_time', $schedule->start_time->format('H:i')) }}" 
+                                           value="{{ old('start_time', $schedule->start_time ? $schedule->start_time->format('H:i') : '') }}" 
                                            required>
                                     @error('start_time')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -155,7 +169,7 @@
                                            class="form-control @error('end_time') is-invalid @enderror" 
                                            id="end_time" 
                                            name="end_time" 
-                                           value="{{ old('end_time', $schedule->end_time->format('H:i')) }}" 
+                                           value="{{ old('end_time', $schedule->end_time ? $schedule->end_time->format('H:i') : '') }}" 
                                            required>
                                     @error('end_time')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -214,6 +228,24 @@
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input @error('allow_unlimited_bookings') is-invalid @enderror" 
+                                       type="checkbox" 
+                                       id="allow_unlimited_bookings" 
+                                       name="allow_unlimited_bookings" 
+                                       value="1" 
+                                       {{ old('allow_unlimited_bookings', $schedule->allow_unlimited_bookings) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="allow_unlimited_bookings">
+                                    Allow Unlimited Bookings
+                                </label>
+                                <div class="form-text">When checked, users can check in unlimited times for this schedule without session limits.</div>
+                                @error('allow_unlimited_bookings')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
                     </div>
                 </div>

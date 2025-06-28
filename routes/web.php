@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\WelcomeController;
 
-Route::view('/', 'welcome');
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
 Auth::routes();
 
@@ -12,24 +13,29 @@ Route::match(['get', 'post'], '/checkin/verify', [App\Http\Controllers\Frontend\
 
 // Check-in routes that require user role
 Route::middleware(['auth', '2fa'])->group(function () {
-    Route::get('/checkin/checkin/{booking}', [App\Http\Controllers\Frontend\CheckinController::class, 'showCheckin'])->name('frontend.checkins.show');
+    // Redirect /checkin/checkin to /checkin/verify
+    Route::get('/checkin/checkin/{booking}', function($booking) {
+        return redirect()->route('frontend.checkins.verify');
+    })->name('frontend.checkins.show');
     Route::post('/checkin/checkin', [App\Http\Controllers\Frontend\CheckinController::class, 'checkin'])->name('frontend.checkins.checkin');
     Route::post('/checkin/checkout', [App\Http\Controllers\Frontend\CheckinController::class, 'checkout'])->name('frontend.checkins.checkout');
+    Route::post('/checkin/auto-checkout', [App\Http\Controllers\Frontend\CheckinController::class, 'autoCheckout'])->name('frontend.checkins.auto-checkout');
+    Route::get('/checkin/auto-checkout-success', [App\Http\Controllers\Frontend\CheckinController::class, 'autoCheckoutSuccess'])->name('frontend.checkins.auto-checkout-success');
 });
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', '2fa', 'admin']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', '2fa']], function () {
     Route::get('/', 'HomeController@index')->name('home');
-    // Permissions
-    Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
-    Route::resource('permissions', 'PermissionsController');
-
-    // Roles
-    Route::delete('roles/destroy', 'RolesController@massDestroy')->name('roles.massDestroy');
-    Route::resource('roles', 'RolesController');
-
-    // Users
-    Route::delete('users/destroy', 'UsersController@massDestroy')->name('users.massDestroy');
     Route::resource('users', 'UsersController');
+    Route::resource('roles', 'RolesController');
+    Route::resource('permissions', 'PermissionsController');
+    Route::resource('schedules', 'ScheduleController');
+    Route::resource('trainers', 'TrainerController');
+    Route::resource('bookings', 'BookingController');
+    Route::post('/bookings/{booking}/mark-as-paid', [App\Http\Controllers\Admin\BookingController::class, 'markAsPaid'])->name('bookings.mark-as-paid');
+
+    // Assign student routes
+    Route::get('/trainers/{trainer}/assign-student', [App\Http\Controllers\Admin\TrainerController::class, 'showAssignStudentForm'])->name('trainers.assign-student');
+    Route::post('/trainers/{trainer}/assign-student', [App\Http\Controllers\Admin\TrainerController::class, 'assignStudent'])->name('trainers.assign-student.store');
 
     // User Alerts
     Route::delete('user-alerts/destroy', 'UserAlertsController@massDestroy')->name('user-alerts.massDestroy');
@@ -51,11 +57,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Payment routes
     Route::resource('payments', App\Http\Controllers\Admin\PaymentController::class);
 
-    // Trainer routes
-    Route::resource('trainers', App\Http\Controllers\Admin\TrainerController::class);
-
     // Category routes
     Route::resource('categories', CategoryController::class);
+
+    // Site Settings
+    Route::get('site-settings', [App\Http\Controllers\Admin\SiteSettingsController::class, 'index'])->name('site-settings.index');
+    Route::put('site-settings', [App\Http\Controllers\Admin\SiteSettingsController::class, 'update'])->name('site-settings.update');
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function () {
     // Change password
@@ -106,7 +113,8 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     // Trainer routes
     Route::middleware(['auth', 'role:trainer'])->group(function () {
         Route::get('/trainer', [App\Http\Controllers\Frontend\TrainerController::class, 'index'])->name('trainer.index');
-        Route::post('/trainer/payments/{payment}/confirm', [App\Http\Controllers\Frontend\TrainerController::class, 'confirmPayment'])->name('trainer.confirm-payment');
+        // COMMENTED OUT: Trainer payment confirmation route
+        // Route::post('/trainer/payments/{payment}/confirm', [App\Http\Controllers\Frontend\TrainerController::class, 'confirmPayment'])->name('trainer.confirm-payment');
     });
 });
 

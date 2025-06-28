@@ -21,8 +21,13 @@
                                             <h5 class="card-title">{{ $schedule->title }}</h5>
                                             <p class="card-text mt-3">
                                                 <small class="text-muted">
-                                                    <i class="fas fa-clock"></i> {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - 
-                                                    {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}
+                                                    <i class="fas fa-clock"></i> 
+                                                    @if($schedule->start_time && $schedule->end_time)
+                                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - 
+                                                        {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}
+                                                    @else
+                                                        Times not set
+                                                    @endif
                                                 </small>
                                             </p>
                                             <p class="card-text text-muted small">
@@ -38,7 +43,8 @@
                 </div>
             </div>
 
-            <!-- Pending Payments Card -->
+            <!-- COMMENTED OUT: Pending Payments Card -->
+            {{-- 
             <div class="card mb-4">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0">Pending Payments</h5>
@@ -111,6 +117,7 @@
                     @endif
                 </div>
             </div>
+            --}}
 
             <!-- Today's Check-ins Card -->
             <div class="card mb-4">
@@ -170,9 +177,20 @@
                                             <h6 class="card-title">{{ $schedule->title }}</h6>
                                             <p class="card-text">
                                                 <small class="text-muted">
-                                                    <i class="fas fa-calendar"></i> {{ \Carbon\Carbon::parse($schedule->start_date)->format('M d, Y') }}<br>
-                                                    <i class="fas fa-clock"></i> {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - 
-                                                    {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}
+                                                    <i class="fas fa-calendar"></i> 
+                                                    @if($schedule->start_date)
+                                                        {{ \Carbon\Carbon::parse($schedule->start_date)->format('M d, Y') }}
+                                                    @else
+                                                        Date not set
+                                                    @endif
+                                                    <br>
+                                                    <i class="fas fa-clock"></i> 
+                                                    @if($schedule->start_time && $schedule->end_time)
+                                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - 
+                                                        {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}
+                                                    @else
+                                                        Times not set
+                                                    @endif
                                                 </small>
                                             </p>
                                             <p class="card-text">

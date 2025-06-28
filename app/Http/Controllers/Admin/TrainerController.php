@@ -7,6 +7,9 @@ use App\Models\Trainer;
 use App\Models\User;
 use App\Models\Schedule;
 use App\Models\Role;
+use App\Models\Booking;
+use App\Models\Payment;
+use App\Models\Child;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
@@ -154,5 +157,120 @@ class TrainerController extends Controller
 
         return redirect()->route('admin.trainers.index')
             ->with('success', 'Trainer deleted successfully.');
+    }
+
+    public function showAssignStudentForm(Trainer $trainer)
+    {
+        abort_if(Gate::denies('trainer_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        // Get users who have paid for this trainer's sessions
+        $paidUsers = User::whereHas('bookings', function($query) use ($trainer) {
+            $query->whereHas('schedule', function($scheduleQuery) use ($trainer) {
+                $scheduleQuery->where('trainer_id', $trainer->id);
+            })->where('is_paid', true);
+        })->with(['children', 'bookings.schedule'])->get();
+
+        $schedules = Schedule::where('trainer_id', $trainer->id)->get();
+
+        return view('admin.trainers.assign-student', compact('trainer', 'paidUsers', 'schedules'));
+    }
+
+    public function assignStudent(Request $request, Trainer $trainer)
+    {
+        abort_if(Gate::denies('trainer_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'schedule_id' => 'required|exists:schedules,id',
+            'child_ids' => 'required|array|min:1',
+            'child_ids.*' => 'exists:children,id',
+            'payment_status' => 'required|in:paid,pending'
+        ]);
+
+        // Verify the schedule belongs to the trainer
+        $schedule = Schedule::where('id', $request->schedule_id)
+            ->where('trainer_id', $trainer->id)
+            ->firstOrFail();
+
+        // Verify the user has paid for this trainer's sessions
+        $hasPaidBooking = Booking::where('user_id', $request->user_id)
+            ->whereHas('schedule', function($query) use ($trainer) {
+                $query->where('trainer_id', $trainer->id);
+            })
+            ->where('is_paid', true)
+            ->exists();
+
+        if (!$hasPaidBooking) {
+            return redirect()->back()
+                ->withErrors(['user_id' => 'This user has not paid for any sessions with this trainer'])
+                ->withInput();
+        }
+
+        $assignedCount = 0;
+        $errors = [];
+
+        foreach ($request->child_ids as $childId) {
+            // Verify the child belongs to the user
+            $child = Child::where('id', $childId)
+                ->where('user_id', $request->user_id)
+                ->first();
+
+            if (!$child) {
+                $errors[] = "Child ID $childId does not belong to the selected user";
+                continue;
+            }
+
+            // Check if booking already exists
+            $existingBooking = Booking::where('user_id', $request->user_id)
+                ->where('schedule_id', $request->schedule_id)
+                ->where('child_id', $childId)
+                ->first();
+
+            if ($existingBooking) {
+                $errors[] = "Child $child->name is already assigned to this schedule";
+                continue;
+            }
+
+            // Create the booking
+            $booking = Booking::create([
+                'user_id' => $request->user_id,
+                'schedule_id' => $request->schedule_id,
+                'child_id' => $childId,
+                'status' => 'confirmed',
+                'is_paid' => $request->payment_status === 'paid',
+                'sessions_remaining' => 4, // Default to 4 sessions
+                'check_in_code' => strtoupper(substr(md5(uniqid()), 0, 8)), // Generate unique check-in code
+                'total_cost' => $schedule->price,
+            ]);
+
+            // If payment status is paid, create a payment record
+            if ($request->payment_status === 'paid') {
+                Payment::create([
+                    'user_id' => $request->user_id,
+                    'booking_id' => $booking->id,
+                    'schedule_id' => $request->schedule_id,
+                    'amount' => $schedule->price,
+                    'description' => 'Admin assigned payment',
+                    'status' => 'paid',
+                    'payment_date' => now(),
+                    'paid_at' => now(),
+                ]);
+            }
+
+            $assignedCount++;
+        }
+
+        if (!empty($errors)) {
+            return redirect()->back()
+                ->withErrors($errors)
+                ->withInput();
+        }
+
+        $message = $assignedCount === 1 
+            ? 'Child has been successfully assigned to the schedule.'
+            : "$assignedCount children have been successfully assigned to the schedule.";
+
+        return redirect()->route('admin.trainers.index')
+            ->with('success', $message);
     }
 }

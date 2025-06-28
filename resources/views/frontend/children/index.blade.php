@@ -51,11 +51,11 @@
                                             </td>
                                             <td>{{ ucfirst($child->gender) }}</td>
                                             <td>
-                                                <div class="btn-group">
+                                                <div>
                                                     <a href="{{ route('frontend.children.edit', $child) }}" 
                                                        class="btn btn-sm btn-outline-primary">
                                                         <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    </a>&nbsp;
                                                     <form action="{{ route('frontend.children.destroy', $child) }}" 
                                                           method="POST" 
                                                           class="d-inline"

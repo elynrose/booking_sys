@@ -8,7 +8,10 @@ use App\Models\Schedule;
 use App\Models\Waitlist;
 use App\Models\User;
 use App\Models\Child;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
 
 class DemoDataSeeder extends Seeder
 {
@@ -17,68 +20,107 @@ class DemoDataSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = Faker::create();
+
+        // Get roles
+        $trainerRole = Role::where('title', 'Trainer')->first();
+        $userRole = Role::where('title', 'User')->first();
+        $adminRole = Role::where('title', 'Admin')->first();
+
         // Use existing users if available
-        $trainer = \App\Models\User::where('role', 'trainer')->first();
-        $parent1 = \App\Models\User::where('role', 'parent')->first();
-        $parent2 = \App\Models\User::where('role', 'parent')->skip(1)->first();
+        $trainer = User::whereHas('roles', function($query) use ($trainerRole) {
+            $query->where('roles.id', $trainerRole->id);
+        })->first();
+
+        $parents = User::whereHas('roles', function($query) use ($userRole) {
+            $query->where('roles.id', $userRole->id);
+        })->take(2)->get();
+
+        $parent1 = $parents->first();
+        $parent2 = $parents->skip(1)->first();
 
         // Ensure a trainer exists
         if (!$trainer) {
             $trainer = User::create([
-                'name' => 'Demo Trainer',
-                'email' => 'trainer@example.com',
-                'password' => bcrypt('password'),
-                'role' => 'trainer',
+                'name' => $faker->name(),
+                'email' => 'demo.trainer@example.com',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
             ]);
+            $trainer->roles()->attach($trainerRole);
         }
 
         // Create schedules
         $schedule1 = Schedule::create([
-            'title' => 'Morning Gymnastics',
-            'description' => 'Basic gymnastics for beginners',
+            'title' => 'Beginner Gymnastics',
+            'description' => 'Perfect for kids new to gymnastics. Learn basic tumbling, balance beam, and vault techniques.',
             'start_time' => now()->addDays(1)->setHour(9)->setMinute(0),
             'end_time' => now()->addDays(1)->setHour(10)->setMinute(0),
-            'max_participants' => 5,
-            'current_participants' => 0,
-            'price' => 25.00,
-            'trainer_id' => $trainer ? $trainer->id : null,
-            'status' => 'active',
-        ]);
-
-        $schedule2 = Schedule::create([
-            'title' => 'Advanced Gymnastics',
-            'description' => 'Advanced gymnastics for experienced students',
-            'start_time' => now()->addDays(2)->setHour(14)->setMinute(0),
-            'end_time' => now()->addDays(2)->setHour(15)->setMinute(0),
-            'max_participants' => 3,
+            'max_participants' => 12,
             'current_participants' => 0,
             'price' => 35.00,
             'trainer_id' => $trainer ? $trainer->id : null,
             'status' => 'active',
         ]);
 
-        // Create bookings
+        $schedule2 = Schedule::create([
+            'title' => 'Swimming Lessons',
+            'description' => 'Learn essential swimming strokes and water safety skills.',
+            'start_time' => now()->addDays(2)->setHour(14)->setMinute(0),
+            'end_time' => now()->addDays(2)->setHour(15)->setMinute(0),
+            'max_participants' => 8,
+            'current_participants' => 0,
+            'price' => 40.00,
+            'trainer_id' => $trainer ? $trainer->id : null,
+            'status' => 'active',
+        ]);
+
+        // Create children first
+        $child1 = null;
+        $child2 = null;
+        
         if ($parent1) {
-            $booking1 = Booking::create([
+            $child1 = Child::create([
                 'user_id' => $parent1->id,
-                'schedule_id' => $schedule1->id,
-                'child_name' => 'Child One',
-                'child_age' => 8,
-                'sessions_remaining' => 4,
-                'status' => 'confirmed',
-                'is_paid' => true,
+                'name' => $faker->randomElement(['Emma', 'Liam', 'Olivia', 'Noah']),
+                'date_of_birth' => now()->subYears(8)->toDateString(),
+                'gender' => 'male',
+            ]);
+        }
+        
+        if ($parent2) {
+            $child2 = Child::create([
+                'user_id' => $parent2->id,
+                'name' => $faker->randomElement(['Sophia', 'William', 'Ava', 'James']),
+                'date_of_birth' => now()->subYears(7)->toDateString(),
+                'gender' => 'female',
             ]);
         }
 
-        if ($parent2) {
+        // Create bookings
+        if ($parent1 && $child1) {
+            $booking1 = Booking::create([
+                'user_id' => $parent1->id,
+                'child_id' => $child1->id,
+                'schedule_id' => $schedule1->id,
+                'sessions_remaining' => 4,
+                'status' => 'confirmed',
+                'is_paid' => true,
+                'check_in_code' => 'GYM001',
+                'total_cost' => 140.00,
+            ]);
+        }
+
+        if ($parent2 && $child2) {
             $booking2 = Booking::create([
                 'user_id' => $parent2->id,
+                'child_id' => $child2->id,
                 'schedule_id' => $schedule1->id,
-                'child_name' => 'Child Two',
-                'child_age' => 7,
                 'sessions_remaining' => 4,
                 'status' => 'pending',
                 'is_paid' => false,
+                'check_in_code' => 'GYM002',
+                'total_cost' => 140.00,
             ]);
         }
 
@@ -88,45 +130,30 @@ class DemoDataSeeder extends Seeder
                 'user_id' => $parent1->id,
                 'booking_id' => $booking1->id,
                 'amount' => $schedule1->price,
-                'payment_method' => 'stripe',
-                'status' => 'completed',
-                'stripe_payment_id' => 'demo_stripe_123',
+                'description' => 'Gymnastics class payment',
+                'status' => 'paid',
+                'payment_date' => now(),
+                'paid_at' => now(),
             ]);
         }
 
         // Create waitlist
-        if ($parent2) {
+        if ($parent2 && $child2) {
             Waitlist::create([
                 'user_id' => $parent2->id,
+                'child_id' => $child2->id,
                 'schedule_id' => $schedule2->id,
-                'child_name' => 'Child Two',
-                'child_age' => 7,
-                'position' => 1,
+                'sessions_requested' => 1,
                 'status' => 'waiting',
+                'notes' => 'Interested in swimming lessons',
             ]);
         }
 
-        // Seed children for each user
+        // Seed additional children for each user
         User::all()->each(function ($user) {
             Child::factory()->count(2)->create([
                 'user_id' => $user->id,
             ]);
         });
-
-        // Seed admin user
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-        ]);
-
-        // Seed regular user
-        User::create([
-            'name' => 'Regular User',
-            'email' => 'user@example.com',
-            'password' => bcrypt('password'),
-            'role' => 'user',
-        ]);
     }
 }

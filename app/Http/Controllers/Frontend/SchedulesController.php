@@ -21,8 +21,7 @@ class SchedulesController extends Controller
         abort_if(Gate::denies('schedule_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $query = Schedule::with(['trainer.user', 'bookings', 'category'])
-            ->where('status', 'active')
-            ->where('start_date', '>=', Carbon::now());
+            ->where('status', 'active');
 
         // Apply date filters if provided
         if ($request->filled('start_date')) {
@@ -42,6 +41,11 @@ class SchedulesController extends Controller
             $query->whereHas('category', function($q) use ($request) {
                 $q->where('slug', $request->category);
             });
+        }
+
+        // Apply type filter if provided
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
         }
 
         $schedules = $query->latest()->paginate(10);
@@ -79,6 +83,11 @@ class SchedulesController extends Controller
     public function show(Schedule $schedule)
     {
         abort_if(Gate::denies('schedule_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        // Check if user is admin, if not, only allow access to active schedules
+        if (!auth()->user()->hasRole('admin') && $schedule->status !== 'active') {
+            abort(404, 'Schedule not found.');
+        }
 
         $schedule->load(['trainer.user', 'bookings.user']);
 

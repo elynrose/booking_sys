@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Gate;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Payment;
 
 class BookingController extends Controller
 {
@@ -65,7 +66,7 @@ class BookingController extends Controller
         abort_if(Gate::denies('booking_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $schedules = Schedule::with(['trainer.user'])->where('status', 'active')->get();
-        $users = User::where('is_active', true)->get();
+        $users = User::all();
         return view('admin.bookings.create', compact('schedules', 'users'));
     }
 
@@ -81,7 +82,13 @@ class BookingController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        Booking::create($validated);
+        $validated['is_paid'] = $request->has('is_paid');
+
+        $booking = Booking::create($validated);
+
+        // Increment current_participants for the schedule
+        $schedule = Schedule::find($validated['schedule_id']);
+        $schedule->incrementParticipants();
 
         return redirect()->route('admin.bookings.index')
             ->with('success', 'Booking created successfully.');
@@ -92,7 +99,7 @@ class BookingController extends Controller
         abort_if(Gate::denies('booking_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $schedules = Schedule::with(['trainer.user'])->where('status', 'active')->get();
-        $users = User::where('is_active', true)->get();
+        $users = User::all();
         return view('admin.bookings.edit', compact('booking', 'schedules', 'users'));
     }
 
@@ -108,7 +115,44 @@ class BookingController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $validated['is_paid'] = $request->has('is_paid');
+
         $booking->update($validated);
+
+        // Check if payment record exists
+        $payment = Payment::where('booking_id', $booking->id)->first();
+        if ($payment) {
+            $payment->update([
+                'status' => 'paid',
+            ]);
+        } else {
+            Payment::create([
+                'booking_id' => $booking->id,
+                'amount' => $booking->total_cost,
+                'payment_method' => 'card',
+                'description' => 'Payment for booking',
+                'status' => 'paid',
+                'payment_intent_id' => $booking->payment_intent_id,
+                'user_id' => $booking->user_id,
+            ]);
+        }
+
+        // If refunded, update the payment status to refunded
+        if ($request->payment_status == 'refunded') {
+            $payment->update([
+                'status' => 'refunded',
+            ]);
+        } else if ($request->payment_status == 'pending') {
+            $payment->update([
+                'status' => 'pending',
+            ]);
+        }
+
+        // Decrement current_participants for the schedule if the booking is cancelled or refunded
+        if ($request->status == 'cancelled' || $request->payment_status == 'refunded') {
+            $schedule = Schedule::find($validated['schedule_id']);
+            $schedule->decrementParticipants();
+        }
 
         return redirect()->route('admin.bookings.index')
             ->with('success', 'Booking updated successfully.');
@@ -129,5 +173,47 @@ class BookingController extends Controller
 
         return redirect()->route('admin.bookings.index')
             ->with('success', 'Booking deleted successfully.');
+    }
+
+    public function markAsPaid(Booking $booking)
+    {
+        abort_if(Gate::denies('booking_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $booking->update([
+            'status' => 'confirmed',
+            'payment_status' => 'paid',
+            'is_paid' => true
+        ]);
+
+        //Check if payment record exists
+        $payment = Payment::where('booking_id', $booking->id)->first();
+        if ($payment) {
+            $payment->update([
+                'status' => 'paid',
+            ]);
+        } else {
+            Payment::create([
+                'booking_id' => $booking->id,
+                'amount' => $booking->total_cost,
+                'payment_method' => 'card',
+                'description' => 'Payment for booking',
+                'status' => 'paid',
+                'payment_intent_id' => $booking->payment_intent_id,
+                'user_id' => $booking->user_id,
+            ]);
+        }
+
+        return redirect()->route('admin.bookings.index')
+            ->with('success', 'Booking marked as paid successfully.');
+    }
+
+    public function incrementParticipants()
+    {
+        $this->increment('current_participants');
+    }
+
+    public function decrementParticipants()
+    {
+        $this->decrement('current_participants');
     }
 } 

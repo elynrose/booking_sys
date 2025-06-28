@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Models\Checkin;
-use App\Models\Payment;
+// use App\Models\Payment;
 use App\Models\Booking;
 use App\Models\Trainer;
-use App\Notifications\PaymentConfirmedNotification;
+// use App\Notifications\PaymentConfirmedNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Gate;
@@ -60,17 +60,22 @@ class TrainerController extends Controller
             ->with(['booking.child', 'booking.user'])
             ->get();
 
-        // Get pending payments for trainer's schedules
-        $pendingPayments = Payment::whereHas('booking.schedule', function($query) use ($trainer) {
-                $query->where('trainer_id', $trainer->id);
-            })
-            ->where('status', 'pending')
-            ->with(['booking.child', 'booking.user', 'booking.schedule'])
-            ->get();
+        // COMMENTED OUT: Get pending payments for trainer's schedules
+        // $pendingPayments = Payment::whereHas('booking.schedule', function($query) use ($trainer) {
+        //         $query->where('trainer_id', $trainer->id);
+        //     })
+        //     ->where('status', 'pending')
+        //     ->with(['booking.child', 'booking.user', 'booking.schedule'])
+        //     ->get();
+
+        // Set empty collection for pending payments
+        $pendingPayments = collect();
 
         return view('frontend.trainer.index', compact('todaySchedules', 'upcomingSchedules', 'todayCheckins', 'pendingPayments'));
     }
 
+    // COMMENTED OUT: Payment confirmation method
+    /*
     public function confirmPayment(Request $request, Payment $payment)
     {
         abort_if(Gate::denies('trainer_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -126,4 +131,5 @@ class TrainerController extends Controller
                 ->with('error', 'Failed to confirm payment. Please try again.');
         }
     }
+    */
 } 

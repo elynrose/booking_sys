@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Booking;
+use App\Models\User;
+use App\Models\Schedule;
+use App\Models\Child;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BookingFactory extends Factory
@@ -11,16 +14,22 @@ class BookingFactory extends Factory
 
     public function definition()
     {
+        $statuses = ['pending', 'confirmed', 'cancelled', 'completed'];
+        $status = $this->faker->randomElement($statuses);
+        
+        // Generate realistic check-in codes (alphanumeric)
+        $checkInCode = strtoupper($this->faker->bothify('??##??'));
+        
         return [
-            'user_id' => $this->faker->numberBetween(1, 10),
-            'schedule_id' => $this->faker->numberBetween(1, 5),
-            'child_id' => $this->faker->numberBetween(1, 15),
-            'sessions_remaining' => $this->faker->numberBetween(1, 3),
-            'status' => $this->faker->randomElement(['pending', 'confirmed', 'cancelled']),
-            'check_in_code' => $this->faker->unique()->randomNumber(6),
-            'is_paid' => $this->faker->boolean,
-            'payment_method' => $this->faker->randomElement(['zelle', 'stripe']),
-            'payment_status' => $this->faker->randomElement(['pending', 'paid', 'refunded']),
+            'user_id' => User::inRandomOrder()->first()->id ?? 1,
+            'schedule_id' => Schedule::inRandomOrder()->first()->id ?? 1,
+            'child_id' => Child::inRandomOrder()->first()->id ?? 1,
+            'sessions_remaining' => $this->faker->numberBetween(1, 8),
+            'status' => $status,
+            'check_in_code' => $checkInCode,
+            'is_paid' => $this->faker->boolean(80), // 80% chance of being paid
+            'total_cost' => $this->faker->randomFloat(2, 25, 150),
+            'notes' => $this->faker->optional(0.4)->sentence(), // 40% chance of having notes
         ];
     }
 } 

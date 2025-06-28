@@ -36,6 +36,11 @@ class ScheduleController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Apply type filter if provided
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
         $schedules = $query->latest()->paginate(10);
 
         // Stat cards
@@ -72,6 +77,7 @@ class ScheduleController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'trainer_id' => 'required|exists:trainers,id',
             'category_id' => 'required|exists:categories,id',
+            'type' => 'required|string|in:group,private',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'start_time' => 'required',
@@ -79,7 +85,12 @@ class ScheduleController extends Controller
             'price' => 'required|numeric|min:0',
             'max_participants' => 'required|integer|min:1',
             'is_featured' => 'boolean',
+            'status' => 'required|string',
+            'allow_unlimited_bookings' => 'boolean',
         ]);
+
+        // Handle checkbox value
+        $validated['allow_unlimited_bookings'] = $request->has('allow_unlimited_bookings');
 
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request->file('photo')->store('schedules', 'public');
@@ -106,6 +117,7 @@ class ScheduleController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'trainer_id' => 'required|exists:trainers,id',
             'category_id' => 'required|exists:categories,id',
+            'type' => 'required|string|in:group,private',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'start_time' => 'required',
@@ -113,7 +125,12 @@ class ScheduleController extends Controller
             'price' => 'required|numeric|min:0',
             'max_participants' => 'required|integer|min:1',
             'is_featured' => 'boolean',
+            'status' => 'required|string',
+            'allow_unlimited_bookings' => 'boolean',
         ]);
+
+        // Handle checkbox value
+        $validated['allow_unlimited_bookings'] = $request->has('allow_unlimited_bookings');
 
         if ($request->hasFile('photo')) {
             // Delete old photo if exists

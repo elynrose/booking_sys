@@ -13,11 +13,15 @@ class Checkin extends Model
         'booking_id',
         'checkin_time',
         'checkout_time',
+        'is_late_checkin',
+        'late_minutes',
     ];
 
     protected $casts = [
         'checkin_time' => 'datetime',
         'checkout_time' => 'datetime',
+        'is_late_checkin' => 'boolean',
+        'late_minutes' => 'integer',
     ];
 
     public function booking()

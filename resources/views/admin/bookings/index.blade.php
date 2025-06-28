@@ -102,7 +102,7 @@
                                         <option value="">All Trainers</option>
                                         @foreach($trainers as $trainer)
                                             <option value="{{ $trainer->id }}" {{ request('trainer_id') == $trainer->id ? 'selected' : '' }}>
-                                                {{ $trainer->name }}
+                                                {{ $trainer->user->name }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -136,8 +136,8 @@
                                                 <span class="badge badge-{{ $booking->status === 'confirmed' ? 'success' : ($booking->status === 'cancelled' ? 'danger' : 'warning') }} mr-2">
                                                     {{ ucfirst($booking->status) }}
                                                 </span>
-                                                <span class="badge badge-{{ $booking->is_paid ? 'success' : 'warning' }}">
-                                                    {{ $booking->is_paid ? 'Paid' : 'Unpaid' }}
+                                                <span class="badge badge-{{ $booking->payments->where('status', 'refunded')->count() > 0 ? 'danger' : ($booking->is_paid ? 'success' : 'warning') }}">
+                                                    {{ $booking->payments->where('status', 'refunded')->count() > 0 ? 'Refunded' : ($booking->is_paid ? 'Paid' : 'Unpaid') }}
                                                 </span>
                                             </div>
                                         </div>
@@ -164,33 +164,45 @@
                                             <div class="col-md-6">
                                                 <p class="mb-1">
                                                     <i class="fas fa-calendar-day mr-2"></i>
-                                                    <strong>Date:</strong> {{ $booking->schedule->start_date->format('M d, Y') }}
+                                                    <strong>Date:</strong> {{ optional($booking->schedule->start_date)->format('M d, Y') ?? 'N/A' }}
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-clock mr-2"></i>
-                                                    <strong>Time:</strong> {{ $booking->schedule->start_time->format('h:i A') }} - 
-                                                    {{ $booking->schedule->end_time->format('h:i A') }}
+                                                    <strong>Time:</strong> {{ optional($booking->schedule->start_time)->format('h:i A') ?? 'N/A' }} - 
+                                                    {{ optional($booking->schedule->end_time)->format('h:i A') ?? 'N/A' }}
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-dollar-sign mr-2"></i>
                                                     <strong>Price:</strong> ${{ number_format($booking->schedule->price, 2) }}
                                                 </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-clock mr-2"></i>
+                                                    <strong>Method:</strong> {{ $booking->payment_method ?? 'None' }}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="ml-3">
-                                        <div class="btn-group">
+                                        <div>
+                                        @if(!$booking->is_paid)
+                                                <form action="{{ route('admin.bookings.mark-as-paid', $booking) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to mark this booking as paid?')">
+                                                        <i class="fas fa-check"></i> Paid
+                                                    </button>
+                                                </form>
+                                            @endif
                                             <a href="{{ route('admin.bookings.show', $booking) }}" class="btn btn-sm btn-info">
-                                                <i class="fas fa-eye"></i> View
+                                                <i class="fas fa-eye"></i>
                                             </a>
                                             <a href="{{ route('admin.bookings.edit', $booking) }}" class="btn btn-sm btn-primary">
-                                                <i class="fas fa-edit"></i> Edit
+                                                <i class="fas fa-edit"></i> 
                                             </a>
+                                          
                                             <form action="{{ route('admin.bookings.destroy', $booking) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this booking?')">
-                                                    <i class="fas fa-trash"></i> Delete
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
                                         </div>

@@ -38,6 +38,14 @@
                             </select>
                         </div>
                         <div class="col-md-3">
+                            <label for="type" class="form-label">Class Type</label>
+                            <select name="type" id="type" class="form-control">
+                                <option value="">All Types</option>
+                                <option value="group" {{ request('type') == 'group' ? 'selected' : '' }}>Group Classes</option>
+                                <option value="private" {{ request('type') == 'private' ? 'selected' : '' }}>Private/Individual Training</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label for="age_group" class="form-label">Age Group</label>
                             <select name="age_group" id="age_group" class="form-control">
                                 <option value="">All Ages</option>
@@ -74,6 +82,7 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100 mb-4">
                 <div class="position-relative">
+                   
                     @if($schedule->photo)
                         <img src="{{ $schedule->photo_url }}" alt="{{ $schedule->title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     @else
@@ -114,11 +123,18 @@
                         @endif
                     </div>
                     <div class="mb-2 small text-secondary">
-                        {{ $schedule->start_time->format('h:i A') }} - {{ $schedule->end_time->format('h:i A') }}
+                        @if($schedule->start_time && $schedule->end_time)
+                            {{ $schedule->start_time->format('h:i A') }} - {{ $schedule->end_time->format('h:i A') }}
+                        @endif
                     </div>
                     <div class="mt-auto d-flex justify-content-between align-items-center">
                         <span class="badge" style="background-color: #2ecc71;">${{ number_format($schedule->price, 2) }}</span>
-                        <span class="badge bg-primary text-white">{{ $schedule->max_participants - $schedule->bookings_count }} spots left</span>
+                        <span class="badge bg-primary text-white">{{ $schedule->max_participants - $schedule->bookings->count() }} spots left</span>
+                    </div>
+                    <div class="mt-2">
+                        <span class="badge badge-{{ $schedule->type === 'group' ? 'info' : 'warning' }}">
+                            {{ $schedule->type === 'group' ? 'Group Class' : 'Private Training' }}
+                        </span>
                     </div>
                     @php
                         $hasActiveBooking = auth()->user()->bookings()

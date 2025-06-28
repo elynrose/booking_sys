@@ -22,6 +22,35 @@
                     @if(isset($activeCheckin))
                         <div class="text-center mb-4">
                             <h4 class="mb-3">Currently Checked In</h4>
+                            
+                            <div class="checkin-info mb-3">
+                                <p class="text-muted mb-2">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Check-in Time: {{ $activeCheckin->checkin_time->format('h:i A') }}
+                                </p>
+                                <p class="text-muted mb-2">
+                                    <i class="fas fa-child me-2"></i>
+                                    Child: {{ $activeCheckin->booking->child->name }}
+                                </p>
+                                <p class="text-muted mb-3">
+                                    <i class="fas fa-calendar me-2"></i>
+                                    Class: {{ $activeCheckin->booking->schedule->title }}
+                                </p>
+                            </div>
+                            
+                            @if($activeCheckin->booking->schedule->photo)
+                                <div class="position-relative mb-4">
+                                    <img src="{{ $activeCheckin->booking->schedule->photo_url }}" alt="{{ $activeCheckin->booking->schedule->title }}" class="w-100 rounded" style="height: 250px; object-fit: cover;">
+                                    <div class="position-absolute bottom-0 start-0 p-3 text-white">
+                                        <h5 class="mb-1">{{ $activeCheckin->booking->schedule->title }}</h5>
+                                        <p class="mb-0">
+                                            <i class="fas fa-child me-2"></i>
+                                            {{ $activeCheckin->booking->child->name }}
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
+                            
                             <div class="timer-display mb-3">
                                 <div class="d-flex justify-content-center align-items-center">
                                     <div class="timer-box">
@@ -85,16 +114,39 @@
                                             <div class="class-details mb-3">
                                                 <div class="d-flex align-items-center mb-2">
                                                     <i class="fas fa-clock text-muted me-2 mr-2"></i>
-                                                    <span>{{ $booking->schedule->start_time->format('h:i A') }} - {{ $booking->schedule->end_time->format('h:i A') }}</span>
+                                                    <span>
+                                                        @if($booking->schedule->start_time && $booking->schedule->end_time)
+                                                            {{ $booking->schedule->start_time->format('h:i A') }} - {{ $booking->schedule->end_time->format('h:i A') }}
+                                                        @else
+                                                            Times not set
+                                                        @endif
+                                                    </span>
                                                 </div>
                                                 <div class="d-flex align-items-center mb-2">
                                                     <i class="fas fa-calendar text-muted me-2 mr-2"></i>
-                                                    <span>{{ $booking->schedule->start_date->format('M d, Y') }} to {{ $booking->schedule->end_date->format('M d, Y') }}</span>
+                                                    <span>
+                                                        @if($booking->schedule->start_date && $booking->schedule->end_date)
+                                                            {{ $booking->schedule->start_date->format('M d, Y') }} to {{ $booking->schedule->end_date->format('M d, Y') }}
+                                                        @else
+                                                            Dates not set
+                                                        @endif
+                                                    </span>
                                                 </div>
-                                                <div class="d-flex align-items-center">
+                                                <div class="d-flex align-items-center mb-2">
                                                     <i class="fas fa-child text-muted me-2 mr-2"></i>
                                                     <span>{{ $booking->child->name }} ({{ $booking->child->age }} years old)</span>
                                                 </div>
+                                                @if($booking->schedule->allow_unlimited_bookings)
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-infinity text-success me-2 mr-2"></i>
+                                                        <span class="text-success fw-bold">Unlimited Access</span>
+                                                    </div>
+                                                @else
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-ticket-alt text-muted me-2 mr-2"></i>
+                                                        <span>{{ $booking->sessions_remaining }} {{ Str::plural('session', $booking->sessions_remaining) }} remaining</span>
+                                                    </div>
+                                                @endif
                                             </div>
 
                                             <div class="d-grid">
@@ -102,7 +154,7 @@
                                                     <button class="btn btn-secondary w-100" disabled>
                                                         <i class="fas fa-info-circle me-2"></i> Already Checked In
                                                     </button>
-                                                @elseif($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining)
+                                                @elseif($booking->schedule->allow_unlimited_bookings || ($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining))
                                                     <form action="{{ route('frontend.checkins.checkin') }}" method="POST">
                                                         @csrf
                                                         <input type="hidden" name="booking_id" value="{{ $booking->id }}">
@@ -111,7 +163,7 @@
                                                             <i class="fas fa-sign-in-alt me-2"></i> Check In
                                                         </button>
                                                     </form>
-                                                @elseif(!$booking->checkins->first()->checkout_time)
+                                                @elseif($booking->checkins->isNotEmpty() && !$booking->checkins->first()->checkout_time)
                                                     <form action="{{ route('frontend.checkins.checkout') }}" method="POST">
                                                         @csrf
                                                         <input type="hidden" name="booking_id" value="{{ $booking->id }}">
@@ -187,64 +239,153 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded');
     
-    // Get the check-in time in UTC
-    const checkinTimeStr = '{{ $activeCheckin->created_at }}';
-    console.log('Raw check-in time:', checkinTimeStr);
+    // Get the user's timezone
+    const userTimezone = '{{ $userTimezone }}';
+    console.log('User timezone:', userTimezone);
     
-    // Create a date object in the local timezone
-    const checkinTime = new Date(checkinTimeStr + 'Z'); // Add Z to interpret as UTC
+    // Get the check-in time as ISO string (already in UTC)
+    const checkinTimeStr = '{{ $activeCheckin->formatted_checkin_time }}';
+    console.log('Check-in time (ISO):', checkinTimeStr);
+    
+    // Create a date object from the ISO string
+    const checkinTime = new Date(checkinTimeStr);
     console.log('Check-in time (UTC):', checkinTime.toISOString());
-    console.log('Check-in time (local):', checkinTime.toLocaleString());
+    console.log('Check-in time (user timezone):', checkinTime.toLocaleString('en-US', { timeZone: userTimezone }));
+
+    // Get session start and end times from the schedule
+    const sessionStartTime = new Date('{{ $activeCheckin->booking->schedule->start_time->toISOString() }}');
+    const sessionEndTime = new Date('{{ $activeCheckin->booking->schedule->end_time->toISOString() }}');
+    
+    // Calculate session duration in seconds
+    const sessionDurationSeconds = Math.floor((sessionEndTime.getTime() - sessionStartTime.getTime()) / 1000);
+    console.log('Session duration (seconds):', sessionDurationSeconds);
+    console.log('Session start:', sessionStartTime.toISOString());
+    console.log('Session end:', sessionEndTime.toISOString());
+    
+    // Calculate when auto-checkout should happen (check-in time + session duration)
+    const autoCheckoutTime = new Date(checkinTime.getTime() + (sessionDurationSeconds * 1000));
+    console.log('Auto checkout time:', autoCheckoutTime.toISOString());
+    console.log('Current time:', new Date().toISOString());
+    console.log('Auto checkout time is in the past:', autoCheckoutTime < new Date());
+    console.log('Time until auto checkout (ms):', autoCheckoutTime.getTime() - new Date().getTime());
+    console.log('Time until auto checkout (hours):', (autoCheckoutTime.getTime() - new Date().getTime()) / (1000 * 60 * 60));
+
+    let autoCheckoutTriggered = false;
 
     function updateTimer() {
         const now = new Date();
-        console.log('Current time (local):', now.toLocaleString());
         
-        // Calculate difference in milliseconds
+        // Calculate the time difference in milliseconds
         const diff = now.getTime() - checkinTime.getTime();
-        console.log('Time difference in milliseconds:', diff);
         
-        // Convert to seconds
-        const totalSeconds = Math.floor(diff / 1000);
-        console.log('Time difference in seconds:', totalSeconds);
+        console.log('Current time:', now.toISOString());
+        console.log('Check-in time:', checkinTime.toISOString());
+        console.log('Difference (ms):', diff);
         
-        if (totalSeconds < 0) {
-            console.error('Negative time difference detected:', totalSeconds);
-            return;
+        // Convert to hours, minutes, seconds
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        // Ensure we don't show negative values
+        const displayHours = Math.max(0, hours);
+        const displayMinutes = Math.max(0, minutes);
+        const displaySeconds = Math.max(0, seconds);
+        
+        document.getElementById('hours').textContent = displayHours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = displayMinutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = displaySeconds.toString().padStart(2, '0');
+
+        // Check if current time has passed the auto-checkout time (check-in + session duration)
+        if (now >= autoCheckoutTime && !autoCheckoutTriggered) {
+            autoCheckoutTriggered = true;
+            triggerAutoCheckout();
         }
         
-        // Calculate hours, minutes, and seconds
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
+        // Also check immediately when page loads if auto-checkout time has already passed
+        if (autoCheckoutTime < new Date() && !autoCheckoutTriggered) {
+            console.log('Auto checkout time has already passed, triggering immediately');
+            autoCheckoutTriggered = true;
+            triggerAutoCheckout();
+        }
         
-        console.log('Calculated time:', { hours, minutes, seconds });
-        
-        // Update the display
-        const hoursElement = document.getElementById('hours');
-        const minutesElement = document.getElementById('minutes');
-        const secondsElement = document.getElementById('seconds');
-        
-        if (hoursElement && minutesElement && secondsElement) {
-            hoursElement.textContent = Math.abs(hours).toString().padStart(2, '0');
-            minutesElement.textContent = Math.abs(minutes).toString().padStart(2, '0');
-            secondsElement.textContent = Math.abs(seconds).toString().padStart(2, '0');
-        } else {
-            console.error('Timer elements not found in the DOM');
+        // Debug: Log timing info every 30 seconds
+        if (seconds % 30 === 0) {
+            const timeUntilAutoCheckout = Math.max(0, autoCheckoutTime.getTime() - now.getTime());
+            const remainingHours = Math.floor(timeUntilAutoCheckout / (1000 * 60 * 60));
+            const remainingMinutes = Math.floor((timeUntilAutoCheckout % (1000 * 60 * 60)) / (1000 * 60));
+            const remainingSeconds = Math.floor((timeUntilAutoCheckout % (1000 * 60)) / 1000);
+            
+            console.log('Auto checkout timing:', {
+                current: now.toISOString(),
+                autoCheckoutTime: autoCheckoutTime.toISOString(),
+                timeUntilAutoCheckout: `${remainingHours}:${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`,
+                sessionDuration: `${Math.floor(sessionDurationSeconds / 3600)}:${Math.floor((sessionDurationSeconds % 3600) / 60).toString().padStart(2, '0')}:${(sessionDurationSeconds % 60).toString().padStart(2, '0')}`,
+                autoCheckoutOver: now >= autoCheckoutTime
+            });
         }
     }
 
-    // Update the timer immediately and then every second
-    console.log('Starting timer updates');
-    updateTimer();
-    const timerInterval = setInterval(updateTimer, 1000);
-    console.log('Timer interval set:', timerInterval);
+    function triggerAutoCheckout() {
+        console.log('Triggering auto checkout...');
+        console.log('Auto checkout time reached:', autoCheckoutTime.toISOString());
+        console.log('Session duration completed:', sessionDurationSeconds, 'seconds');
+        
+        // Show notification to user
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-warning alert-dismissible fade show position-fixed';
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            <i class="fas fa-clock me-2"></i>
+            <strong>Session Complete!</strong> Your session duration has ended. You are being automatically checked out.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(notification);
 
-    // Clean up interval when page is unloaded
-    window.addEventListener('beforeunload', function() {
-        console.log('Cleaning up timer interval');
-        clearInterval(timerInterval);
-    });
+        // Perform auto checkout
+        fetch('{{ route("frontend.checkins.auto-checkout") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                booking_id: {{ $activeCheckin->booking->id }},
+                user_id: {{ $user->id }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Auto checkout successful:', data);
+                // Redirect to auto checkout success page
+                setTimeout(() => {
+                    window.location.href = '{{ route("frontend.checkins.auto-checkout-success") }}';
+                }, 2000);
+            } else {
+                console.error('Auto checkout failed:', data.error);
+                notification.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+                notification.innerHTML = `
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Error!</strong> Auto checkout failed. Please check out manually.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Auto checkout error:', error);
+            notification.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+            notification.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Error!</strong> Auto checkout failed. Please check out manually.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+        });
+    }
+
+    // Update the timer every second
+    setInterval(updateTimer, 1000);
+    updateTimer(); // Initial update
 });
 </script>
 @else

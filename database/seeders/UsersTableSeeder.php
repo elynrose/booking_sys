@@ -3,26 +3,32 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UsersTableSeeder extends Seeder
 {
     public function run()
     {
-        $users = [
-            [
-                'id'                 => 1,
-                'name'               => 'Admin',
-                'email'              => 'admin@admin.com',
-                'password'           => bcrypt('password'),
-                'remember_token'     => null,
-                'verified'           => 1,
-                'verified_at'        => '2025-02-17 14:19:31',
-                'verification_token' => '',
-                'two_factor_code'    => '',
-            ],
-        ];
+        // Get admin role
+        $adminRole = Role::where('title', 'Admin')->first();
 
-        User::insert($users);
+        // Create admin user if it doesn't exist
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'verified' => 1,
+                'verified_at' => now(),
+            ]
+        );
+
+        // Assign admin role if not already assigned
+        if ($adminRole && !$admin->roles()->where('roles.id', $adminRole->id)->exists()) {
+            $admin->roles()->attach($adminRole);
+        }
     }
 }

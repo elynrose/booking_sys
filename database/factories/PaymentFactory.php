@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Payment;
+use App\Models\User;
+use App\Models\Schedule;
+use App\Models\Booking;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PaymentFactory extends Factory
@@ -11,14 +14,36 @@ class PaymentFactory extends Factory
 
     public function definition()
     {
+        $paymentDescriptions = [
+            'Gymnastics class payment',
+            'Swimming lesson fee',
+            'Martial arts training payment',
+            'Dance class registration',
+            'Soccer training fee',
+            'Basketball skills payment',
+            'Tennis lesson payment',
+            'Cheerleading class fee',
+            'Monthly membership payment',
+            'Class package payment',
+            'Registration fee',
+            'Equipment fee',
+            'Competition entry fee',
+            'Private lesson payment',
+            'Summer camp payment',
+        ];
+
+        $status = $this->faker->randomElement(['pending', 'paid', 'refunded']);
+        $paidAt = $status === 'paid' ? $this->faker->dateTimeBetween('-1 month', 'now') : null;
+
         return [
-            'user_id' => $this->faker->numberBetween(1, 10),
-            'schedule_id' => $this->faker->numberBetween(1, 5),
-            'booking_id' => $this->faker->numberBetween(1, 20),
-            'amount' => $this->faker->randomFloat(2, 10, 100),
-            'status' => $this->faker->randomElement(['pending', 'paid', 'refunded']),
-            'paid_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
-            'description' => $this->faker->sentence,
+            'user_id' => User::inRandomOrder()->first()->id ?? 1,
+            'schedule_id' => Schedule::inRandomOrder()->first()->id ?? 1,
+            'booking_id' => Booking::inRandomOrder()->first()->id ?? 1,
+            'amount' => $this->faker->randomFloat(2, 25, 150),
+            'description' => $this->faker->randomElement($paymentDescriptions),
+            'status' => $status,
+            'payment_date' => $this->faker->dateTimeBetween('-1 month', 'now'),
+            'paid_at' => $paidAt,
         ];
     }
 } 

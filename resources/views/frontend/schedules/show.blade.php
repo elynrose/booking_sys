@@ -30,12 +30,20 @@
                                 <h5 class="text-muted mb-2">Schedule</h5>
                                 <p class="mb-1">
                                     <i class="fas fa-calendar text-primary me-2"></i>
-                                   {{ $schedule->start_date->format('M d, Y') }} - {{ $schedule->end_date->format('M d, Y') }}
+                                   @if($schedule->start_date && $schedule->end_date)
+                                       {{ $schedule->start_date->format('M d, Y') }} - {{ $schedule->end_date->format('M d, Y') }}
+                                   @else
+                                       Dates not set
+                                   @endif
                                 </p>
                                 <p class="mb-1">
                                     <i class="fas fa-clock text-primary me-2"></i>
-                                    {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - 
-                                    {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}
+                                    @if($schedule->start_time && $schedule->end_time)
+                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} - 
+                                        {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}
+                                    @else
+                                        Times not set
+                                    @endif
                                 </p>
                             </div>
                         </div>

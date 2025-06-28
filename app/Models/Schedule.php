@@ -26,6 +26,8 @@ class Schedule extends Model
         'price',
         'max_participants',
         'is_featured',
+        'status',
+        'allow_unlimited_bookings',
     ];
 
     protected $casts = [
@@ -34,6 +36,7 @@ class Schedule extends Model
         'start_time' => 'datetime',
         'end_time' => 'datetime',
         'is_featured' => 'boolean',
+        'allow_unlimited_bookings' => 'boolean',
     ];
 
     public function category()
@@ -103,7 +106,9 @@ class Schedule extends Model
 
     public function getRemainingSpots()
     {
-        return $this->max_participants - $this->current_participants;
+        // Count only active bookings (not cancelled)
+        $activeBookings = $this->bookings()->where('status', '!=', 'cancelled')->count();
+        return $this->max_participants - $activeBookings;
     }
 
     public function isFull()
@@ -158,6 +163,7 @@ class Schedule extends Model
             'now' => $now->format('Y-m-d H:i:s'),
             'start_date' => $startDate->format('Y-m-d H:i:s'),
             'end_date' => $endDate->format('Y-m-d H:i:s'),
+            'status' => $this->status,
             'max_participants' => $this->max_participants,
             'active_bookings' => $activeBookings,
             'total_bookings' => $this->bookings->count(),
@@ -165,29 +171,33 @@ class Schedule extends Model
         ]);
         
         // Check each condition separately
+        $isActive = $this->status === 'active';
         $isAvailableForBooking = $now->lte($endDate);
         $hasSpotsAvailable = $this->max_participants > $activeBookings;
         
         // Store the status for debugging
         $this->availabilityStatus = [
+            'is_active' => $isActive,
             'is_available_for_booking' => $isAvailableForBooking,
             'has_spots_available' => $hasSpotsAvailable,
             'current_time' => $now->format('Y-m-d H:i:s'),
             'start_date' => $startDate->format('Y-m-d H:i:s'),
             'end_date' => $endDate->format('Y-m-d H:i:s'),
+            'status' => $this->status,
             'max_participants' => $this->max_participants,
             'active_bookings' => $activeBookings,
             'remaining_spots' => $this->max_participants - $activeBookings
         ];
         
         \Log::info('Schedule #' . $this->id . ' Availability Result:', [
+            'isActive' => $isActive,
             'isAvailableForBooking' => $isAvailableForBooking,
             'hasSpotsAvailable' => $hasSpotsAvailable,
-            'final_result' => $isAvailableForBooking && $hasSpotsAvailable,
-            'reason' => !$isAvailableForBooking ? 'Schedule has ended' : (!$hasSpotsAvailable ? 'No spots available' : 'Available')
+            'final_result' => $isActive && $isAvailableForBooking && $hasSpotsAvailable,
+            'reason' => !$isActive ? 'Schedule is not active' : (!$isAvailableForBooking ? 'Schedule has ended' : (!$hasSpotsAvailable ? 'No spots available' : 'Available'))
         ]);
         
-        return $isAvailableForBooking && $hasSpotsAvailable;
+        return $isActive && $isAvailableForBooking && $hasSpotsAvailable;
     }
 
     public function getAvailabilityStatus()

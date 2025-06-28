@@ -126,9 +126,13 @@
                             <div class="list-group-item list-group-item-action">
                                 <div class="d-flex w-100 justify-content-between align-items-center">
                                     <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-2 border-bottom mb-4">
                                             <h5 class="mb-1">Payment #{{ $payment->id }}</h5>
-                                            <span class="badge badge-{{ $payment->status === 'completed' ? 'success' : ($payment->status === 'pending' ? 'warning' : 'danger') }}">
+                                            <span class="badge badge-{{
+                                                $payment->status === 'completed' ? 'success' :
+                                                ($payment->status === 'pending' ? 'warning' :
+                                                ($payment->status === 'refunded' ? 'info' : 'danger'))
+                                            }}">
                                                 {{ ucfirst($payment->status) }}
                                             </span>
                                         </div>
@@ -155,20 +159,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="ml-3">
-                                        <div class="btn-group">
-                                            <a href="{{ route('admin.payments.edit', $payment) }}" class="btn btn-sm btn-info">
-                                                <i class="fas fa-edit"></i> Edit
-                                            </a>
-                                            <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this payment?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
+                                   
                                 </div>
                             </div>
                         @empty

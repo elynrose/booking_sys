@@ -31,7 +31,9 @@ class DashboardController extends Controller
 
         // Get total statistics
         $totalBookings = Booking::count();
-        $totalRevenue = Payment::where('payments.status', 'completed')->sum('amount');
+        $totalRevenue = Payment::where('payments.status', 'paid')->sum('amount');
+        $realizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '<=', now())->sum('amount');
+        $unrealizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '>', now())->sum('amount');
         $totalUsers = User::count();
         $totalTrainers = Trainer::count();
         $totalSchedules = Schedule::count();
@@ -39,7 +41,7 @@ class DashboardController extends Controller
 
         // Get date range statistics
         $dateRangeBookings = Booking::whereBetween('created_at', [$startDate, $endDate])->count();
-        $dateRangeRevenue = Payment::where('payments.status', 'completed')
+        $dateRangeRevenue = Payment::where('payments.status', 'paid')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('amount');
         $dateRangeUsers = User::whereBetween('created_at', [$startDate, $endDate])->count();
@@ -61,7 +63,7 @@ class DashboardController extends Controller
         ];
 
         // Get revenue by category
-        $revenueByCategory = Payment::where('payments.status', 'completed')
+        $revenueByCategory = Payment::where('payments.status', 'paid')
             ->whereBetween('payments.created_at', [$startDate, $endDate])
             ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
             ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
@@ -71,7 +73,7 @@ class DashboardController extends Controller
             ->get();
 
         // Get revenue by trainer
-        $revenueByTrainer = Payment::where('payments.status', 'completed')
+        $revenueByTrainer = Payment::where('payments.status', 'paid')
             ->whereBetween('payments.created_at', [$startDate, $endDate])
             ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
             ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
@@ -82,7 +84,7 @@ class DashboardController extends Controller
             ->get();
 
         // Get daily revenue for chart
-        $dailyRevenue = Payment::where('payments.status', 'completed')
+        $dailyRevenue = Payment::where('payments.status', 'paid')
             ->whereBetween('payments.created_at', [$startDate, $endDate])
             ->select(
                 DB::raw('DATE(payments.created_at) as date'),
@@ -129,6 +131,8 @@ class DashboardController extends Controller
             'endDate',
             'totalBookings',
             'totalRevenue',
+            'realizedRevenue',
+            'unrealizedRevenue',
             'totalUsers',
             'totalTrainers',
             'totalSchedules',
@@ -143,7 +147,8 @@ class DashboardController extends Controller
             'dailyRevenue',
             'dailyBookings',
             'recentBookings',
-            'recentPayments'
+            'recentPayments',
+            
         ));
     }
 } 

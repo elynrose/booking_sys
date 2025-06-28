@@ -75,7 +75,11 @@
                                                         <div class="text-muted">No dates set</div>
                                                     @endif
                                                     <small class="text-muted">
-                                                        {{ $booking->schedule->start_time->format('h:i A') }} - {{ $booking->schedule->end_time->format('h:i A') }}
+                                                        @if($booking->schedule->start_time && $booking->schedule->end_time)
+                                                            {{ $booking->schedule->start_time->format('h:i A') }} - {{ $booking->schedule->end_time->format('h:i A') }}
+                                                        @else
+                                                            Times not set
+                                                        @endif
                                                     </small>
                                                 </div>
                                             </td>

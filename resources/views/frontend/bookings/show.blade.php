@@ -23,7 +23,14 @@
                                     <div class="d-flex align-items-center mb-3">
                                         
                                         <div>
-                                            <h6 class="mb-0"><i class="fas fa-clock text-primary me-3 fa-lg"></i> {{ $booking->schedule->start_time->format('h:i A') }} to {{ $booking->schedule->end_time->format('h:i A') }}</h6>
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-clock text-primary me-3 fa-lg"></i> 
+                                                @if($booking->schedule->start_time && $booking->schedule->end_time)
+                                                    {{ $booking->schedule->start_time->format('h:i A') }} to {{ $booking->schedule->end_time->format('h:i A') }}
+                                                @else
+                                                    Times not set
+                                                @endif
+                                            </h6>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center">

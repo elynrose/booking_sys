@@ -24,7 +24,7 @@
 
     <!-- Stats Overview -->
     <div class="row mb-4">
-        <div class="col-md-4 mb-3 mb-md-0">
+        <div class="col-md-3 mb-3 mb-md-0">
             <div class="card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -41,7 +41,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3 mb-md-0">
+        <div class="col-md-3 mb-3 mb-md-0">
             <div class="card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -58,7 +58,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3 mb-3 mb-md-0">
             <div class="card h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -70,6 +70,23 @@
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1">Pending Payments</h6>
                             <h3 class="mb-0">${{ number_format($pendingPayments, 2) }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="px-3">
+                                <i class="fas fa-check-circle fa-2x text-success"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Total Paid</h6>
+                            <h3 class="mb-0">${{ number_format($paidBookingsTotal, 2) }}</h3>
                         </div>
                     </div>
                 </div>
@@ -126,7 +143,7 @@
                                 @if($booking->checkins->where('checkout_time', null)->isNotEmpty())
                                     <span class="badge bg-success">Checked In</span>
                                 @else
-                                    <a href="{{ route('frontend.checkins.show', $booking->id) }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('frontend.checkins.verify') }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-qrcode me-1"></i> Check In
                                     </a>
                                 @endif

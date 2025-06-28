@@ -116,6 +116,16 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="type">Class Type</label>
+                                    <select class="form-control" id="type" name="type">
+                                        <option value="">All Types</option>
+                                        <option value="group" {{ request('type') == 'group' ? 'selected' : '' }}>Group Classes</option>
+                                        <option value="private" {{ request('type') == 'private' ? 'selected' : '' }}>Private/Individual Training</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-12 text-right">
@@ -137,9 +147,14 @@
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h5 class="mb-1">{{ $schedule->title }}</h5>
-                                            <span class="badge badge-{{ $schedule->status === 'active' ? 'success' : 'danger' }}">
-                                                {{ ucfirst($schedule->status) }}
-                                            </span>
+                                            <div>
+                                                <span class="badge badge-{{ $schedule->status === 'active' ? 'success' : 'danger' }} mr-2">
+                                                    {{ ucfirst($schedule->status) }}
+                                                </span>
+                                                <span class="badge badge-{{ $schedule->type === 'group' ? 'info' : 'warning' }}">
+                                                    {{ $schedule->type === 'group' ? 'Group Class' : 'Private Training' }}
+                                                </span>
+                                            </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -154,8 +169,8 @@
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-clock mr-2"></i>
-                                                    <strong>Time:</strong> {{ $schedule->start_time ? Carbon\Carbon::parse($schedule->start_time)->format('h:i A') : 'N/A' }} - 
-                                                    {{ $schedule->end_time ? Carbon\Carbon::parse($schedule->end_time)->format('h:i A') : 'N/A' }}
+                                                    <strong>Time:</strong> {{ optional($schedule->start_time)->format('h:i A') ?? 'N/A' }} - 
+                                                    {{ optional($schedule->end_time)->format('h:i A') ?? 'N/A' }}
                                                 </p>
                                             </div>
                                             <div class="col-md-6">

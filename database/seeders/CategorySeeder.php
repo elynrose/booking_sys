@@ -16,15 +16,45 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Individual',
-                'slug' => 'individual',
-                'description' => 'One-on-one training sessions'
+                'name' => 'Gymnastics',
+                'slug' => 'gymnastics',
+                'description' => 'Classical gymnastics training for all skill levels',
             ],
             [
-                'name' => 'Group',
-                'slug' => 'group',
-                'description' => 'Group training sessions'
-            ]
+                'name' => 'Swimming',
+                'slug' => 'swimming',
+                'description' => 'Swimming lessons and water safety training',
+            ],
+            [
+                'name' => 'Martial Arts',
+                'slug' => 'martial-arts',
+                'description' => 'Karate, Taekwondo, and self-defense training',
+            ],
+            [
+                'name' => 'Dance',
+                'slug' => 'dance',
+                'description' => 'Ballet, Jazz, Hip-hop, and contemporary dance',
+            ],
+            [
+                'name' => 'Soccer',
+                'slug' => 'soccer',
+                'description' => 'Youth soccer training and team development',
+            ],
+            [
+                'name' => 'Basketball',
+                'slug' => 'basketball',
+                'description' => 'Basketball skills, drills, and team play',
+            ],
+            [
+                'name' => 'Tennis',
+                'slug' => 'tennis',
+                'description' => 'Tennis instruction for beginners and intermediate players',
+            ],
+            [
+                'name' => 'Cheerleading',
+                'slug' => 'cheerleading',
+                'description' => 'Cheerleading, tumbling, and spirit training',
+            ],
         ];
 
         foreach ($categories as $category) {

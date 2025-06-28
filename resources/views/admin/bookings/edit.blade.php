@@ -19,16 +19,18 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="user_id" class="form-label">User</label>
-                            <select class="form-select @error('user_id') is-invalid @enderror" 
+                            <select class="form-select form-control @error('user_id') is-invalid @enderror" 
                                     id="user_id" 
                                     name="user_id" 
                                     required>
                                 <option value="">Select User</option>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}" 
-                                            {{ old('user_id', $booking->user_id) == $user->id ? 'selected' : '' }}>
-                                        {{ $user->name }}
-                                    </option>
+                                    @if($user && $user->name)
+                                        <option value="{{ $user->id }}" 
+                                                {{ old('user_id', $booking->user_id) == $user->id ? 'selected' : '' }}>
+                                            {{ $user->name }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                             @error('user_id')
@@ -38,16 +40,18 @@
 
                         <div class="mb-3">
                             <label for="schedule_id" class="form-label">Schedule</label>
-                            <select class="form-select @error('schedule_id') is-invalid @enderror" 
+                            <select class="form-select form-control @error('schedule_id') is-invalid @enderror" 
                                     id="schedule_id" 
                                     name="schedule_id" 
                                     required>
                                 <option value="">Select Schedule</option>
                                 @foreach($schedules as $schedule)
-                                    <option value="{{ $schedule->id }}" 
-                                            {{ old('schedule_id', $booking->schedule_id) == $schedule->id ? 'selected' : '' }}>
-                                        {{ $schedule->title }} ({{ $schedule->trainer->name }})
-                                    </option>
+                                    @if($schedule && $schedule->trainer && $schedule->trainer->user && $schedule->trainer->user->name)
+                                        <option value="{{ $schedule->id }}" 
+                                                {{ old('schedule_id', $booking->schedule_id) == $schedule->id ? 'selected' : '' }}>
+                                            {{ $schedule->title }} ({{ $schedule->trainer->user->name }})
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                             @error('schedule_id')
@@ -57,7 +61,7 @@
 
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
-                            <select class="form-select @error('status') is-invalid @enderror" 
+                            <select class="form-select form-control @error('status') is-invalid @enderror" 
                                     id="status" 
                                     name="status" 
                                     required>
@@ -74,12 +78,13 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="payment_status" class="form-label">Payment Status</label>
-                            <select class="form-select @error('payment_status') is-invalid @enderror" 
+                            <select class="form-select form-control @error('payment_status') is-invalid @enderror" 
                                     id="payment_status" 
                                     name="payment_status" 
                                     required>
                                 <option value="pending" {{ old('payment_status', $booking->payment_status) == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="confirmed" {{ old('payment_status', $booking->payment_status) == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                <option value="paid" {{ old('payment_status', $booking->payment_status) == 'paid' ? 'selected' : '' }}>Paid</option>
+                                <option value="refunded" {{ old('payment_status', $booking->payment_status) == 'refunded' ? 'selected' : '' }}>Refunded</option>
                             </select>
                             @error('payment_status')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -104,7 +109,7 @@
 
                         <div class="mb-3 payment-method-field" style="display: none;">
                             <label for="payment_method" class="form-label">Payment Method</label>
-                            <select class="form-select @error('payment_method') is-invalid @enderror" 
+                            <select class="form-select form-control @error('payment_method') is-invalid @enderror" 
                                     id="payment_method" 
                                     name="payment_method">
                                 <option value="">Select Payment Method</option>

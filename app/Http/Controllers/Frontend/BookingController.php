@@ -43,6 +43,9 @@ class BookingController extends Controller
             $status = $schedule->getAvailabilityStatus();
             $errorMessage = 'This schedule is not available for booking because: ';
             
+            if (!$status['is_active']) {
+                $errorMessage .= 'The class is not active (Status: ' . $schedule->status . '). ';
+            }
             if (!$status['is_available_for_booking']) {
                 $errorMessage .= 'The class has ended (End date: ' . $status['end_date'] . '). ';
             }
@@ -94,10 +97,23 @@ class BookingController extends Controller
         // Check if schedule is available
         if (!$schedule->isAvailable()) {
             $availabilityStatus = $schedule->getAvailabilityStatus();
+            $errorMessage = 'This schedule is not available for booking because: ';
+            
+            if (!$availabilityStatus['is_active']) {
+                $errorMessage .= 'The class is not active (Status: ' . $schedule->status . '). ';
+            }
+            if (!$availabilityStatus['is_available_for_booking']) {
+                $errorMessage .= 'The class has ended (End date: ' . $availabilityStatus['end_date'] . '). ';
+            }
+            if (!$availabilityStatus['has_spots_available']) {
+                $errorMessage .= 'The class is full (Max participants: ' . $availabilityStatus['max_participants'] . 
+                                ', Active bookings: ' . $availabilityStatus['active_bookings'] . '). ';
+            }
+            
             \Log::info('Schedule #' . $schedule->id . ' is not available:', $availabilityStatus);
             
             return redirect()->route('bookings.index')
-                ->with('error', 'This schedule is not available for booking.');
+                ->with('error', $errorMessage);
         }
 
         // Check if user already has a booking

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Child extends Model
 {
@@ -21,8 +22,15 @@ class Child extends Model
         'date_of_birth' => 'date'
     ];
 
+    protected $appends = ['age'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getAgeAttribute()
+    {
+        return $this->date_of_birth ? Carbon::parse($this->date_of_birth)->age : null;
     }
 } 

@@ -61,6 +61,19 @@ class HomeController extends Controller
             ->where('status', 'pending')
             ->sum('amount');
 
+        // Calculate paid bookings total amount (minus refunds and cancellations)
+        $paidBookingsTotal = Booking::where('user_id', $user->id)
+            ->where('is_paid', true)
+            ->where('status', '!=', 'cancelled')
+            ->sum('total_cost');
+            
+        // Subtract refunded payments
+        $refundedAmount = Payment::where('user_id', $user->id)
+            ->where('status', 'refunded')
+            ->sum('amount');
+            
+        $paidBookingsTotal = $paidBookingsTotal - $refundedAmount;
+
         // Get payment history
         $paymentHistory = Payment::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
@@ -98,6 +111,7 @@ class HomeController extends Controller
             'activeSchedules',
             'pendingCheckins',
             'pendingPayments',
+            'paidBookingsTotal',
             'paymentHistory',
             'featuredSchedules',
             'featuredTrainers',

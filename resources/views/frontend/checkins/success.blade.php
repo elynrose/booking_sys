@@ -4,12 +4,20 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card mt-5">
                 <div class="card-body text-center">
                     <div class="mb-4">
                         <i class="fas fa-check-circle text-success" style="font-size: 48px;"></i>
                         <h3 class="mt-3">Check-in Successful!</h3>
                     </div>
+
+                    @if(isset($isLateCheckin) && $isLateCheckin)
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Late Check-in Notice:</strong> You checked in {{ $lateMinutes }} minutes after the class start time.
+                            <br><small>Your session will still end at the scheduled end time.</small>
+                        </div>
+                    @endif
 
                     <div class="class-details mb-4">
                         @if($booking && $booking->schedule && $booking->schedule->class)
@@ -18,28 +26,13 @@
                         @if($booking && $booking->child)
                             <p>Child: {{ $booking->child->name }}</p>
                         @endif
-                        <p>Check-in Time: {{ ($checkin ?? $existingCheckin)->created_at->format('h:i A') }}</p>
+                        <p>Check-in Time: {{ ($checkin ?? $existingCheckin)->checkin_time->format('h:i A') }}</p>
+                        @if($booking && $booking->schedule)
+                            <p>Class Time: {{ $booking->schedule->start_time }} - {{ $booking->schedule->end_time }}</p>
+                        @endif
                     </div>
 
-                    <div class="timer-container mb-4">
-                        <h5>Time Elapsed</h5>
-                        <div class="timer-display">
-                            <div class="timer-box">
-                                <span id="hours">00</span>
-                                <span class="timer-label">Hours</span>
-                            </div>
-                            <span class="timer-separator">:</span>
-                            <div class="timer-box">
-                                <span id="minutes">00</span>
-                                <span class="timer-label">Minutes</span>
-                            </div>
-                            <span class="timer-separator">:</span>
-                            <div class="timer-box">
-                                <span id="seconds">00</span>
-                                <span class="timer-label">Seconds</span>
-                            </div>
-                        </div>
-                    </div>
+                
 
                     <div class="d-flex justify-content-center gap-3">
                         <form action="{{ route('frontend.checkins.checkout') }}" method="POST">
@@ -49,7 +42,7 @@
                             <button type="submit" class="btn btn-danger">
                                 <i class="fas fa-sign-out-alt"></i> Check Out
                             </button>
-                        </form>
+                        </form> &nbsp;
                         <a href="{{ route('frontend.checkins.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Back to Check-in
                         </a>
@@ -108,7 +101,7 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const checkinTime = new Date('{{ ($checkin ?? $existingCheckin)->created_at }}');
+    const checkinTime = new Date('{{ ($checkin ?? $existingCheckin)->checkin_time->toISOString() }}');
     console.log('Check-in time:', checkinTime.toISOString());
 
     function updateTimer() {

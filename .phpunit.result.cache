@@ -1,0 +1,1 @@
+{"version":1,"defects":{"Tests\\Feature\\ScheduleTest::admin_can_create_schedule":8,"Tests\\Feature\\ScheduleTest::admin_can_update_schedule_status":8,"Tests\\Feature\\ScheduleTest::schedule_status_must_be_valid":8},"times":[]}

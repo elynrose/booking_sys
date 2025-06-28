@@ -57,6 +57,9 @@
                                     </div>
                                     <div class="ml-3">
                                         <div class="btn-group">
+                                            <a href="{{ route('admin.trainers.assign-student', $trainer) }}" class="btn btn-sm btn-success">
+                                                <i class="fas fa-user-plus"></i> Assign Student
+                                            </a>
                                             <a href="{{ route('admin.trainers.edit', $trainer) }}" class="btn btn-sm btn-info">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
