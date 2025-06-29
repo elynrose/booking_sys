@@ -25,7 +25,10 @@ class PermissionSeeder extends Seeder
             'child',
             'user_alert',
             'checkin',
-            'site_settings'
+            'site_settings',
+            'dashboard',
+            'role',
+            'permission'
         ];
 
         $permissions = [
