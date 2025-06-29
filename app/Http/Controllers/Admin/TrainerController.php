@@ -38,7 +38,7 @@ class TrainerController extends Controller
 
         $users = User::whereDoesntHave('trainer')
             ->whereDoesntHave('roles', function($query) {
-                $query->where('title', 'trainer');
+                $query->where('title', 'Trainer');
             })
             ->get();
         $schedules = Schedule::all();
@@ -72,7 +72,7 @@ class TrainerController extends Controller
 
         // Assign trainer role
         $user = User::find($request->user_id);
-        $trainerRole = Role::where('title', 'trainer')->first();
+        $trainerRole = Role::where('title', 'Trainer')->first();
         if ($trainerRole) {
             $user->roles()->syncWithoutDetaching([$trainerRole->id]);
         }

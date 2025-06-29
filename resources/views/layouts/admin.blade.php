@@ -161,6 +161,20 @@
                                 </a>
                             </li>
                             @endcan
+                            @can('role_access')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.roles.index') }}">
+                                    <i class="fas fa-user-tag"></i> Roles
+                                </a>
+                            </li>
+                            @endcan
+                            @can('permission_access')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.permissions.index') }}">
+                                    <i class="fas fa-key"></i> Permissions
+                                </a>
+                            </li>
+                            @endcan
                             @can('site_settings_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.site-settings.index') }}">
@@ -196,21 +210,6 @@
                                     @can('user_management_access')
                                         <a class="dropdown-item disabled" href="#">
                                             {{ trans('cruds.userManagement.title') }}
-                                        </a>
-                                    @endcan
-                                    @can('permission_access')
-                                        <a class="dropdown-item ml-3" href="{{ route('admin.permissions.index') }}">
-                                            {{ trans('cruds.permission.title') }}
-                                        </a>
-                                    @endcan
-                                    @can('role_access')
-                                        <a class="dropdown-item ml-3" href="{{ route('admin.roles.index') }}">
-                                            {{ trans('cruds.role.title') }}
-                                        </a>
-                                    @endcan
-                                    @can('user_access')
-                                        <a class="dropdown-item ml-3" href="{{ route('admin.users.index') }}">
-                                            {{ trans('cruds.user.title') }}
                                         </a>
                                     @endcan
                                     @can('user_alert_access')
