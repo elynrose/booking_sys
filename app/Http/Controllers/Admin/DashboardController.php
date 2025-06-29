@@ -134,7 +134,7 @@ class DashboardController extends Controller
             $recentPaymentsQuery->whereHas('booking.schedule', function($q) use ($trainerSchedules) {
                 $q->whereIn('id', $trainerSchedules);
             });
-        } elseif (!auth()->user()->hasRole('admin')) {
+        } elseif (!auth()->user()->hasRole('Admin')) {
             $recentPaymentsQuery->whereHas('booking', function($q) {
                 $q->where('user_id', auth()->id());
             });
