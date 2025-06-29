@@ -110,6 +110,30 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="">All Statuses</option>
+                                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                        <option value="unpaid" {{ request('status') == 'unpaid' ? 'selected' : '' }}>Unpaid</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="show_deleted" name="show_deleted" value="1" {{ request('show_deleted') ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="show_deleted">
+                                            <i class="fas fa-trash mr-1"></i> Show Deleted Schedules
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-group">
                                     <label>&nbsp;</label>
                                     <div>
                                         <button type="submit" class="btn btn-primary">
@@ -132,14 +156,6 @@
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h5 class="mb-1">Booking #{{ $booking->id }}</h5>
-                                            <div>
-                                                <span class="badge badge-{{ $booking->status === 'confirmed' ? 'success' : ($booking->status === 'cancelled' ? 'danger' : 'warning') }} mr-2">
-                                                    {{ ucfirst($booking->status) }}
-                                                </span>
-                                                <span class="badge badge-{{ $booking->payments->where('status', 'refunded')->count() > 0 ? 'danger' : ($booking->is_paid ? 'success' : 'warning') }}">
-                                                    {{ $booking->payments->where('status', 'refunded')->count() > 0 ? 'Refunded' : ($booking->is_paid ? 'Paid' : 'Unpaid') }}
-                                                </span>
-                                            </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -147,9 +163,24 @@
                                                     <i class="fas fa-user mr-2"></i>
                                                     <strong>User:</strong> {{ $booking->user->name }}
                                                 </p>
+                                                @if($booking->children && $booking->children->count() > 0)
+                                                    <p class="mb-1">
+                                                        <i class="fas fa-child mr-2"></i>
+                                                        <strong>Children:</strong> 
+                                                        {{ $booking->children->pluck('name')->implode(', ') }}
+                                                    </p>
+                                                @endif
                                                 <p class="mb-1">
                                                     <i class="fas fa-calendar mr-2"></i>
-                                                    <strong>Schedule:</strong> {{ $booking->schedule->title }}
+                                                    <strong>Schedule:</strong> 
+                                                    @if($booking->schedule)
+                                                        {{ $booking->schedule->title }}
+                                                        @if($booking->schedule->deleted_at)
+                                                            <span class="badge badge-warning ml-1">Deleted</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="text-danger">Schedule Not Found</span>
+                                                    @endif
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-user-tie mr-2"></i>
@@ -160,20 +191,45 @@
                                                         No Trainer
                                                     @endif
                                                 </p>
+                                                <div class="mt-2">
+                                                    <span class="badge badge-{{ $booking->status === 'confirmed' ? 'success' : ($booking->status === 'cancelled' ? 'danger' : 'warning') }} mr-2 d-flex align-items-center d-inline-flex">
+                                                        <i class="fas fa-calendar-check mr-1"></i>
+                                                        <span>{{ ucfirst($booking->status) }}</span>
+                                                    </span>
+                                                    <span class="badge badge-{{ $booking->payment_status === 'paid' ? 'success' : ($booking->payment_status === 'refunded' ? 'danger' : 'warning') }} d-flex align-items-center d-inline-flex">
+                                                        <i class="fas fa-credit-card mr-1"></i>
+                                                        <span>{{ ucfirst($booking->payment_status) }}</span>
+                                                    </span>
+                                                </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <p class="mb-1">
-                                                    <i class="fas fa-calendar-day mr-2"></i>
-                                                    <strong>Date:</strong> {{ optional($booking->schedule->start_date)->format('M d, Y') ?? 'N/A' }}
+                                                    <i class="fas fa-calendar-alt mr-2"></i>
+                                                    <strong>Date:</strong> 
+                                                    @if($booking->schedule)
+                                                        {{ optional($booking->schedule->start_date)->format('M d, Y') ?? 'N/A' }}
+                                                    @else
+                                                        <span class="text-danger">N/A</span>
+                                                    @endif
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-clock mr-2"></i>
-                                                    <strong>Time:</strong> {{ optional($booking->schedule->start_time)->format('h:i A') ?? 'N/A' }} - 
-                                                    {{ optional($booking->schedule->end_time)->format('h:i A') ?? 'N/A' }}
+                                                    <strong>Time:</strong> 
+                                                    @if($booking->schedule)
+                                                        {{ optional($booking->schedule->start_time)->format('h:i A') ?? 'N/A' }} - 
+                                                        {{ optional($booking->schedule->end_time)->format('h:i A') ?? 'N/A' }}
+                                                    @else
+                                                        <span class="text-danger">N/A</span>
+                                                    @endif
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-dollar-sign mr-2"></i>
-                                                    <strong>Price:</strong> ${{ number_format($booking->schedule->price, 2) }}
+                                                    <strong>Price:</strong> 
+                                                    @if($booking->schedule)
+                                                        ${{ number_format($booking->schedule->price, 2) }}
+                                                    @else
+                                                        <span class="text-danger">N/A</span>
+                                                    @endif
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-clock mr-2"></i>

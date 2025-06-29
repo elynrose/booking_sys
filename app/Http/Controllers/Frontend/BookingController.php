@@ -171,7 +171,14 @@ class BookingController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $booking->load(['schedule.trainer.user', 'payments']);
+        $booking->load([
+            'schedule.trainer.user', 
+            'payments',
+            'child',
+            'checkins' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            }
+        ]);
 
         return view('frontend.bookings.show', compact('booking'));
     }

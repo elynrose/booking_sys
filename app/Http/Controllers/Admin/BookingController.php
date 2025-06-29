@@ -18,7 +18,20 @@ class BookingController extends Controller
     {
         abort_if(Gate::denies('booking_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $query = Booking::with(['user', 'schedule.trainer.user']);
+        $query = Booking::with(['user', 'schedule' => function($q) {
+            $q->withTrashed()->with('trainer.user');
+        }]);
+
+        // Only show deleted bookings if specifically requested
+        if ($request->boolean('show_deleted')) {
+            $query->whereHas('schedule', function($q) {
+                $q->withTrashed();
+            });
+        } else {
+            $query->whereHas('schedule', function($q) {
+                $q->whereNull('deleted_at'); // Only show bookings with non-deleted schedules
+            });
+        }
 
         // Apply date filters if provided
         if ($request->filled('start_date')) {
@@ -117,24 +130,88 @@ class BookingController extends Controller
 
         $validated['is_paid'] = $request->has('is_paid');
 
+        $oldPaymentStatus = $booking->payment_status;
+        $newPaymentStatus = $validated['payment_status'];
+
         $booking->update($validated);
 
         // Check if payment record exists
         $payment = Payment::where('booking_id', $booking->id)->first();
         if ($payment) {
             $payment->update([
-                'status' => 'paid',
+                'status' => $newPaymentStatus === 'paid' ? 'paid' : $newPaymentStatus,
             ]);
         } else {
-            Payment::create([
+            $payment = Payment::create([
                 'booking_id' => $booking->id,
                 'amount' => $booking->total_cost,
                 'payment_method' => 'card',
                 'description' => 'Payment for booking',
-                'status' => 'paid',
+                'status' => $newPaymentStatus === 'paid' ? 'paid' : $newPaymentStatus,
                 'payment_intent_id' => $booking->payment_intent_id,
                 'user_id' => $booking->user_id,
             ]);
+        }
+
+        // If payment status changed to 'paid', trigger the same logic as Stripe payment confirmation
+        if ($oldPaymentStatus !== 'paid' && $newPaymentStatus === 'paid') {
+            try {
+                \DB::beginTransaction();
+
+                // Update booking payment status to completed
+                $booking->update([
+                    'payment_status' => 'paid',
+                    'is_paid' => true
+                ]);
+
+                \Log::info('Admin updated booking payment status to paid', [
+                    'booking_id' => $booking->id,
+                    'admin_user_id' => auth()->id()
+                ]);
+
+                // Update payment record with additional info
+                $payment->update([
+                    'status' => 'paid',
+                    'paid_at' => now()
+                ]);
+
+                // Send payment confirmation email
+                try {
+                    \Log::info('Attempting to send payment confirmation email for admin-updated booking payment');
+                    $booking->user->notify(new \App\Notifications\PaymentConfirmedNotification($payment));
+                    \Log::info('Payment confirmation email sent successfully for admin-updated booking payment');
+                    
+                    // Notify other admins about the payment (excluding the current admin)
+                    \Log::info('Attempting to send admin notifications for admin-updated booking payment');
+                    $admins = \App\Models\User::whereHas('roles', function($query) {
+                        $query->where('title', 'Admin');
+                    })->where('id', '!=', auth()->id())->get();
+                    
+                    \Log::info('Found admins to notify for admin-updated booking payment', ['admin_count' => $admins->count()]);
+                    
+                    foreach ($admins as $admin) {
+                        $admin->notify(new \App\Notifications\AdminPaymentReceivedNotification($payment));
+                    }
+                    \Log::info('Admin notifications sent successfully for admin-updated booking payment');
+                } catch (\Exception $e) {
+                    // Log email error but don't fail the payment
+                    \Log::error('Failed to send payment confirmation email for admin-updated booking payment', ['error' => $e->getMessage()]);
+                }
+
+                \DB::commit();
+
+                \Log::info('Admin booking payment status update completed successfully', [
+                    'booking_id' => $booking->id,
+                    'payment_id' => $payment->id
+                ]);
+
+            } catch (\Exception $e) {
+                \DB::rollBack();
+                \Log::error('Error updating booking payment status to paid by admin', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
 
         // If refunded, update the payment status to refunded
@@ -179,32 +256,94 @@ class BookingController extends Controller
     {
         abort_if(Gate::denies('booking_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $booking->update([
-            'status' => 'confirmed',
-            'payment_status' => 'paid',
-            'is_paid' => true
-        ]);
+        try {
+            \DB::beginTransaction();
 
-        //Check if payment record exists
-        $payment = Payment::where('booking_id', $booking->id)->first();
-        if ($payment) {
-            $payment->update([
-                'status' => 'paid',
+            // Update booking payment status
+            $booking->update([
+                'status' => 'confirmed',
+                'payment_status' => 'paid',
+                'is_paid' => true
             ]);
-        } else {
-            Payment::create([
+
+            \Log::info('Admin marked booking as paid', [
                 'booking_id' => $booking->id,
-                'amount' => $booking->total_cost,
-                'payment_method' => 'card',
-                'description' => 'Payment for booking',
-                'status' => 'paid',
-                'payment_intent_id' => $booking->payment_intent_id,
-                'user_id' => $booking->user_id,
+                'admin_user_id' => auth()->id()
             ]);
-        }
 
-        return redirect()->route('admin.bookings.index')
-            ->with('success', 'Booking marked as paid successfully.');
+            // Update or create payment record
+            $payment = Payment::where('booking_id', $booking->id)
+                ->where('status', 'pending')
+                ->latest()
+                ->first();
+
+            if (!$payment) {
+                // Create payment record if it doesn't exist
+                $payment = Payment::create([
+                    'user_id' => $booking->user_id,
+                    'booking_id' => $booking->id,
+                    'schedule_id' => $booking->schedule_id,
+                    'amount' => $booking->schedule->price,
+                    'payment_method' => 'admin_marked',
+                    'status' => 'paid',
+                    'description' => 'Payment for ' . $booking->schedule->title . ' - ' . $booking->child->name,
+                    'paid_at' => now()
+                ]);
+
+                \Log::info('New payment record created by admin', ['payment_id' => $payment->id]);
+            } else {
+                $payment->update([
+                    'status' => 'paid',
+                    'payment_method' => 'admin_marked',
+                    'paid_at' => now()
+                ]);
+
+                \Log::info('Existing payment record updated by admin', ['payment_id' => $payment->id]);
+            }
+
+            // Send payment confirmation email
+            try {
+                \Log::info('Attempting to send payment confirmation email for admin-marked payment');
+                $booking->user->notify(new \App\Notifications\PaymentConfirmedNotification($payment));
+                \Log::info('Payment confirmation email sent successfully for admin-marked payment');
+                
+                // Notify admins about the payment (excluding the current admin to avoid duplicate notifications)
+                \Log::info('Attempting to send admin notifications for admin-marked payment');
+                $admins = \App\Models\User::whereHas('roles', function($query) {
+                    $query->where('title', 'Admin');
+                })->where('id', '!=', auth()->id())->get();
+                
+                \Log::info('Found admins to notify for admin-marked payment', ['admin_count' => $admins->count()]);
+                
+                foreach ($admins as $admin) {
+                    $admin->notify(new \App\Notifications\AdminPaymentReceivedNotification($payment));
+                }
+                \Log::info('Admin notifications sent successfully for admin-marked payment');
+            } catch (\Exception $e) {
+                // Log email error but don't fail the payment
+                \Log::error('Failed to send payment confirmation email for admin-marked payment', ['error' => $e->getMessage()]);
+            }
+
+            \DB::commit();
+
+            \Log::info('Admin payment marking completed successfully', [
+                'booking_id' => $booking->id,
+                'payment_id' => $payment->id
+            ]);
+
+            return redirect()->route('admin.bookings.index')
+                ->with('success', 'Booking marked as paid successfully. Payment confirmation emails have been sent.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error marking booking as paid by admin', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->route('admin.bookings.index')
+                ->with('error', 'Failed to mark booking as paid. Please try again.');
+        }
     }
 
     public function incrementParticipants()

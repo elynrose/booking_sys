@@ -22,7 +22,8 @@ class SiteSettings extends Model
         'meta_keywords', 'meta_description', 'og_image',
         'contact_email', 'contact_phone', 'contact_address',
         'facebook_url', 'twitter_url', 'instagram_url', 'linkedin_url',
-        'footer_text', 'footer_links', 'welcome_cover_image', 'welcome_hero_title', 'welcome_hero_description'
+        'footer_text', 'footer_links', 'welcome_cover_image', 'welcome_hero_title', 'welcome_hero_description',
+        'stripe_publishable_key', 'stripe_secret_key', 'stripe_webhook_secret', 'stripe_enabled', 'stripe_currency'
     ];
 
     /**
@@ -41,7 +42,7 @@ class SiteSettings extends Model
     public static function createDefaultSettings()
     {
         return self::create([
-            'site_name' => 'GymSaaS',
+            'site_name' => 'Greenstreet',
             'site_description' => 'Modern gym management system',
             'primary_color' => '#6772e5',
             'secondary_color' => '#32325d',
@@ -124,5 +125,31 @@ class SiteSettings extends Model
     public function getWelcomeCoverImageUrlAttribute()
     {
         return $this->welcome_cover_image ? asset('storage/' . $this->welcome_cover_image) : null;
+    }
+
+    /**
+     * Get Stripe configuration
+     */
+    public static function getStripeConfig()
+    {
+        $settings = self::getSettings();
+        return [
+            'enabled' => $settings->stripe_enabled,
+            'publishable_key' => $settings->stripe_publishable_key,
+            'secret_key' => $settings->stripe_secret_key,
+            'webhook_secret' => $settings->stripe_webhook_secret,
+            'currency' => $settings->stripe_currency ?? 'usd'
+        ];
+    }
+
+    /**
+     * Check if Stripe is enabled and configured
+     */
+    public static function isStripeEnabled()
+    {
+        $settings = self::getSettings();
+        return $settings->stripe_enabled && 
+               !empty($settings->stripe_publishable_key) && 
+               !empty($settings->stripe_secret_key);
     }
 } 

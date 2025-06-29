@@ -72,6 +72,14 @@ class DashboardController extends Controller
             ->groupBy('categories.id', 'categories.name')
             ->get();
 
+        // Debug revenue by category
+        \Log::info('Revenue by Category Query Result:', [
+            'count' => $revenueByCategory->count(),
+            'data' => $revenueByCategory->toArray(),
+            'startDate' => $startDate->format('Y-m-d H:i:s'),
+            'endDate' => $endDate->format('Y-m-d H:i:s')
+        ]);
+
         // Get revenue by trainer
         $revenueByTrainer = Payment::where('payments.status', 'paid')
             ->whereBetween('payments.created_at', [$startDate, $endDate])
@@ -82,6 +90,14 @@ class DashboardController extends Controller
             ->select('users.name', DB::raw('SUM(payments.amount) as total'))
             ->groupBy('trainers.id', 'users.name')
             ->get();
+
+        // Debug revenue by trainer
+        \Log::info('Revenue by Trainer Query Result:', [
+            'count' => $revenueByTrainer->count(),
+            'data' => $revenueByTrainer->toArray(),
+            'startDate' => $startDate->format('Y-m-d H:i:s'),
+            'endDate' => $endDate->format('Y-m-d H:i:s')
+        ]);
 
         // Get daily revenue for chart
         $dailyRevenue = Payment::where('payments.status', 'paid')

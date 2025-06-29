@@ -106,7 +106,74 @@ class PaymentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $oldStatus = $payment->status;
+        $newStatus = $validated['status'];
+
         $payment->update($validated);
+
+        // If status changed to 'paid', trigger the same logic as Stripe payment confirmation
+        if ($oldStatus !== 'paid' && $newStatus === 'paid') {
+            try {
+                \DB::beginTransaction();
+
+                $booking = Booking::find($validated['booking_id']);
+                
+                // Update booking payment status
+                $booking->update([
+                    'payment_status' => 'paid',
+                    'is_paid' => true
+                ]);
+
+                \Log::info('Admin updated payment status to paid', [
+                    'payment_id' => $payment->id,
+                    'booking_id' => $booking->id,
+                    'admin_user_id' => auth()->id()
+                ]);
+
+                // Update payment record with additional info
+                $payment->update([
+                    'status' => 'paid',
+                    'paid_at' => now()
+                ]);
+
+                // Send payment confirmation email
+                try {
+                    \Log::info('Attempting to send payment confirmation email for admin-updated payment');
+                    $booking->user->notify(new \App\Notifications\PaymentConfirmedNotification($payment));
+                    \Log::info('Payment confirmation email sent successfully for admin-updated payment');
+                    
+                    // Notify other admins about the payment (excluding the current admin)
+                    \Log::info('Attempting to send admin notifications for admin-updated payment');
+                    $admins = \App\Models\User::whereHas('roles', function($query) {
+                        $query->where('title', 'Admin');
+                    })->where('id', '!=', auth()->id())->get();
+                    
+                    \Log::info('Found admins to notify for admin-updated payment', ['admin_count' => $admins->count()]);
+                    
+                    foreach ($admins as $admin) {
+                        $admin->notify(new \App\Notifications\AdminPaymentReceivedNotification($payment));
+                    }
+                    \Log::info('Admin notifications sent successfully for admin-updated payment');
+                } catch (\Exception $e) {
+                    // Log email error but don't fail the payment
+                    \Log::error('Failed to send payment confirmation email for admin-updated payment', ['error' => $e->getMessage()]);
+                }
+
+                \DB::commit();
+
+                \Log::info('Admin payment status update completed successfully', [
+                    'payment_id' => $payment->id,
+                    'booking_id' => $booking->id
+                ]);
+
+            } catch (\Exception $e) {
+                \DB::rollBack();
+                \Log::error('Error updating payment status to paid by admin', [
+                    'payment_id' => $payment->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         return redirect()->route('admin.payments.index')
             ->with('success', 'Payment updated successfully.');

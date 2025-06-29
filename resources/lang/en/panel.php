@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'site_title' => 'Website',
+    'site_title' => 'Greenstreet',
 
 ];

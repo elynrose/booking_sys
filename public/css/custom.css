@@ -136,3 +136,10 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     margin-left: 3px;
     margin-right: 3px;
 }
+
+/* Global table text color */
+.table td,
+.table tr,
+.table th {
+    color: #000 !important;
+}

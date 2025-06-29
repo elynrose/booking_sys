@@ -17,6 +17,8 @@ class Payment extends Model
         'amount',
         'description',
         'status',
+        'payment_method',
+        'transaction_id',
         'payment_date',
         'paid_at',
         'stripe_payment_id',
@@ -47,11 +49,11 @@ class Payment extends Model
 
     public function confirm()
     {
-        $this->update(['status' => 'completed']);
+        $this->update(['status' => 'paid']);
         $this->booking->update([
             'is_paid' => true,
             'status' => 'confirmed',
-            'payment_status' => 'confirmed'
+            'payment_status' => 'paid'
         ]);
     }
 

@@ -33,7 +33,7 @@
                                             <p class="card-text text-muted small">
                                                 <i class="fas fa-users"></i> {{ $schedule->bookings->count() }} of {{ $schedule->max_participants }} max
                                             </p>
-                                            <a href="{{ route('frontend.schedules.show', $schedule) }}" class="btn btn-primary btn-sm">View Details</a>
+                                            <a href="{{ route('frontend.trainer.class-details', $schedule) }}" class="btn btn-primary btn-sm">View Details</a>
                                         </div>
                                     </div>
                                 </div>
@@ -196,7 +196,7 @@
                                             <p class="card-text">
                                                 <i class="fas fa-users"></i> {{ $schedule->bookings->count() }} / {{ $schedule->max_participants }} participants
                                             </p>
-                                            <a href="{{ route('frontend.schedules.show', $schedule) }}" class="btn btn-primary btn-sm">View Details</a>
+                                            <a href="{{ route('frontend.trainer.class-details', $schedule) }}" class="btn btn-primary btn-sm">View Details</a>
                                         </div>
                                     </div>
                                 </div>

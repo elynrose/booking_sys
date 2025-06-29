@@ -39,11 +39,11 @@
                             <a href="{{ route('frontend.schedules.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                                 <i class="fas fa-calendar mr-2"></i> Schedules
                             </a>
-                            <a href="{{ route('frontend.bookings.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                            <a href="{{ route('bookings.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:border-gray-300 transition duration-150 ease-in-out">
                                 <i class="fas fa-calendar-check mr-2"></i> My Bookings
                             </a>
-                            <a href="{{ route('frontend.trainers.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
-                                <i class="fas fa-chalkboard-teacher mr-2"></i> Trainer
+                            <a href="{{ route('frontend.trainer.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:border-gray-300 transition duration-150 ease-in-out">
+                                <i class="fas fa-user-tie mr-2"></i> Trainers
                             </a>
                         </div>
                     </div>
@@ -104,11 +104,11 @@
                     <x-responsive-nav-link :href="route('frontend.schedules.index')" :active="request()->routeIs('frontend.schedules.index')">
                         <i class="fas fa-calendar mr-2"></i> {{ __('Classes') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('frontend.bookings.index')" :active="request()->routeIs('frontend.bookings.index')">
+                    <x-responsive-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.index')">
                         <i class="fas fa-calendar-check mr-2"></i> {{ __('My Bookings') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('frontend.trainers.index')" :active="request()->routeIs('frontend.trainers.index')">
-                        <i class="fas fa-chalkboard-teacher mr-2"></i> {{ __('Trainer Dashboard') }}
+                    <x-responsive-nav-link :href="route('frontend.trainer.index')" :active="request()->routeIs('frontend.trainer.index')">
+                        <i class="fas fa-user-tie mr-2"></i> {{ __('Trainers') }}
                     </x-responsive-nav-link>
                 </div>
 
@@ -140,7 +140,9 @@
 
         <!-- Page Content -->
         <main>
+            <div class="container py-4">
             @yield('content')
+            </div>
         </main>
     </div>
 </body>

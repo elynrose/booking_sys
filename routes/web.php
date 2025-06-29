@@ -92,6 +92,7 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     // Route::post('contact', 'ContactController@store')->name('contact.store');
 
     Route::get('frontend/profile', 'ProfileController@index')->name('profile.index');
+    Route::get('frontend/profile/edit', 'ProfileController@edit')->name('profile.edit');
     Route::post('frontend/profile', 'ProfileController@update')->name('profile.update');
     Route::post('frontend/profile/destroy', 'ProfileController@destroy')->name('profile.destroy');
     Route::post('frontend/profile/password', 'ProfileController@password')->name('profile.password');
@@ -104,6 +105,9 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::get('/payments', [App\Http\Controllers\Frontend\PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/create', [App\Http\Controllers\Frontend\PaymentController::class, 'create'])->name('payments.create');
     Route::post('/payments', [App\Http\Controllers\Frontend\PaymentController::class, 'store'])->name('payments.store');
+    Route::post('/payments/process', [App\Http\Controllers\Frontend\PaymentController::class, 'process'])->name('payments.process');
+    Route::get('/payments/confirm', [App\Http\Controllers\Frontend\PaymentController::class, 'confirm'])->name('payments.confirm');
+    Route::get('/payments/success', [App\Http\Controllers\Frontend\PaymentController::class, 'success'])->name('payments.success');
     Route::get('/payments/{payment}', [App\Http\Controllers\Frontend\PaymentController::class, 'show'])->name('payments.show');
     Route::get('/payments/{payment}/edit', [App\Http\Controllers\Frontend\PaymentController::class, 'edit'])->name('payments.edit');
     Route::put('/payments/{payment}', [App\Http\Controllers\Frontend\PaymentController::class, 'update'])->name('payments.update');
@@ -113,6 +117,7 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     // Trainer routes
     Route::middleware(['auth', 'role:trainer'])->group(function () {
         Route::get('/trainer', [App\Http\Controllers\Frontend\TrainerController::class, 'index'])->name('trainer.index');
+        Route::get('/trainer/class/{schedule}', [App\Http\Controllers\Frontend\TrainerController::class, 'showClassDetails'])->name('trainer.class-details');
         // COMMENTED OUT: Trainer payment confirmation route
         // Route::post('/trainer/payments/{payment}/confirm', [App\Http\Controllers\Frontend\TrainerController::class, 'confirmPayment'])->name('trainer.confirm-payment');
     });

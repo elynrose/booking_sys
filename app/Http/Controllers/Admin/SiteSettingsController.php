@@ -77,6 +77,11 @@ class SiteSettingsController extends Controller
             'linkedin_url' => 'nullable|url',
             'footer_text' => 'nullable|string',
             'footer_links' => 'nullable|string',
+            'stripe_publishable_key' => 'nullable|string|max:255',
+            'stripe_secret_key' => 'nullable|string|max:255',
+            'stripe_webhook_secret' => 'nullable|string|max:255',
+            'stripe_enabled' => 'boolean',
+            'stripe_currency' => 'nullable|string|max:3',
         ]);
 
         $settings = SiteSettings::getSettings();

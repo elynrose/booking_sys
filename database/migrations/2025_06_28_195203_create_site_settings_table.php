@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('site_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('site_name')->default('GymSaaS');
+            $table->string('site_name')->default('Greenstreet');
             $table->text('site_description')->nullable();
             $table->string('logo')->nullable();
             $table->string('favicon')->nullable();

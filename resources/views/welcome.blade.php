@@ -229,7 +229,7 @@
                         </div>
                         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#faqAccordion">
                             <div class="card-body">
-                                You can book sessions through our website, mobile app, or by visiting our front desk. We recommend booking in advance to secure your preferred time slot.
+                                You can book sessions through Greenstreet, mobile app, or by visiting our front desk. We recommend booking in advance to secure your preferred time slot.
                             </div>
                         </div>
                     </div>

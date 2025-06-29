@@ -74,6 +74,57 @@ class TrainerController extends Controller
         return view('frontend.trainer.index', compact('todaySchedules', 'upcomingSchedules', 'todayCheckins', 'pendingPayments'));
     }
 
+    public function showClassDetails(Schedule $schedule)
+    {
+        abort_if(Gate::denies('trainer_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user = auth()->user();
+        $trainer = Trainer::where('user_id', $user->id)->first();
+        
+        if (!$trainer) {
+            return redirect()->route('frontend.home')
+                ->with('error', 'Trainer profile not found.');
+        }
+
+        // Verify the schedule belongs to this trainer
+        if ($schedule->trainer_id !== $trainer->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Get all bookings for this schedule with related data
+        $bookings = Booking::where('schedule_id', $schedule->id)
+            ->where('status', 'confirmed')
+            ->with([
+                'user', 
+                'child', 
+                'checkins' => function($query) {
+                    $query->orderBy('created_at', 'desc');
+                }
+            ])
+            ->get();
+
+        // Calculate check-in/check-out statistics for each booking
+        $bookingsWithStats = $bookings->map(function($booking) {
+            $checkins = $booking->checkins;
+            $totalCheckins = $checkins->count();
+            $totalCheckouts = $checkins->whereNotNull('checkout_time')->count();
+            $currentlyCheckedIn = $checkins->whereNull('checkout_time')->count();
+
+            $booking->checkin_stats = [
+                'total_checkins' => $totalCheckins,
+                'total_checkouts' => $totalCheckouts,
+                'currently_checked_in' => $currentlyCheckedIn,
+                'last_checkin' => $checkins->first() ? $checkins->first()->created_at : null,
+                'last_checkout' => $checkins->whereNotNull('checkout_time')->first() ? 
+                    $checkins->whereNotNull('checkout_time')->first()->checkout_time : null
+            ];
+
+            return $booking;
+        });
+
+        return view('frontend.trainer.class-details', compact('schedule', 'bookingsWithStats'));
+    }
+
     // COMMENTED OUT: Payment confirmation method
     /*
     public function confirmPayment(Request $request, Payment $payment)

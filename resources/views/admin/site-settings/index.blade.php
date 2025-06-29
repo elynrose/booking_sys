@@ -576,6 +576,70 @@
                             </div>
                         </div>
 
+                        <!-- Stripe Configuration -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h4 class="mb-3">
+                                    <i class="fab fa-stripe me-2"></i>
+                                    Stripe Payment Configuration
+                                </h4>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Configure your Stripe payment settings here. These keys will be used for processing payments instead of the .env file.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="stripe_enabled">Enable Stripe Payments</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="stripe_enabled" name="stripe_enabled" value="1" {{ $settings->stripe_enabled ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="stripe_enabled">
+                                            Enable Stripe payment processing
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="stripe_currency">Currency</label>
+                                    <select class="form-control" id="stripe_currency" name="stripe_currency">
+                                        <option value="usd" {{ ($settings->stripe_currency ?? 'usd') == 'usd' ? 'selected' : '' }}>USD - US Dollar</option>
+                                        <option value="eur" {{ ($settings->stripe_currency ?? 'usd') == 'eur' ? 'selected' : '' }}>EUR - Euro</option>
+                                        <option value="gbp" {{ ($settings->stripe_currency ?? 'usd') == 'gbp' ? 'selected' : '' }}>GBP - British Pound</option>
+                                        <option value="cad" {{ ($settings->stripe_currency ?? 'usd') == 'cad' ? 'selected' : '' }}>CAD - Canadian Dollar</option>
+                                        <option value="aud" {{ ($settings->stripe_currency ?? 'usd') == 'aud' ? 'selected' : '' }}>AUD - Australian Dollar</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="stripe_publishable_key">Publishable Key</label>
+                                    <input type="text" class="form-control" id="stripe_publishable_key" name="stripe_publishable_key" value="{{ $settings->stripe_publishable_key }}" placeholder="pk_test_...">
+                                    <small class="form-text text-muted">Your Stripe publishable key (starts with pk_test_ or pk_live_)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="stripe_secret_key">Secret Key</label>
+                                    <input type="password" class="form-control" id="stripe_secret_key" name="stripe_secret_key" value="{{ $settings->stripe_secret_key }}" placeholder="sk_test_...">
+                                    <small class="form-text text-muted">Your Stripe secret key (starts with sk_test_ or sk_live_)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="stripe_webhook_secret">Webhook Secret</label>
+                                    <input type="password" class="form-control" id="stripe_webhook_secret" name="stripe_webhook_secret" value="{{ $settings->stripe_webhook_secret }}" placeholder="whsec_...">
+                                    <small class="form-text text-muted">Your Stripe webhook secret (starts with whsec_) - Optional for basic payment processing</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary">
