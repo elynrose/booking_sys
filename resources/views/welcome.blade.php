@@ -348,6 +348,9 @@
 /* Custom styles */
 .banner-image {
     position: relative;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
 }
 
 .hover-card {
