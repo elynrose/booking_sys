@@ -161,20 +161,6 @@
                                 </a>
                             </li>
                             @endcan
-                            @can('role_access')
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.roles.index') }}">
-                                    <i class="fas fa-user-tag"></i> Roles
-                                </a>
-                            </li>
-                            @endcan
-                            @can('permission_access')
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.permissions.index') }}">
-                                    <i class="fas fa-key"></i> Permissions
-                                </a>
-                            </li>
-                            @endcan
                             @can('site_settings_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.site-settings.index') }}">
