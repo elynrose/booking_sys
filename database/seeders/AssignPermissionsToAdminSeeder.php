@@ -38,9 +38,9 @@ class AssignPermissionsToAdminSeeder extends Seeder
         // Assign all permissions to admin role
         $adminRole->permissions()->sync($permissions->pluck('id'));
 
-        // Assign permissions to trainer role (all except user management)
+        // Assign permissions to trainer role (all except user management and site settings)
         $trainerPermissions = $permissions->filter(function($perm) {
-            return !str_starts_with($perm->title, 'user_');
+            return !str_starts_with($perm->title, 'user_') && !str_starts_with($perm->title, 'site_settings_');
         });
         $trainerRole->permissions()->sync($trainerPermissions->pluck('id'));
 

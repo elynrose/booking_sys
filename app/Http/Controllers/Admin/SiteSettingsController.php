@@ -6,17 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\SiteSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Gate;
+use Illuminate\Http\Response;
 
 class SiteSettingsController extends Controller
 {
     public function index()
     {
+        abort_if(Gate::denies('site_settings_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
         $settings = SiteSettings::getSettings();
         return view('admin.site-settings.index', compact('settings'));
     }
 
     public function update(Request $request)
     {
+        abort_if(Gate::denies('site_settings_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
         $request->validate([
             'site_name' => 'required|string|max:255',
             'site_description' => 'nullable|string',
