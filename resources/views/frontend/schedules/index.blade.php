@@ -15,8 +15,8 @@
 
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1 class="display-5 fw-bold">Our Classes</h1>
-            <p class="lead text-muted">Find the perfect class for your child's development and interests.</p>
+            <h1 class="display-5 fw-bold">{{ __('app.schedules.our_classes') }}</h1>
+            <p class="lead text-muted">{{ __('app.schedules.find_perfect_class') }}</p>
         </div>
     </div>
 
@@ -27,48 +27,48 @@
                 <div class="card-body">
                     <form action="{{ route('frontend.schedules.index') }}" method="GET" class="row g-3 align-items-end">
                         <div class="col-md-3">
-                            <label for="category" class="form-label">Category</label>
+                            <label for="category" class="form-label">{{ __('app.dashboard.category') }}</label>
                             <select name="category" id="category" class="form-control">
-                                <option value="">All Categories</option>
+                                <option value="">{{ __('app.schedules.all_categories') }}</option>
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->slug }}" {{ request('category') == $category->slug ? 'selected' : '' }}>
+                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="type" class="form-label">Class Type</label>
+                            <label for="type" class="form-label">{{ __('app.schedules.class_type') }}</label>
                             <select name="type" id="type" class="form-control">
-                                <option value="">All Types</option>
-                                <option value="group" {{ request('type') == 'group' ? 'selected' : '' }}>Group Classes</option>
-                                <option value="private" {{ request('type') == 'private' ? 'selected' : '' }}>Private/Individual Training</option>
+                                <option value="">{{ __('app.schedules.all_types') }}</option>
+                                <option value="group" {{ request('type') == 'group' ? 'selected' : '' }}>{{ __('app.schedules.group_classes') }}</option>
+                                <option value="private" {{ request('type') == 'private' ? 'selected' : '' }}>{{ __('app.schedules.private_individual_training') }}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="age_group" class="form-label">Age Group</label>
+                            <label for="age_group" class="form-label">{{ __('app.children.age') }} {{ __('app.dashboard.category') }}</label>
                             <select name="age_group" id="age_group" class="form-control">
-                                <option value="">All Ages</option>
-                                <option value="3-5">3-5 years</option>
-                                <option value="6-8">6-8 years</option>
-                                <option value="9-12">9-12 years</option>
+                                <option value="">{{ __('app.schedules.all_ages') }}</option>
+                                <option value="3-5" {{ request('age_group') == '3-5' ? 'selected' : '' }}>{{ __('app.schedules.age_groups.3-5') }}</option>
+                                <option value="6-8" {{ request('age_group') == '6-8' ? 'selected' : '' }}>{{ __('app.schedules.age_groups.6-8') }}</option>
+                                <option value="9-12" {{ request('age_group') == '9-12' ? 'selected' : '' }}>{{ __('app.schedules.age_groups.9-12') }}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="day" class="form-label">Day</label>
+                            <label for="day" class="form-label">{{ __('app.schedules.days.any_day') }}</label>
                             <select name="day" id="day" class="form-control">
-                                <option value="">Any Day</option>
-                                <option value="monday">Monday</option>
-                                <option value="tuesday">Tuesday</option>
-                                <option value="wednesday">Wednesday</option>
-                                <option value="thursday">Thursday</option>
-                                <option value="friday">Friday</option>
-                                <option value="saturday">Saturday</option>
-                                <option value="sunday">Sunday</option>
+                                <option value="">{{ __('app.schedules.days.any_day') }}</option>
+                                <option value="monday" {{ request('day') == 'monday' ? 'selected' : '' }}>{{ __('app.schedules.days.monday') }}</option>
+                                <option value="tuesday" {{ request('day') == 'tuesday' ? 'selected' : '' }}>{{ __('app.schedules.days.tuesday') }}</option>
+                                <option value="wednesday" {{ request('day') == 'wednesday' ? 'selected' : '' }}>{{ __('app.schedules.days.wednesday') }}</option>
+                                <option value="thursday" {{ request('day') == 'thursday' ? 'selected' : '' }}>{{ __('app.schedules.days.thursday') }}</option>
+                                <option value="friday" {{ request('day') == 'friday' ? 'selected' : '' }}>{{ __('app.schedules.days.friday') }}</option>
+                                <option value="saturday" {{ request('day') == 'saturday' ? 'selected' : '' }}>{{ __('app.schedules.days.saturday') }}</option>
+                                <option value="sunday" {{ request('day') == 'sunday' ? 'selected' : '' }}>{{ __('app.schedules.days.sunday') }}</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                            <button type="submit" class="btn btn-primary w-100">{{ __('app.schedules.apply_filters') }}</button>
                         </div>
                     </form>
                 </div>
@@ -84,12 +84,14 @@
                 <div class="position-relative">
                    
                     @if($schedule->photo)
-                        <img src="{{ $schedule->photo_url }}" alt="{{ $schedule->title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        <img src="{{ Storage::url($schedule->photo) }}" alt="{{ $schedule->title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     @else
-                        <svg class="card-img-top" width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="100%" height="100%" fill="#f8f9fa"/>
-                            <text x="50%" y="50%" font-family="Arial" font-size="24" fill="#6c757d" text-anchor="middle" dominant-baseline="middle">No Image Available</text>
-                        </svg>
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="100" height="100" fill="#f8f9fa"/>
+                                <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" fill="#6c757d" font-size="14">{{ __('app.schedules.no_image_available') }}</text>
+                            </svg>
+                        </div>
                     @endif
                     @if($schedule->trainer && $schedule->trainer->user)
                         <div class="position-absolute" style="top: 100%; left: 86%; transform: translate(-50%, -50%); z-index: 2;">
@@ -113,23 +115,24 @@
                     <h5 class="card-title mb-1">{{ $schedule->title }}</h5>
                     @if($schedule->trainer && $schedule->trainer->user)
                         <p class="card-text text-muted mb-2">
-                            <i class="fas fa-user-tie"></i> {{ $schedule->trainer->user->name }}
+                            <i class="fas fa-tag me-1"></i>{{ optional($schedule->category)->name ?? __('app.dashboard.uncategorized') }}
+                            <br><i class="fas fa-user-tie me-1"></i>{{ $schedule->trainer->user->name }}
                         </p>
                     @endif
                     <p class="card-text text-muted mb-2">{{ Str::limit($schedule->description, 70) }}</p>
                     <div class="mb-1 small text-secondary">
                         @if($schedule->start_date && $schedule->end_date)
-                            {{ $schedule->start_date->format('M d, Y') }} &mdash; {{ $schedule->end_date->format('M d, Y') }}
+                            {{ optional($schedule->start_date)->format('M d, Y') ?? __('app.status.n_a') }} &mdash; {{ $schedule->end_date->format('M d, Y') }}
                         @endif
                     </div>
                     <div class="mb-2 small text-secondary">
                         @if($schedule->start_time && $schedule->end_time)
-                            {{ $schedule->start_time->format('h:i A') }} - {{ $schedule->end_time->format('h:i A') }}
+                            {{ optional($schedule->start_time)->format('h:i A') ?? __('app.status.n_a') }} - {{ $schedule->end_time->format('h:i A') }}
                         @endif
                     </div>
                     <div class="mt-auto d-flex justify-content-between align-items-center">
                         <span class="badge" style="background-color: #2ecc71;">${{ number_format($schedule->price, 2) }}</span>
-                        <span class="badge bg-primary text-white">{{ $schedule->max_participants - $schedule->bookings->count() }} spots left</span>
+                        <span class="badge bg-primary text-white">{{ $schedule->max_participants - $schedule->bookings->count() }} {{ __('app.schedules.spots_left') }}</span>
                     </div>
                     <div class="mt-2">
                         <span class="badge badge-{{ $schedule->type === 'group' ? 'info' : 'warning' }}">
@@ -146,11 +149,11 @@
                     @endphp
                     @if($hasActiveBooking)
                         <button class="btn btn-secondary btn-block mt-3" disabled>
-                            <i class="fas fa-check-circle me-2"></i> Currently Booked
+                            <i class="fas fa-check-circle me-2"></i> {{ __('app.status.currently_booked') }}
                         </button>
                     @else
-                        <a href="{{ route('bookings.create', $schedule) }}" class="btn btn-primary btn-block mt-3">
-                            <i class="fas fa-calendar-plus me-2"></i> Book Now
+                        <a href="{{ route('frontend.bookings.create', ['schedule_id' => $schedule->id]) }}" class="btn btn-primary btn-block mt-3">
+                            <i class="fas fa-calendar-plus me-2"></i> {{ __('app.welcome.book_now') }}
                         </a>
                     @endif
                 </div>
@@ -159,7 +162,7 @@
         @empty
         <div class="col-12">
             <div class="alert alert-info">
-                No classes found matching your criteria. Please try different filters.
+                {{ __('app.alerts.no_records_found') }}
             </div>
         </div>
         @endforelse

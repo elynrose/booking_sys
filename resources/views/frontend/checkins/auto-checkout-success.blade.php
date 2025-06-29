@@ -3,45 +3,57 @@
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-sm-12">
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body text-center p-5">
+                    <!-- Session Completed Icon -->
                     <div class="mb-4">
-                        <i class="fas fa-clock fa-4x text-warning mb-3"></i>
-                        <h3 class="text-warning">Session Completed</h3>
-                        <p class="lead">Your session has ended and you have been automatically checked out.</p>
+                        <i class="fas fa-clock text-warning" style="font-size: 4rem;"></i>
                     </div>
 
-                    <div class="alert alert-info">
-                        <h5>Session Summary</h5>
-                        <div class="row text-start">
+                    <!-- Session Completed Message -->
+                    <h3 class="text-warning">{{ __('app.checkins.session_completed') }}</h3>
+                    <p class="lead">{{ __('app.checkins.session_ended') }}</p>
+
+                    <!-- Session Summary -->
+                    <div class="mt-4">
+                        <h5>{{ __('app.checkins.session_summary') }}</h5>
+                        
+                        <div class="row mt-3">
                             <div class="col-md-6">
-                                <p><strong>Class:</strong> {{ $booking->schedule->title }}</p>
-                                <p><strong>Child:</strong> {{ $booking->child->name }}</p>
-                                <p><strong>Check-in:</strong> {{ $checkin->checkin_time->format('M d, Y h:i A') }}</p>
+                                <p><strong>{{ __('app.checkins.class') }}:</strong> {{ $booking->schedule->title }}</p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Check-out:</strong> {{ $checkin->checkout_time->format('M d, Y h:i A') }}</p>
-                                <p><strong>Duration:</strong> {{ sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds) }}</p>
-                                <p><strong>Sessions Remaining:</strong> {{ $booking->sessions_remaining }}</p>
+                                <p><strong>{{ __('app.checkins.child') }}:</strong> {{ $booking->child->name }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>{{ __('app.checkins.checkin') }}:</strong> {{ $checkin->checkin_time->format('M d, Y h:i A') }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>{{ __('app.checkins.checkout') }}:</strong> {{ $checkin->checkout_time->format('M d, Y h:i A') }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>{{ __('app.checkins.duration') }}:</strong> {{ sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds) }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>{{ __('app.checkins.sessions_remaining') }}:</strong> {{ $booking->sessions_remaining }}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="alert alert-success">
-                        <i class="fas fa-envelope me-2"></i>
-                        An email notification has been sent to your registered email address with session details.
-                    </div>
-
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                        <a href="{{ route('frontend.checkins.verify') }}" class="btn btn-primary">&nbsp;
-                            <i class="fas fa-qrcode me-2"></i>Check In Again
-                        </a>&nbsp;
-                        <a href="{{ route('frontend.home') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-home me-2"></i>Go to Dashboard
-                        </a>&nbsp;
-                        <a href="{{ route('bookings.index') }}" class="btn btn-outline-info">
-                            <i class="fas fa-calendar me-2"></i>View Bookings
+                    <!-- Action Buttons -->
+                    <div class="mt-4">
+                        <a href="{{ route('frontend.schedules.index') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-calendar me-1"></i>{{ __('app.welcome.view_classes') }}
+                        </a>
+                        <a href="{{ route('frontend.profile.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-user me-1"></i>{{ __('app.profile.my_profile') }}
                         </a>
                     </div>
                 </div>

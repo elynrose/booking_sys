@@ -1,50 +1,56 @@
 @extends('layouts.frontend')
 
 @section('content')
-<div class="container">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card mt-5">
-                <div class="card-body text-center">
+            <div class="card shadow">
+                <div class="card-body text-center p-5">
+                    <!-- Success Icon -->
                     <div class="mb-4">
-                        <i class="fas fa-check-circle text-success" style="font-size: 48px;"></i>
-                        <h3 class="mt-3">Check-in Successful!</h3>
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
                     </div>
 
-                    @if(isset($isLateCheckin) && $isLateCheckin)
-                        <div class="alert alert-warning" role="alert">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Late Check-in Notice:</strong> You checked in {{ $lateMinutes }} minutes after the class start time.
-                            <br><small>Your session will still end at the scheduled end time.</small>
+                    <!-- Success Message -->
+                    <h3 class="mt-3">{{ __('app.checkins.checkin_successful') }}</h3>
+                    
+                    @if(isset($lateMinutes) && $lateMinutes > 0)
+                        <div class="alert alert-warning mt-3">
+                            <strong>{{ __('app.checkins.late_checkin_notice', ['minutes' => $lateMinutes]) }}</strong>
+                            <br><small>{{ __('app.checkins.late_checkin_help') }}</small>
                         </div>
                     @endif
 
-                    <div class="class-details mb-4">
-                        @if($booking && $booking->schedule && $booking->schedule->class)
-                            <h4>{{ $booking->schedule->class->name }}</h4>
-                        @endif
-                        @if($booking && $booking->child)
-                            <p>Child: {{ $booking->child->name }}</p>
-                        @endif
-                        <p>Check-in Time: {{ ($checkin ?? $existingCheckin)->checkin_time->format('h:i A') }}</p>
-                        @if($booking && $booking->schedule)
-                            <p>Class Time: {{ $booking->schedule->start_time }} - {{ $booking->schedule->end_time }}</p>
-                        @endif
+                    <!-- Session Details -->
+                    <div class="mt-4">
+                        <h4>{{ $booking->schedule->class->name }}</h4>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <p>{{ __('app.checkins.child') }}: {{ $booking->child->name }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ __('app.checkins.checkin_time') }}: {{ ($checkin ?? $existingCheckin)->checkin_time->format('h:i A') }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>{{ __('app.checkins.class_time') }}: {{ $booking->schedule->start_time }} - {{ $booking->schedule->end_time }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ __('app.schedules.participants') }}: {{ $booking->schedule->current_participants }} / {{ $booking->schedule->max_participants }}</p>
+                            </div>
+                        </div>
                     </div>
 
-                
-
-                    <div class="d-flex justify-content-center gap-3">
-                        <form action="{{ route('frontend.checkins.checkout') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="booking_id" value="{{ $booking->id }}">
-                            <input type="hidden" name="user_id" value="{{ $booking->user_id }}">
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-sign-out-alt"></i> Check Out
-                            </button>
-                        </form> &nbsp;
-                        <a href="{{ route('frontend.checkins.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to Check-in
+                    <!-- Action Buttons -->
+                    <div class="mt-4">
+                        <a href="{{ route('frontend.schedules.index') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-calendar me-1"></i>{{ __('app.welcome.view_classes') }}
+                        </a>
+                        <a href="{{ route('frontend.profile.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-user me-1"></i>{{ __('app.profile.my_profile') }}
                         </a>
                     </div>
                 </div>
