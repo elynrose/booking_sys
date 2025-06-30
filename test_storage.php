@@ -23,29 +23,59 @@ if (is_dir('storage/app/public')) {
     echo "   📁 Files in storage: " . implode(', ', array_filter($files, function($f) { return $f != '.' && $f != '..'; })) . "\n";
 } else {
     echo "   ❌ Storage directory missing\n";
+    echo "   🔧 Creating storage directory structure...\n";
+    mkdir('storage/app/public', 0755, true);
+    mkdir('storage/app/public/site', 0755, true);
+    mkdir('storage/app/public/trainers', 0755, true);
+    mkdir('storage/app/public/schedules', 0755, true);
+    echo "   ✅ Storage directories created\n";
 }
 
 // Test 3: Check if we can access a file through the symlink
 echo "\n3. Testing file access through symlink...\n";
 $testFile = 'public/storage/site/test.txt';
-file_put_contents('storage/app/public/site/test.txt', 'test');
-if (file_exists($testFile)) {
-    echo "   ✅ Can access files through symlink\n";
-    unlink('storage/app/public/site/test.txt'); // Clean up
+if (is_dir('storage/app/public/site')) {
+    file_put_contents('storage/app/public/site/test.txt', 'test');
+    if (file_exists($testFile)) {
+        echo "   ✅ Can access files through symlink\n";
+        unlink('storage/app/public/site/test.txt'); // Clean up
+    } else {
+        echo "   ❌ Cannot access files through symlink\n";
+    }
 } else {
-    echo "   ❌ Cannot access files through symlink\n";
+    echo "   ❌ Site directory doesn't exist\n";
 }
 
-// Test 4: Check Laravel asset helper
-echo "\n4. Testing Laravel asset helper...\n";
-$assetUrl = asset('storage/site/test.txt');
-echo "   🔗 Asset URL: $assetUrl\n";
+// Test 4: Check permissions
+echo "\n4. Checking permissions...\n";
+if (is_dir('storage')) {
+    $storagePerms = substr(sprintf('%o', fileperms('storage')), -4);
+    echo "   📁 Storage permissions: $storagePerms\n";
+} else {
+    echo "   ❌ Storage directory not found\n";
+}
 
-// Test 5: Check permissions
-echo "\n5. Checking permissions...\n";
-$storagePerms = substr(sprintf('%o', fileperms('storage')), -4);
-$publicPerms = substr(sprintf('%o', fileperms('public')), -4);
-echo "   📁 Storage permissions: $storagePerms\n";
-echo "   🌐 Public permissions: $publicPerms\n";
+if (is_dir('public')) {
+    $publicPerms = substr(sprintf('%o', fileperms('public')), -4);
+    echo "   🌐 Public permissions: $publicPerms\n";
+} else {
+    echo "   ❌ Public directory not found\n";
+}
 
-echo "\n🎉 Storage test completed!\n"; 
+// Test 5: Check current working directory
+echo "\n5. Current working directory...\n";
+echo "   📂 " . getcwd() . "\n";
+
+// Test 6: Check if we're in the right place
+echo "\n6. Checking Laravel files...\n";
+if (file_exists('artisan')) {
+    echo "   ✅ Laravel artisan file found\n";
+} else {
+    echo "   ❌ Laravel artisan file not found - wrong directory?\n";
+}
+
+echo "\n🎉 Storage test completed!\n";
+echo "\n📋 Next steps:\n";
+echo "1. Run: php artisan storage:link\n";
+echo "2. Run: chmod -R 775 storage/\n";
+echo "3. Run: chmod -R 775 public/storage/\n"; 
