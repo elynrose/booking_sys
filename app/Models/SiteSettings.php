@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 class SiteSettings extends Model
 {
     protected $fillable = [
-        'site_name', 'site_description', 'logo', 'favicon',
+        'site_name', 'site_description', 'logo', 'banner', 'favicon',
         'primary_color', 'secondary_color', 'accent_color', 'success_color', 
         'warning_color', 'danger_color', 'text_color', 'text_muted_color',
         'background_color', 'card_background_color', 'navigation_background_color',
@@ -101,6 +101,14 @@ class SiteSettings extends Model
     public function getLogoUrlAttribute()
     {
         return $this->logo ? asset('storage/' . $this->logo) : null;
+    }
+
+    /**
+     * Get banner URL
+     */
+    public function getBannerUrlAttribute()
+    {
+        return $this->banner ? asset('storage/' . $this->banner) : null;
     }
 
     /**
