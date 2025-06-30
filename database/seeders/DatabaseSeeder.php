@@ -33,29 +33,38 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create admin user
-        $admin = User::create([
-            'name' => $faker->name(),
+        $admin = User::firstOrCreate([
             'email' => 'admin@example.com',
+        ], [
+            'name' => $faker->name(),
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
-        $adminRole = Role::where('title', 'Admin')->first();
-        $admin->roles()->attach($adminRole);
+        $adminRole = Role::where('name', 'Admin')->first();
+        if ($adminRole && !$admin->roles()->where('name', 'Admin')->exists()) {
+            $admin->roles()->attach($adminRole);
+        }
 
         // Create trainer user
-        $trainer = User::create([
-            'name' => $faker->name(),
+        $trainer = User::firstOrCreate([
             'email' => 'trainer@example.com',
+        ], [
+            'name' => $faker->name(),
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
-        $trainer->roles()->attach(Role::where('name', 'Trainer')->first());
+        $trainerRole = Role::where('name', 'Trainer')->first();
+        if ($trainerRole && !$trainer->roles()->where('name', 'Trainer')->exists()) {
+            $trainer->roles()->attach($trainerRole);
+        }
 
         // Create regular users with realistic names
         $users = User::factory()->count(10)->create();
-        $userRole = Role::where('title', 'User')->first();
+        $userRole = Role::where('name', 'User')->first();
         foreach ($users as $user) {
-            $user->roles()->attach($userRole);
+            if ($userRole && !$user->roles()->where('name', 'User')->exists()) {
+                $user->roles()->attach($userRole);
+            }
         }
 
         // Seed Schedules with realistic gym activities
