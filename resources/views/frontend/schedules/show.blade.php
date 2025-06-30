@@ -98,8 +98,8 @@
                     <div class="border-top pt-4">
                         <h5 class="text-muted mb-3">Trainer</h5>
                         <div class="d-flex align-items-center">
-                            @if($schedule->trainer->user->profile_photo_path)
-                                <img src="{{ Storage::url($schedule->trainer->user->profile_photo_path) }}" 
+                            @if($schedule->trainer->user->photo)
+                                <img src="{{ Storage::url($schedule->trainer->user->photo) }}" 
                                      alt="{{ $schedule->trainer->user->name }}" 
                                      class="rounded-circle me-3"
                                      style="width: 50px; height: 50px; object-fit: cover;">

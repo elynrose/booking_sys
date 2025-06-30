@@ -21,8 +21,8 @@
                                 <div class="d-flex w-100 justify-content-between align-items-center">
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center mb-2">
-                                            @if($user->profile_photo_path)
-                                                <img src="{{ Storage::url($user->profile_photo_path) }}" 
+                                            @if($user->photo)
+                                                <img src="{{ Storage::url($user->photo) }}" 
                                                      alt="{{ $user->name }}" 
                                                      class="rounded-circle mr-3"
                                                      style="width: 40px; height: 40px; object-fit: cover;">

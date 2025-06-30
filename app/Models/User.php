@@ -17,6 +17,7 @@ use Laravel\Cashier\Billable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -56,6 +57,7 @@ class User extends Authenticatable implements HasMedia
         'role',
         'phone',
         'address',
+        'photo',
         'member_id',
         'timezone',
     ];
@@ -183,5 +185,13 @@ class User extends Authenticatable implements HasMedia
     public function trainer()
     {
         return $this->hasOne(Trainer::class);
+    }
+
+    /**
+     * Get profile photo URL
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->photo ? Storage::url($this->photo) : null;
     }
 }

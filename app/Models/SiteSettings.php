@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class SiteSettings extends Model
 {
@@ -100,7 +101,7 @@ class SiteSettings extends Model
      */
     public function getLogoUrlAttribute()
     {
-        return $this->logo ? asset('storage/' . $this->logo) : null;
+        return $this->logo ? Storage::url($this->logo) : null;
     }
 
     /**
@@ -108,7 +109,7 @@ class SiteSettings extends Model
      */
     public function getBannerUrlAttribute()
     {
-        return $this->banner ? asset('storage/' . $this->banner) : null;
+        return $this->banner ? Storage::url($this->banner) : null;
     }
 
     /**
@@ -116,7 +117,7 @@ class SiteSettings extends Model
      */
     public function getFaviconUrlAttribute()
     {
-        return $this->favicon ? asset('storage/' . $this->favicon) : null;
+        return $this->favicon ? Storage::url($this->favicon) : null;
     }
 
     /**
@@ -124,7 +125,7 @@ class SiteSettings extends Model
      */
     public function getOgImageUrlAttribute()
     {
-        return $this->og_image ? asset('storage/' . $this->og_image) : null;
+        return $this->og_image ? Storage::url($this->og_image) : null;
     }
 
     /**
@@ -132,7 +133,7 @@ class SiteSettings extends Model
      */
     public function getWelcomeCoverImageUrlAttribute()
     {
-        return $this->welcome_cover_image ? asset('storage/' . $this->welcome_cover_image) : null;
+        return $this->welcome_cover_image ? Storage::url($this->welcome_cover_image) : null;
     }
 
     /**

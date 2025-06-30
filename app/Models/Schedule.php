@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class Schedule extends Model
 {
@@ -144,7 +145,7 @@ class Schedule extends Model
     public function getPhotoUrlAttribute()
     {
         if ($this->photo) {
-            return asset('storage/' . $this->photo);
+            return Storage::url($this->photo);
         }
         return asset('images/default-schedule.jpg');
     }
