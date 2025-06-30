@@ -37,6 +37,7 @@
                         <div class="form-group">
                             <label for="profile_picture">Profile Picture</label>
                             <input type="file" name="profile_picture" id="profile_picture" class="form-control-file @error('profile_picture') is-invalid @enderror">
+                            <small class="form-text text-muted">Max file size: 1MB. Supported formats: JPEG, PNG, JPG, GIF.</small>
                             @error('profile_picture')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror

@@ -44,6 +44,7 @@
                                 <div class="form-group">
                                     <label for="logo">Logo</label>
                                     <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                                    <small class="form-text text-muted">Max file size: 1MB. Supported formats: JPEG, PNG, JPG, GIF, SVG.</small>
                                     @if($settings->logo)
                                         <div class="mt-2">
                                             <img src="{{ $settings->logo_url }}" alt="Current Logo" style="max-height: 50px;">
@@ -55,6 +56,7 @@
                                 <div class="form-group">
                                     <label for="favicon">Favicon</label>
                                     <input type="file" class="form-control" id="favicon" name="favicon" accept="image/*">
+                                    <small class="form-text text-muted">Max file size: 512KB. Supported formats: ICO, PNG, JPG.</small>
                                     @if($settings->favicon)
                                         <div class="mt-2">
                                             <img src="{{ $settings->favicon_url }}" alt="Current Favicon" style="max-height: 32px;">
@@ -66,6 +68,7 @@
                                 <div class="form-group">
                                     <label for="og_image">OG Image</label>
                                     <input type="file" class="form-control" id="og_image" name="og_image" accept="image/*">
+                                    <small class="form-text text-muted">Max file size: 1MB. Supported formats: JPEG, PNG, JPG.</small>
                                     @if($settings->og_image)
                                         <div class="mt-2">
                                             <img src="{{ $settings->og_image_url }}" alt="Current OG Image" style="max-height: 50px;">
@@ -84,7 +87,7 @@
                                 <div class="form-group">
                                     <label for="welcome_cover_image">Cover Image</label>
                                     <input type="file" class="form-control" id="welcome_cover_image" name="welcome_cover_image" accept="image/*">
-                                    <small class="form-text text-muted">Recommended size: 1920x800px. Max size: 5MB.</small>
+                                    <small class="form-text text-muted">Max file size: 1MB. Supported formats: JPEG, PNG, JPG.</small>
                                     @if($settings->welcome_cover_image)
                                         <div class="mt-2">
                                             <img src="{{ $settings->welcome_cover_image_url }}" alt="Current Cover Image" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
