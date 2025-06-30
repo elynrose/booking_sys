@@ -78,7 +78,7 @@ class BookingController extends Controller
     {
         abort_if(Gate::denies('booking_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $schedules = Schedule::with(['trainer.user'])->where('status', 'active')->get();
+        $schedules = Schedule::with(['trainer.user'])->where('status', '=', 'active')->get();
         $users = User::all();
         return view('admin.bookings.create', compact('schedules', 'users'));
     }
@@ -111,7 +111,7 @@ class BookingController extends Controller
     {
         abort_if(Gate::denies('booking_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $schedules = Schedule::with(['trainer.user'])->where('status', 'active')->get();
+        $schedules = Schedule::with(['trainer.user'])->where('status', '=', 'active')->get();
         $users = User::all();
         return view('admin.bookings.edit', compact('booking', 'schedules', 'users'));
     }

@@ -18,7 +18,7 @@ class ScheduleController extends Controller
     public function index(Request $request)
     {
         $query = Schedule::with(['category', 'trainer.user'])
-            ->where('status', 'active');
+            ->where('status', '=', 'active');
 
         // Filter by category if provided
         if ($request->has('category')) {
@@ -75,7 +75,7 @@ class ScheduleController extends Controller
         // Get related schedules
         $relatedSchedules = Schedule::where('category_id', $schedule->category_id)
             ->where('id', '!=', $schedule->id)
-            ->where('status', 'active')
+            ->where('status', '=', 'active')
             ->take(3)
             ->get();
 

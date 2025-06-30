@@ -35,7 +35,7 @@ class TrainerController extends Controller
         $todaySchedules = Schedule::where('trainer_id', $trainer->id)
             ->whereDate('start_date', '<=', Carbon::today())
             ->whereDate('end_date', '>=', Carbon::today())
-            ->where('status', 'active')
+            ->where('status', '=', 'active')
             ->with(['bookings' => function($query) {
                 $query->where('status', 'confirmed')
                     ->where('is_paid', true);
@@ -45,7 +45,7 @@ class TrainerController extends Controller
         // Get upcoming schedules
         $upcomingSchedules = Schedule::where('trainer_id', $trainer->id)
             ->whereDate('start_date', '>', Carbon::today())
-            ->where('status', 'active')
+            ->where('status', '=', 'active')
             ->with(['bookings' => function($query) {
                 $query->where('status', 'confirmed')
                     ->where('is_paid', true);

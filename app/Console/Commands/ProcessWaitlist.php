@@ -18,7 +18,7 @@ class ProcessWaitlist extends Command
 
         // Get all schedules that have spots available
         $schedules = Schedule::where('current_participants', '<', 'max_participants')
-            ->where('status', 'active')
+            ->where('status', '=', 'active')
             ->get();
 
         foreach ($schedules as $schedule) {

@@ -45,7 +45,7 @@ class ScheduleController extends Controller
 
         // Stat cards
         $totalSchedules = Schedule::count();
-        $activeSchedules = Schedule::where('status', 'active')->count();
+        $activeSchedules = Schedule::where('status', '=', 'active')->count();
         $inactiveSchedules = Schedule::where('status', 'inactive')->count();
         $upcomingSchedules = Schedule::whereDate('start_date', '>', now())->count();
 

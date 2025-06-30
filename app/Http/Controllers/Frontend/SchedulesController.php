@@ -21,7 +21,7 @@ class SchedulesController extends Controller
         abort_if(Gate::denies('schedule_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $query = Schedule::with(['trainer.user', 'bookings', 'category'])
-            ->where('status', 'active');
+            ->where('status', '=', 'active');
 
         // Apply date filters if provided
         if ($request->filled('start_date')) {
@@ -39,13 +39,13 @@ class SchedulesController extends Controller
         // Apply category filter if provided
         if ($request->filled('category')) {
             $query->whereHas('category', function($q) use ($request) {
-                $q->where('slug', $request->category);
+                $q->where('slug', '=', $request->category);
             });
         }
 
         // Apply type filter if provided
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $query->where('type', '=', $request->type);
         }
 
         $schedules = $query->latest()->paginate(10);
@@ -123,9 +123,9 @@ class SchedulesController extends Controller
         abort_if(Gate::denies('schedule_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $schedules = Schedule::with(['trainer.user', 'bookings'])
-            ->where('status', 'active')
+            ->where('status', '=', 'active')
             ->where('is_featured', true)
-            ->where('start_date', '>=', Carbon::now())
+            ->where('start_date', '>=', Carbon::now()->toDateTimeString())
             ->latest()
             ->take(6)
             ->get();
@@ -139,8 +139,8 @@ class SchedulesController extends Controller
 
         $schedules = Schedule::with(['trainer.user', 'bookings'])
             ->where('trainer_id', $trainer->id)
-            ->where('status', 'active')
-            ->where('start_date', '>=', Carbon::now())
+            ->where('status', '=', 'active')
+            ->where('start_date', '>=', Carbon::now()->toDateTimeString())
             ->latest()
             ->paginate(10);
 

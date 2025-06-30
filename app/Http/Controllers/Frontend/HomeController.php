@@ -82,8 +82,8 @@ class HomeController extends Controller
 
         // Get featured schedules
         $featuredSchedules = Schedule::with(['trainer.user', 'bookings'])
-            ->where('status', 'active')
-            ->where('start_date', '>=', Carbon::now())
+            ->where('status', '=', 'active')
+            ->where('start_date', '>=', Carbon::now()->toDateTimeString())
             ->latest()
             ->take(6)
             ->get();
@@ -92,16 +92,16 @@ class HomeController extends Controller
         $featuredTrainers = Trainer::with(['user', 'schedules'])
             ->where('is_active', true)
             ->whereHas('schedules', function ($query) {
-                $query->where('status', 'active')
-                    ->where('start_date', '>=', Carbon::now());
+                $query->where('status', '=', 'active')
+                    ->where('start_date', '>=', Carbon::now()->toDateTimeString());
             })
             ->take(4)
             ->get();
 
         // Get categories with active schedules
         $categories = Category::withCount(['schedules' => function ($query) {
-            $query->where('status', 'active')
-                ->where('start_date', '>=', Carbon::now());
+            $query->where('status', '=', 'active')
+                ->where('start_date', '>=', Carbon::now()->toDateTimeString());
         }])
         ->having('schedules_count', '>', 0)
         ->take(6)
