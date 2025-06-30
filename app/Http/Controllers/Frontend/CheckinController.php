@@ -21,22 +21,11 @@ class CheckinController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('checkin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        $checkins = Checkin::with(['booking.schedule.trainer.user'])
-            ->whereHas('booking', function ($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->latest()
-            ->paginate(10);
-
-        return view('frontend.checkins.index', compact('checkins'));
+        return view('frontend.checkins.index');
     }
 
     public function verify(Request $request)
     {
-        abort_if(Gate::denies('checkin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
         // Initialize variables with default values
         $bookings = collect();
         $unpaidBookings = 0;
@@ -335,8 +324,6 @@ class CheckinController extends Controller
 
     public function autoCheckoutSuccess()
     {
-        abort_if(Gate::denies('checkin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
         // Get the most recent auto checkout for the current user
         $checkin = Checkin::with(['booking.schedule', 'booking.child'])
             ->whereHas('booking', function($query) {
