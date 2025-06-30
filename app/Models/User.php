@@ -187,12 +187,6 @@ class User extends Authenticatable implements HasMedia
 
     public function hasRole($role)
     {
-        \Log::info('hasRole method:', [
-            'input_role' => $role,
-            'user_roles' => $this->roles->pluck('title'),
-            'check_result' => $this->roles()->where('title', $role)->exists()
-        ]);
-        
         return $this->roles()->where('title', $role)->exists();
     }
 }
