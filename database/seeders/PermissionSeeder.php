@@ -41,8 +41,11 @@ class PermissionSeeder extends Seeder
 
         foreach ($tables as $table) {
             foreach ($permissions as $permission) {
+                $permissionName = $table . '_' . $permission;
                 Permission::firstOrCreate([
-                    'title' => $table . '_' . $permission
+                    'title' => $permissionName,
+                    'name' => $permissionName,
+                    'guard_name' => 'web'
                 ]);
             }
         }

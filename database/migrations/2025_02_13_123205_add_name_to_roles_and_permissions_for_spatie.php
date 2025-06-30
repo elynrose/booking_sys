@@ -8,18 +8,6 @@ use Illuminate\Support\Facades\DB;
 return new class extends Migration {
     public function up()
     {
-        // Add 'name' column to roles if it doesn't exist
-        if (!Schema::hasColumn('roles', 'name')) {
-            Schema::table('roles', function (Blueprint $table) {
-                $table->string('name')->nullable()->after('title');
-            });
-        }
-        // Add 'name' column to permissions if it doesn't exist
-        if (!Schema::hasColumn('permissions', 'name')) {
-            Schema::table('permissions', function (Blueprint $table) {
-                $table->string('name')->nullable()->after('title');
-            });
-        }
         // Copy 'title' values to 'name' for roles
         DB::statement("UPDATE roles SET name = title WHERE name IS NULL OR name = ''");
         // Copy 'title' values to 'name' for permissions
@@ -35,12 +23,12 @@ return new class extends Migration {
 
     public function down()
     {
-        // Remove 'name' columns if you want to roll back
+        // Make 'name' columns nullable again
         Schema::table('roles', function (Blueprint $table) {
-            $table->dropColumn('name');
+            $table->string('name')->nullable()->change();
         });
         Schema::table('permissions', function (Blueprint $table) {
-            $table->dropColumn('name');
+            $table->string('name')->nullable()->change();
         });
     }
 }; 
