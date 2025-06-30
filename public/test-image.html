@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Test</title>
+</head>
+<body>
+    <h1>Image Display Test</h1>
+    
+    <h2>Test 1: Direct file access</h2>
+    <p>If you can see an image below, the storage symlink is working:</p>
+    <img src="/storage/site/test-image.png" alt="Test Image" style="max-width: 200px; border: 1px solid #ccc;">
+    
+    <h2>Test 2: Check if file exists</h2>
+    <p>Check the browser's developer tools (F12) to see if the image loads or shows a 404 error.</p>
+    
+    <h2>Test 3: Manual URL test</h2>
+    <p>Try accessing: <a href="/storage/site/test-image.png" target="_blank">/storage/site/test-image.png</a></p>
+    
+    <h2>Debug Info</h2>
+    <p>Current URL: <span id="current-url"></span></p>
+    <p>Storage path: /storage/</p>
+    
+    <script>
+        document.getElementById('current-url').textContent = window.location.href;
+    </script>
+</body>
+</html> 
