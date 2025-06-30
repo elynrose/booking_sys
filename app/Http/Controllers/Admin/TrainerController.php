@@ -58,6 +58,8 @@ class TrainerController extends Controller
     {
         abort_if(Gate::denies('trainer_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        \Log::info('Trainer creation started', ['request_data' => $request->except('profile_picture')]);
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'bio' => 'nullable|string',
@@ -69,15 +71,20 @@ class TrainerController extends Controller
         ]);
 
         try {
+            \Log::info('Validation passed, creating trainer data');
+            
             $data = $request->except('profile_picture', 'schedules');
             
             // Set default is_active to true
             $data['is_active'] = true;
 
+            \Log::info('Trainer data prepared', ['data' => $data]);
+
             // Handle profile picture upload more safely
             if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
                 try {
                     $data['profile_picture'] = $request->file('profile_picture')->store('trainers', 'public');
+                    \Log::info('Profile picture uploaded successfully', ['path' => $data['profile_picture']]);
                 } catch (\Exception $e) {
                     \Log::error('Profile picture upload error: ' . $e->getMessage());
                     // Continue without the profile picture if upload fails
@@ -85,25 +92,33 @@ class TrainerController extends Controller
                 }
             }
 
+            \Log::info('Creating trainer record');
             $trainer = Trainer::create($data);
+            \Log::info('Trainer created successfully', ['trainer_id' => $trainer->id]);
 
             // Assign trainer role
+            \Log::info('Assigning trainer role');
             $user = User::find($request->user_id);
             $trainerRole = Role::where('name', 'Trainer')->first();
             if ($trainerRole) {
                 $user->roles()->syncWithoutDetaching([$trainerRole->id]);
+                \Log::info('Trainer role assigned successfully');
+            } else {
+                \Log::warning('Trainer role not found');
             }
 
             // Handle schedule assignments
             if ($request->has('schedules') && is_array($request->schedules)) {
                 try {
                     $trainer->schedules()->attach($request->schedules);
+                    \Log::info('Schedules attached successfully', ['schedules' => $request->schedules]);
                 } catch (\Exception $e) {
                     \Log::error('Schedule assignment error: ' . $e->getMessage());
                     // Continue even if schedule assignment fails
                 }
             }
 
+            \Log::info('Trainer creation completed successfully');
             return redirect()->route('admin.trainers.index')
                 ->with('success', 'Trainer created successfully.');
                 
