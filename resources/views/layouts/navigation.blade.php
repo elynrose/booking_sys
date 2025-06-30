@@ -12,9 +12,18 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('frontend.home')" :active="request()->routeIs('frontend.home')">
-                        {{ __('Home') }}
-                    </x-nav-link>
+                    @if(auth()->user()->hasRole('Admin'))
+                        <x-nav-link :href="route('admin.home')" :active="request()->routeIs('admin.home')">
+                            {{ __('Admin Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('frontend.home')" :active="request()->routeIs('frontend.home')">
+                            {{ __('User Dashboard') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('frontend.home')" :active="request()->routeIs('frontend.home')">
+                            {{ __('Home') }}
+                        </x-nav-link>
+                    @endif
                     <x-nav-link :href="route('frontend.schedules.index')" :active="request()->routeIs('frontend.schedules.index')">
                         {{ __('Classes') }}
                     </x-nav-link>
@@ -79,9 +88,18 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('frontend.home')" :active="request()->routeIs('frontend.home')">
-                {{ __('Home') }}
-            </x-responsive-nav-link>
+            @if(auth()->user()->hasRole('Admin'))
+                <x-responsive-nav-link :href="route('admin.home')" :active="request()->routeIs('admin.home')">
+                    {{ __('Admin Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('frontend.home')" :active="request()->routeIs('frontend.home')">
+                    {{ __('User Dashboard') }}
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('frontend.home')" :active="request()->routeIs('frontend.home')">
+                    {{ __('Home') }}
+                </x-responsive-nav-link>
+            @endif
             <x-responsive-nav-link :href="route('frontend.schedules.index')" :active="request()->routeIs('frontend.schedules.index')">
                 {{ __('Classes') }}
             </x-responsive-nav-link>

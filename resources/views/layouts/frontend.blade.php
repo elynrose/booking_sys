@@ -55,11 +55,24 @@
                     <ul class="navbar-nav mr-auto">
                         @guest
                         @else
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('frontend.home') }}">
-                                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                                </a>
-                            </li>
+                            @if(auth()->user()->hasRole('Admin'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.home') }}">
+                                        <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('frontend.home') }}">
+                                        <i class="fas fa-home"></i> User Dashboard
+                                    </a>
+                                </li>
+                            @else
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('frontend.home') }}">
+                                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                                    </a>
+                                </li>
+                            @endif
                             @if(auth()->user()->hasRole('Trainer'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('frontend.trainer.index') }}">
