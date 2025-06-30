@@ -62,7 +62,7 @@ class CheckinController extends Controller
         }
 
         // Verify that the user has the 'user' role
-        if (!$user->hasRole('user')) {
+        if (!$user->hasRole('User')) {
             return redirect()->route('frontend.checkins.index')
                 ->with('error', 'This member ID is not associated with a valid user account.');
         }
@@ -191,7 +191,7 @@ class CheckinController extends Controller
         if ($isLateCheckin) {
             try {
                 // Get admin users
-                $admins = User::role('admin')->get();
+                $admins = User::role('Admin')->get();
                 foreach ($admins as $admin) {
                     $admin->notify(new \App\Notifications\LateCheckinNotification($booking, $checkin, $lateMinutes));
                 }

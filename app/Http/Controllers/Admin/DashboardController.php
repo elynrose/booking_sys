@@ -129,7 +129,7 @@ class DashboardController extends Controller
         $recentPaymentsQuery = Payment::with(['booking.user', 'booking.schedule.trainer.user']);
         
         // Apply role-based filtering
-        if (auth()->user()->hasRole('trainer')) {
+        if (auth()->user()->hasRole('Trainer')) {
             $trainerSchedules = auth()->user()->trainer->schedules->pluck('id');
             $recentPaymentsQuery->whereHas('booking.schedule', function($q) use ($trainerSchedules) {
                 $q->whereIn('id', $trainerSchedules);

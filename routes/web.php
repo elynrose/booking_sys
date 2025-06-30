@@ -115,7 +115,7 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::get('/bookings/payment/success', [App\Http\Controllers\Frontend\PaymentController::class, 'success'])->name('bookings.payment.success');
 
     // Trainer routes
-    Route::middleware(['auth', 'role:trainer'])->group(function () {
+    Route::middleware(['auth', 'role:Trainer'])->group(function () {
         Route::get('/trainer', [App\Http\Controllers\Frontend\TrainerController::class, 'index'])->name('trainer.index');
         Route::get('/trainer/class/{schedule}', [App\Http\Controllers\Frontend\TrainerController::class, 'showClassDetails'])->name('trainer.class-details');
         // COMMENTED OUT: Trainer payment confirmation route

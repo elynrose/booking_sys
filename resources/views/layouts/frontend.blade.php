@@ -60,14 +60,14 @@
                                     <i class="fas fa-tachometer-alt"></i> Dashboard
                                 </a>
                             </li>
-                            @if(auth()->user()->hasRole('trainer'))
+                            @if(auth()->user()->hasRole('Trainer'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('frontend.trainer.index') }}">
                                     <i class="fas fa-user-tie"></i> Trainer Dashboard
                                 </a>
                             </li>
                             @endif
-                            @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('User'))
+                            @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('User') || auth()->user()->hasRole('Member'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('frontend.schedules.index') }}">
                                     <i class="fas fa-calendar-alt"></i> Classes
@@ -111,24 +111,6 @@
                                         <a class="dropdown-item" href="/admin">{{ __('Admin') }}</a>
                                     @endif
 
-                                   <!--   @can('user_management_access')
-                                        <a class="dropdown-item disabled" href="#">
-                                            {{ trans('cruds.userManagement.title') }}
-                                        </a>
-                                    @endcan
-                                  
-                               
-                                    @can('user_access')
-                                        <a class="dropdown-item ml-3" href="{{ route('frontend.users.index') }}">
-                                            {{ trans('cruds.user.title') }}
-                                        </a>
-                                    @endcan
-                                    @can('user_alert_access')
-                                        <a class="dropdown-item" href="{{ route('frontend.user-alerts.index') }}">
-                                            {{ trans('cruds.userAlert.title') }}
-                                        </a>
-                                    @endcan -->
-
                                     <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
@@ -139,12 +121,6 @@
                                     </form>
                                 </div>
                             </li>
-                            @if(auth()->check())
-                                <!-- DEBUG: Show user roles -->
-                                <li class="nav-item">
-                                    <span class="nav-link text-danger">Roles: {{ implode(', ', auth()->user()->roles->pluck('title')->toArray()) }}</span>
-                                </li>
-                            @endif
                         @endguest
                     </ul>
                 </div>
