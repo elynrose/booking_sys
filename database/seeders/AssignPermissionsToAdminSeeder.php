@@ -15,9 +15,9 @@ class AssignPermissionsToAdminSeeder extends Seeder
     public function run(): void
     {
         // Get the admin, trainer, and user roles
-        $adminRole = Role::where('title', 'Admin')->first();
-        $trainerRole = Role::where('title', 'Trainer')->first();
-        $userRole = Role::where('title', 'User')->first();
+        $adminRole = Role::where('name', 'Admin')->first();
+        $trainerRole = Role::where('name', 'Trainer')->first();
+        $userRole = Role::where('name', 'User')->first();
 
         if (!$adminRole) {
             $this->command->error('Admin role not found!');
@@ -40,13 +40,13 @@ class AssignPermissionsToAdminSeeder extends Seeder
 
         // Assign permissions to trainer role (all except user management and site settings)
         $trainerPermissions = $permissions->filter(function($perm) {
-            return !str_starts_with($perm->title, 'user_') && !str_starts_with($perm->title, 'site_settings_');
+            return !str_starts_with($perm->name, 'user_') && !str_starts_with($perm->name, 'site_settings_');
         });
         $trainerRole->permissions()->sync($trainerPermissions->pluck('id'));
 
         // Assign permissions to user role (only booking, schedule, payment, profile, child, checkin, home, user_alert)
         $userPermissions = $permissions->filter(function($perm) {
-            return preg_match('/^(booking|schedule|payment|profile|child|checkin|home|user_alert)_/', $perm->title);
+            return preg_match('/^(booking|schedule|payment|profile|child|checkin|home|user_alert)_/', $perm->name);
         });
         $userRole->permissions()->sync($userPermissions->pluck('id'));
 

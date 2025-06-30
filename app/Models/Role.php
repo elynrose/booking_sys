@@ -4,9 +4,9 @@ namespace App\Models;
 
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Role as SpatieRole;
 
-class Role extends Model
+class Role extends SpatieRole
 {
     use HasFactory;
 
@@ -19,19 +19,31 @@ class Role extends Model
     ];
 
     protected $fillable = [
-        'title',
+        'name',
+        'guard_name',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
+    /**
+     * Override the name attribute to use title
+     */
+    public function getNameAttribute()
+    {
+        return $this->title;
+    }
+
+    /**
+     * Override the name mutator to use title
+     */
+    public function setNameAttribute($value)
+    {
+        $this->title = $value;
+    }
+
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
-    }
-
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class);
     }
 }

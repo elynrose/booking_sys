@@ -150,17 +150,17 @@ class User extends Authenticatable implements HasMedia
 
     public function getIsAdminAttribute()
     {
-        return $this->roles()->where('id', 1)->exists();
+        return $this->hasRole('Admin');
     }
 
     public function getIsUserAttribute()
     {
-        return $this->roles()->where('id', 2)->exists();
+        return $this->hasRole('User');
     }
 
     public function getIsTrainerAttribute()
     {
-        return $this->roles()->where('id', 3)->exists();
+        return $this->hasRole('Trainer');
     }
 
     public function schedules()
@@ -183,45 +183,5 @@ class User extends Authenticatable implements HasMedia
     public function trainer()
     {
         return $this->hasOne(Trainer::class);
-    }
-
-    public function hasRole($role)
-    {
-        try {
-            // Check if user is authenticated and has roles relationship
-            if (!$this->exists || !$this->roles) {
-                return false;
-            }
-            
-            return $this->roles()->where('title', $role)->exists();
-        } catch (\Exception $e) {
-            // Log the error but don't crash the application
-            \Log::error('hasRole error: ' . $e->getMessage(), [
-                'user_id' => $this->id ?? 'unknown',
-                'role' => $role,
-                'trace' => $e->getTraceAsString()
-            ]);
-            return false;
-        }
-    }
-
-    /**
-     * Static helper method for safe role checking
-     */
-    public static function hasRoleSafe($role)
-    {
-        try {
-            if (!auth()->check()) {
-                return false;
-            }
-            
-            return auth()->user()->hasRole($role);
-        } catch (\Exception $e) {
-            \Log::error('hasRoleSafe error: ' . $e->getMessage(), [
-                'role' => $role,
-                'trace' => $e->getTraceAsString()
-            ]);
-            return false;
-        }
     }
 }

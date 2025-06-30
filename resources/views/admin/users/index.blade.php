@@ -56,7 +56,7 @@
                                                     <i class="fas fa-user-tag mr-2"></i>
                                                     <strong>Role:</strong> 
                                                     <span class="badge badge-{{ $user->roles->first() ? 'primary' : 'secondary' }}">
-                                                        {{ $user->roles->first() ? $user->roles->first()->title : 'No Role' }}
+                                                        {{ $user->roles->first() ? $user->roles->first()->name : 'No Role' }}
                                                     </span>
                                                 </p>
                                                 <p class="mb-1">
