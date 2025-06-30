@@ -140,23 +140,3 @@ Route::group(['namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function 
         Route::get('two-factor/resend', 'TwoFactorController@resend')->name('twoFactor.resend');
     }
 });
-
-// Admin Routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    
-    // Schedule Routes
-    Route::resource('schedules', App\Http\Controllers\Admin\ScheduleController::class);
-    
-    // Booking Routes
-    Route::resource('bookings', App\Http\Controllers\Admin\BookingController::class);
-
-    // Payment routes
-    Route::resource('payments', App\Http\Controllers\Admin\PaymentController::class);
-
-    // Trainer routes
-    Route::resource('trainers', App\Http\Controllers\Admin\TrainerController::class);
-
-    // Category routes
-    Route::resource('categories', CategoryController::class);
-});
