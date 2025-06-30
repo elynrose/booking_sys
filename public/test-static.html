@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Static File Test</title>
+</head>
+<body>
+    <h1>Static File Test</h1>
+    <p>If you can see this page, the web server is working.</p>
+    
+    <h2>Image Test</h2>
+    <p>Testing if images can be served:</p>
+    
+    <h3>Test 1: Direct image access</h3>
+    <p>Try this URL in your browser: <code>/storage/site/4R5IRtHFIGohpQ5zNRGQugQ9d5My77HJpHJUKafz.png</code></p>
+    
+    <h3>Test 2: Check browser console</h3>
+    <p>Open browser developer tools (F12) and check the Console and Network tabs for any errors.</p>
+    
+    <h3>Test 3: Common issues</h3>
+    <ul>
+        <li><strong>404 Error:</strong> File doesn't exist or symlink is broken</li>
+        <li><strong>403 Error:</strong> Permission issue</li>
+        <li><strong>500 Error:</strong> Server configuration issue</li>
+        <li><strong>No error but no image:</strong> File exists but web server can't serve it</li>
+    </ul>
+    
+    <h3>Test 4: Manual URL test</h3>
+    <p>Replace 'yourdomain.com' with your actual domain:</p>
+    <p><a href="https://yourdomain.com/storage/site/4R5IRtHFIGohpQ5zNRGQugQ9d5My77HJpHJUKafz.png" target="_blank">https://yourdomain.com/storage/site/4R5IRtHFIGohpQ5zNRGQugQ9d5My77HJpHJUKafz.png</a></p>
+    
+    <script>
+        console.log('Static file test loaded successfully');
+        console.log('Current URL:', window.location.href);
+        console.log('Document root:', window.location.origin);
+    </script>
+</body>
+</html> 

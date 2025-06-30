@@ -94,6 +94,37 @@ echo "   🔗 Asset URL: $assetUrl\n";
 echo "\n8. Checking APP_URL...\n";
 echo "   🌐 APP_URL: " . config('app.url') . "\n";
 
+echo "\n9. Testing direct file access...\n";
+if (isset($settings) && $settings->logo) {
+    $directUrl = config('app.url') . '/storage/' . $settings->logo;
+    echo "   🔗 Direct URL: $directUrl\n";
+    
+    // Test if we can read the file
+    $filePath = 'storage/app/public/' . $settings->logo;
+    if (file_exists($filePath)) {
+        $fileSize = filesize($filePath);
+        $fileType = mime_content_type($filePath);
+        echo "   📏 File size: $fileSize bytes\n";
+        echo "   🎨 File type: $fileType\n";
+        
+        // Check if it's a valid image
+        if (strpos($fileType, 'image/') === 0) {
+            echo "   ✅ Valid image file\n";
+        } else {
+            echo "   ❌ Not a valid image file\n";
+        }
+    }
+}
+
+echo "\n10. Checking web server configuration...\n";
+$testImagePath = 'public/storage/test-image.png';
+if (file_exists($testImagePath)) {
+    echo "   ✅ Test image exists and is accessible\n";
+} else {
+    echo "   ❌ Test image not accessible through web server\n";
+    echo "   🔧 This might indicate a web server configuration issue\n";
+}
+
 echo "\n🎯 DIAGNOSIS:\n";
 if (isset($settings) && $settings->logo && !file_exists('storage/app/public/' . $settings->logo)) {
     echo "❌ The image file is missing from disk but exists in the database.\n";
@@ -102,12 +133,17 @@ if (isset($settings) && $settings->logo && !file_exists('storage/app/public/' . 
     echo "1. Clear the logo field from the database\n";
     echo "2. Try uploading the image again\n";
     echo "3. Check the upload process for errors\n";
+} elseif (isset($settings) && $settings->logo && file_exists('storage/app/public/' . $settings->logo)) {
+    echo "✅ Image file exists on disk\n";
+    echo "🔧 The issue might be with web server configuration or URL generation\n";
 } else {
-    echo "✅ Files appear to be in place\n";
+    echo "✅ No broken image references found\n";
+    echo "🔧 Try uploading a new image and check if it displays\n";
 }
 
 echo "\n📋 Next Steps:\n";
-echo "1. Clear the logo field: UPDATE site_settings SET logo = NULL;\n";
-echo "2. Try uploading a new image through the admin panel\n";
-echo "3. Check the upload process for any errors\n";
-echo "4. Monitor the Laravel logs during upload\n"; 
+echo "1. Try uploading a new image through the admin panel\n";
+echo "2. Check browser developer tools (F12) for any errors\n";
+echo "3. Test direct access to the image URL\n";
+echo "4. Check web server error logs\n";
+echo "5. Verify the symlink is working: ls -la public/storage\n"; 
