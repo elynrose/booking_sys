@@ -5,7 +5,7 @@
     <!-- Date Range Filter -->
     <div class="card mb-4">
         <div class="card-body">
-            <form method="GET" action="{{ route('admin.dashboard') }}" class="row align-items-end">
+            <form method="GET" action="{{ route('admin.home') }}" class="row align-items-end">
                 <div class="col-md-4">
                     <label for="start_date">Start Date</label>
                     <input type="date" class="form-control" id="start_date" name="start_date" value="{{ $startDate->format('Y-m-d') }}">
