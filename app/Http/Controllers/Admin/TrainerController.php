@@ -63,32 +63,58 @@ class TrainerController extends Controller
             'bio' => 'nullable|string',
             'payment_method' => 'required|in:check,paypal,venmo,cashapp',
             'payment_details' => 'required|string',
-            'profile_picture' => 'nullable|image|max:2048',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'schedules' => 'nullable|array',
             'schedules.*' => 'exists:schedules,id'
         ]);
 
-        $data = $request->except('profile_picture', 'schedules');
+        try {
+            $data = $request->except('profile_picture', 'schedules');
+            
+            // Set default is_active to true
+            $data['is_active'] = true;
 
-        if ($request->hasFile('profile_picture')) {
-            $data['profile_picture'] = $request->file('profile_picture')->store('trainers', 'public');
+            // Handle profile picture upload more safely
+            if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
+                try {
+                    $data['profile_picture'] = $request->file('profile_picture')->store('trainers', 'public');
+                } catch (\Exception $e) {
+                    \Log::error('Profile picture upload error: ' . $e->getMessage());
+                    // Continue without the profile picture if upload fails
+                    $data['profile_picture'] = null;
+                }
+            }
+
+            $trainer = Trainer::create($data);
+
+            // Assign trainer role
+            $user = User::find($request->user_id);
+            $trainerRole = Role::where('name', 'Trainer')->first();
+            if ($trainerRole) {
+                $user->roles()->syncWithoutDetaching([$trainerRole->id]);
+            }
+
+            // Handle schedule assignments
+            if ($request->has('schedules') && is_array($request->schedules)) {
+                try {
+                    $trainer->schedules()->attach($request->schedules);
+                } catch (\Exception $e) {
+                    \Log::error('Schedule assignment error: ' . $e->getMessage());
+                    // Continue even if schedule assignment fails
+                }
+            }
+
+            return redirect()->route('admin.trainers.index')
+                ->with('success', 'Trainer created successfully.');
+                
+        } catch (\Exception $e) {
+            \Log::error('Trainer creation error: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return redirect()->back()
+                ->withErrors(['error' => 'Error creating trainer: ' . $e->getMessage()])
+                ->withInput();
         }
-
-        $trainer = Trainer::create($data);
-
-        // Assign trainer role
-        $user = User::find($request->user_id);
-        $trainerRole = Role::where('title', 'Trainer')->first();
-        if ($trainerRole) {
-            $user->roles()->syncWithoutDetaching([$trainerRole->id]);
-        }
-
-        if ($request->has('schedules')) {
-            $trainer->schedules()->attach($request->schedules);
-        }
-
-        return redirect()->route('admin.trainers.index')
-            ->with('success', 'Trainer created successfully.');
     }
 
     /**

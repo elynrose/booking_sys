@@ -94,35 +94,55 @@ class SiteSettingsController extends Controller
         $data = $request->except(['logo', 'favicon', 'og_image', 'welcome_cover_image']);
 
         // Handle logo upload
-        if ($request->hasFile('logo')) {
-            if ($settings->logo) {
-                Storage::delete('public/' . $settings->logo);
+        if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+            try {
+                if ($settings->logo) {
+                    Storage::delete('public/' . $settings->logo);
+                }
+                $data['logo'] = $request->file('logo')->store('site', 'public');
+            } catch (\Exception $e) {
+                \Log::error('Logo upload error: ' . $e->getMessage());
+                // Continue without updating the logo if upload fails
             }
-            $data['logo'] = $request->file('logo')->store('site', 'public');
         }
 
         // Handle favicon upload
-        if ($request->hasFile('favicon')) {
-            if ($settings->favicon) {
-                Storage::delete('public/' . $settings->favicon);
+        if ($request->hasFile('favicon') && $request->file('favicon')->isValid()) {
+            try {
+                if ($settings->favicon) {
+                    Storage::delete('public/' . $settings->favicon);
+                }
+                $data['favicon'] = $request->file('favicon')->store('site', 'public');
+            } catch (\Exception $e) {
+                \Log::error('Favicon upload error: ' . $e->getMessage());
+                // Continue without updating the favicon if upload fails
             }
-            $data['favicon'] = $request->file('favicon')->store('site', 'public');
         }
 
         // Handle OG image upload
-        if ($request->hasFile('og_image')) {
-            if ($settings->og_image) {
-                Storage::delete('public/' . $settings->og_image);
+        if ($request->hasFile('og_image') && $request->file('og_image')->isValid()) {
+            try {
+                if ($settings->og_image) {
+                    Storage::delete('public/' . $settings->og_image);
+                }
+                $data['og_image'] = $request->file('og_image')->store('site', 'public');
+            } catch (\Exception $e) {
+                \Log::error('OG image upload error: ' . $e->getMessage());
+                // Continue without updating the OG image if upload fails
             }
-            $data['og_image'] = $request->file('og_image')->store('site', 'public');
         }
 
         // Handle welcome cover image upload
-        if ($request->hasFile('welcome_cover_image')) {
-            if ($settings->welcome_cover_image) {
-                Storage::delete('public/' . $settings->welcome_cover_image);
+        if ($request->hasFile('welcome_cover_image') && $request->file('welcome_cover_image')->isValid()) {
+            try {
+                if ($settings->welcome_cover_image) {
+                    Storage::delete('public/' . $settings->welcome_cover_image);
+                }
+                $data['welcome_cover_image'] = $request->file('welcome_cover_image')->store('site', 'public');
+            } catch (\Exception $e) {
+                \Log::error('Welcome cover image upload error: ' . $e->getMessage());
+                // Continue without updating the welcome cover image if upload fails
             }
-            $data['welcome_cover_image'] = $request->file('welcome_cover_image')->store('site', 'public');
         }
 
         $settings->update($data);
