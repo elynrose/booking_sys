@@ -91,7 +91,7 @@ try {
     $admin = \App\Models\User::where('email', 'admin@admin.com')->first();
     if ($admin) {
         echo "   ✅ Admin user exists: " . $admin->name . "\n";
-        $roles = $admin->roles->pluck('title')->toArray();
+        $roles = $admin->roles->pluck('name')->toArray();
         echo "   👥 Roles: " . implode(', ', $roles) . "\n";
     } else {
         echo "   ❌ Admin user not found\n";

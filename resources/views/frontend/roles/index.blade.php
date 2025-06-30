@@ -43,11 +43,11 @@
                                             {{ $role->id ?? '' }}
                                         </td>
                                         <td>
-                                            {{ $role->title ?? '' }}
+                                            {{ $role->name ?? '' }}
                                         </td>
                                         <td>
                                             @foreach($role->permissions as $key => $item)
-                                                <span>{{ $item->title }}</span>
+                                                <span>{{ $item->name }}</span>
                                             @endforeach
                                         </td>
                                         <td>

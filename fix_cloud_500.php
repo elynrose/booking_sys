@@ -123,7 +123,7 @@ echo "\n10. Checking admin permissions...\n";
 try {
     $admin = \App\Models\User::where('email', 'admin@admin.com')->first();
     if ($admin) {
-        $roles = $admin->roles->pluck('title')->toArray();
+        $roles = $admin->roles->pluck('name')->toArray();
         if (in_array('Admin', $roles)) {
             echo "   ✅ Admin user has Admin role\n";
         } else {

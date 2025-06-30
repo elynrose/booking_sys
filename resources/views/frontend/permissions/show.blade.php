@@ -28,10 +28,10 @@
                                 </tr>
                                 <tr>
                                     <th>
-                                        {{ trans('cruds.permission.fields.title') }}
+                                        {{ trans('cruds.permission.fields.name') }}
                                     </th>
                                     <td>
-                                        {{ $permission->title }}
+                                        {{ $permission->name }}
                                     </td>
                                 </tr>
                             </tbody>

@@ -35,7 +35,7 @@ class AuthServiceProvider extends ServiceProvider
             // Log user's roles
             $userRoles = $user->roles()->get();
             Log::info('User roles:', [
-                'roles' => $userRoles->pluck('title')->toArray()
+                'roles' => $userRoles->pluck('name')->toArray()
             ]);
             
             if ($user->hasRole('Admin')) {
@@ -63,7 +63,7 @@ class AuthServiceProvider extends ServiceProvider
                 ]);
 
                 // Check if user has the role
-                $hasRole = $user->roles()->where('title', $roleName)->exists();
+                $hasRole = $user->roles()->where('name', $roleName)->exists();
                 
                 Log::info('Role check result:', [
                     'has_role' => $hasRole,

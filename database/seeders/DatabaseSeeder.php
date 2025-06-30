@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
-        $trainer->roles()->attach(Role::where('title', 'Trainer')->first());
+        $trainer->roles()->attach(Role::where('name', 'Trainer')->first());
 
         // Create regular users with realistic names
         $users = User::factory()->count(10)->create();

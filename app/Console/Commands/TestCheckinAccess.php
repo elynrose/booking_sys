@@ -48,7 +48,7 @@ class TestCheckinAccess extends Command
 
         // 3. Check all checkin-related permissions
         $this->info('3. All checkin-related permissions:');
-        $checkinPermissions = Permission::where('title', 'like', 'checkin%')->get();
+        $checkinPermissions = Permission::where('name', 'like', 'checkin%')->get();
         
         if ($checkinPermissions->isEmpty()) {
             $this->warn("⚠️  No checkin permissions found!");

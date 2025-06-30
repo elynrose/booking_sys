@@ -83,7 +83,7 @@ class ListRolesPermissions extends Command
         });
         
         if ($rolesWithoutPermissions->isNotEmpty()) {
-            $this->warn("Roles without permissions: " . $rolesWithoutPermissions->pluck('title')->implode(', '));
+            $this->warn("Roles without permissions: " . $rolesWithoutPermissions->pluck('name')->implode(', '));
         }
     }
 } 

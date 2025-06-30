@@ -5,18 +5,17 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class CheckRole
+class TrainerOrAdminMiddleware
 {
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next)
     {
-        \Log::info('CheckRole middleware:', [
+        \Log::info('TrainerOrAdminMiddleware:', [
             'user' => $request->user() ? $request->user()->email : 'no user',
-            'role' => $role,
             'user_roles' => $request->user() ? $request->user()->roles->pluck('name') : []
         ]);
 
-        if (!$request->user() || !$request->user()->hasRole($role)) {
-            \Log::info('Access denied in CheckRole middleware');
+        if (!$request->user() || (!$request->user()->hasRole('Trainer') && !$request->user()->hasRole('Admin'))) {
+            \Log::info('Access denied in TrainerOrAdminMiddleware');
             abort(403, 'Unauthorized action.');
         }
 
