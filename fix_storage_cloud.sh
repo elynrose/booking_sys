@@ -24,6 +24,7 @@ echo "✅ Storage directories created"
 echo "📁 Removing existing storage symlink..."
 rm -f public/storage
 
+
 # Create new storage symlink
 echo "🔗 Creating new storage symlink..."
 php artisan storage:link
