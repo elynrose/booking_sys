@@ -40,6 +40,7 @@ if (isset($settings) && $settings->logo) {
         echo "   🔐 Permissions: " . substr(sprintf('%o', fileperms($logoPath)), -4) . "\n";
     } else {
         echo "   ❌ Logo file missing: $logoPath\n";
+        echo "   🔧 This means the upload failed but the database was updated\n";
     }
 }
 
@@ -54,6 +55,10 @@ if (isset($settings) && $settings->logo) {
 }
 
 echo "\n5. Checking web server access...\n";
+// Create directory if it doesn't exist
+if (!is_dir('storage/app/public')) {
+    mkdir('storage/app/public', 0755, true);
+}
 $testFile = 'public/storage/test.txt';
 file_put_contents('storage/app/public/test.txt', 'test');
 if (file_exists($testFile)) {
@@ -67,12 +72,19 @@ echo "\n6. Checking all files in storage...\n";
 $storagePath = 'storage/app/public';
 if (is_dir($storagePath)) {
     $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($storagePath));
+    $filesFound = false;
     foreach ($iterator as $file) {
         if ($file->isFile()) {
+            $filesFound = true;
             $relativePath = str_replace($storagePath . '/', '', $file->getPathname());
             echo "   📁 $relativePath (" . filesize($file->getPathname()) . " bytes)\n";
         }
     }
+    if (!$filesFound) {
+        echo "   ❌ No files found in storage directory\n";
+    }
+} else {
+    echo "   ❌ Storage directory doesn't exist\n";
 }
 
 echo "\n7. Checking asset() function...\n";
@@ -82,9 +94,20 @@ echo "   🔗 Asset URL: $assetUrl\n";
 echo "\n8. Checking APP_URL...\n";
 echo "   🌐 APP_URL: " . config('app.url') . "\n";
 
-echo "\n🎯 Troubleshooting Tips:\n";
-echo "1. Check if the image URLs are correct in the database\n";
-echo "2. Verify the files exist in storage/app/public/\n";
-echo "3. Test direct access to the image URLs\n";
-echo "4. Check web server configuration (Apache/Nginx)\n";
-echo "5. Clear browser cache and try again\n"; 
+echo "\n🎯 DIAGNOSIS:\n";
+if (isset($settings) && $settings->logo && !file_exists('storage/app/public/' . $settings->logo)) {
+    echo "❌ The image file is missing from disk but exists in the database.\n";
+    echo "   This indicates a failed upload that wasn't properly handled.\n";
+    echo "\n🔧 SOLUTION:\n";
+    echo "1. Clear the logo field from the database\n";
+    echo "2. Try uploading the image again\n";
+    echo "3. Check the upload process for errors\n";
+} else {
+    echo "✅ Files appear to be in place\n";
+}
+
+echo "\n📋 Next Steps:\n";
+echo "1. Clear the logo field: UPDATE site_settings SET logo = NULL;\n";
+echo "2. Try uploading a new image through the admin panel\n";
+echo "3. Check the upload process for any errors\n";
+echo "4. Monitor the Laravel logs during upload\n"; 
