@@ -112,37 +112,48 @@
                     <ul class="navbar-nav mr-auto">
                         @guest
                         @else
+                            @can('dashboard_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.home') }}">
                                     <i class="fas fa-tachometer-alt"></i> Dashboard
                                 </a>
                             </li>
+                            @endcan
+                            @can('trainer_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.trainers.index') }}">
                                     <i class="fas fa-user-tie"></i> Trainers
                                 </a>
                             </li>
+                            @endcan
+                            @can('schedule_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.schedules.index') }}">
                                     <i class="fas fa-calendar-alt"></i> Classes
                                 </a>
                             </li>
+                            @endcan
+                            @can('booking_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.bookings.index') }}">
                                     <i class="fas fa-book"></i> My Bookings
                                 </a>
                             </li>
+                            @endcan
+                            @can('payment_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.payments.index') }}">
                                     <i class="fas fa-money-bill"></i> Payments
                                 </a>
                             </li>
-                       
+                            @endcan
+                            @can('category_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.categories.index') }}">
                                     <i class="fas fa-tags"></i> Categories
                                 </a>
                             </li>
+                            @endcan
                             @can('user_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.users.index') }}">
@@ -150,11 +161,13 @@
                                 </a>
                             </li>
                             @endcan
+                            @can('site_settings_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.site-settings.index') }}">
                                     <i class="fas fa-cog"></i> Site Settings
                                 </a>
                             </li>
+                            @endcan
                         @endguest
                     </ul>
 
@@ -183,21 +196,6 @@
                                     @can('user_management_access')
                                         <a class="dropdown-item disabled" href="#">
                                             {{ trans('cruds.userManagement.title') }}
-                                        </a>
-                                    @endcan
-                                    @can('permission_access')
-                                        <a class="dropdown-item ml-3" href="{{ route('admin.permissions.index') }}">
-                                            {{ trans('cruds.permission.title') }}
-                                        </a>
-                                    @endcan
-                                    @can('role_access')
-                                        <a class="dropdown-item ml-3" href="{{ route('admin.roles.index') }}">
-                                            {{ trans('cruds.role.title') }}
-                                        </a>
-                                    @endcan
-                                    @can('user_access')
-                                        <a class="dropdown-item ml-3" href="{{ route('admin.users.index') }}">
-                                            {{ trans('cruds.user.title') }}
                                         </a>
                                     @endcan
                                     @can('user_alert_access')

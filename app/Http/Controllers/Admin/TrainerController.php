@@ -36,11 +36,17 @@ class TrainerController extends Controller
     {
         abort_if(Gate::denies('trainer_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $users = User::whereDoesntHave('trainer')
-            ->whereDoesntHave('roles', function($query) {
-                $query->where('title', 'trainer');
-            })
-            ->get();
+        // Get users who don't already have a trainer profile
+        $users = User::whereDoesntHave('trainer')->get();
+        
+        // If the current user is admin, they should be able to see all users
+        // If they're not admin, filter out users who already have trainer role
+        if (!auth()->user()->hasRole('Admin')) {
+            $users = $users->whereDoesntHave('roles', function($query) {
+                $query->where('title', 'Trainer');
+            });
+        }
+        
         $schedules = Schedule::all();
         return view('admin.trainers.create', compact('users', 'schedules'));
     }
@@ -72,7 +78,7 @@ class TrainerController extends Controller
 
         // Assign trainer role
         $user = User::find($request->user_id);
-        $trainerRole = Role::where('title', 'trainer')->first();
+        $trainerRole = Role::where('title', 'Trainer')->first();
         if ($trainerRole) {
             $user->roles()->syncWithoutDetaching([$trainerRole->id]);
         }

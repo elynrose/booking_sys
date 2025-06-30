@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class IsAdmin
 {
@@ -13,9 +15,9 @@ class IsAdmin
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->hasRole('admin')) {
+        if (!auth()->check() || !auth()->user()->hasRole('Admin')) {
             abort(403, 'Unauthorized action.');
         }
 

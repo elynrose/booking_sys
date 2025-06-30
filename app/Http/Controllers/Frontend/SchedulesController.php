@@ -85,7 +85,7 @@ class SchedulesController extends Controller
         abort_if(Gate::denies('schedule_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         // Check if user is admin, if not, only allow access to active schedules
-        if (!auth()->user()->hasRole('admin') && $schedule->status !== 'active') {
+        if (!auth()->user()->hasRole('Admin') && $schedule->status !== 'active') {
             abort(404, 'Schedule not found.');
         }
 
