@@ -99,11 +99,14 @@ class HomeController extends Controller
             ->get();
 
         // Get categories with active schedules
-        $categories = Category::withCount(['schedules' => function ($query) {
+        $categories = Category::whereHas('schedules', function ($query) {
+            $query->where('status', '=', 'active')
+                ->where('start_date', '>=', Carbon::now()->toDateTimeString());
+        })
+        ->withCount(['schedules' => function ($query) {
             $query->where('status', '=', 'active')
                 ->where('start_date', '>=', Carbon::now()->toDateTimeString());
         }])
-        ->having('schedules_count', '>', 0)
         ->take(6)
         ->get();
 
