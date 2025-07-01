@@ -2,6 +2,85 @@
 
 @section('content')
 <div class="container-fluid">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ $totalUsers }}</h4>
+                            <small>Total Users</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ $verifiedUsers }}</h4>
+                            <small>Verified</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ $unverifiedUsers }}</h4>
+                            <small>Unverified</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ $recentUsers }}</h4>
+                            <small>New (7 days)</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-plus fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ $activeUsers }}</h4>
+                            <small>Active (30 days)</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -14,6 +93,83 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- Search and Filter Form -->
+                    <form method="GET" action="{{ route('admin.users.index') }}" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="search">Search</label>
+                                    <input type="text" class="form-control" id="search" name="search" 
+                                           placeholder="Search by name, email, or phone" 
+                                           value="{{ request('search') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="role_id">Role</label>
+                                    <select class="form-control" id="role_id" name="role_id">
+                                        <option value="">All Roles</option>
+                                        @foreach($roles as $id => $name)
+                                            <option value="{{ $id }}" {{ request('role_id') == $id ? 'selected' : '' }}>
+                                                {{ $name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="email_verified">Email Status</label>
+                                    <select class="form-control" id="email_verified" name="email_verified">
+                                        <option value="">All Users</option>
+                                        <option value="verified" {{ request('email_verified') == 'verified' ? 'selected' : '' }}>Verified</option>
+                                        <option value="unverified" {{ request('email_verified') == 'unverified' ? 'selected' : '' }}>Unverified</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="last_login">Last Login</label>
+                                    <select class="form-control" id="last_login" name="last_login">
+                                        <option value="">All Users</option>
+                                        <option value="recent" {{ request('last_login') == 'recent' ? 'selected' : '' }}>Recent (Last 7 days)</option>
+                                        <option value="inactive" {{ request('last_login') == 'inactive' ? 'selected' : '' }}>Inactive (30+ days)</option>
+                                        <option value="never" {{ request('last_login') == 'never' ? 'selected' : '' }}>Never Logged In</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="start_date">Start Date</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" 
+                                           value="{{ request('start_date') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="end_date">End Date</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" 
+                                           value="{{ request('end_date') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Search & Filter
+                                        </button>
+                                        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+                                            <i class="fas fa-times"></i> Clear
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
                     <!-- Users List -->
                     <div class="list-group">
                         @forelse($users as $user)
@@ -90,7 +246,16 @@
                             </div>
                         @empty
                             <div class="list-group-item">
-                                <div class="text-center">No users found.</div>
+                                <div class="text-center">
+                                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No users found</h5>
+                                    @if(request()->hasAny(['search', 'role_id', 'email_verified', 'last_login', 'start_date', 'end_date']))
+                                        <p class="text-muted">Try adjusting your search criteria or filters.</p>
+                                        <a href="{{ route('admin.users.index') }}" class="btn btn-primary">
+                                            <i class="fas fa-times"></i> Clear All Filters
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         @endforelse
                     </div>

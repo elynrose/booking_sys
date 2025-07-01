@@ -14,13 +14,70 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UsersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $users = User::with(['roles'])->paginate(10);
+        $query = User::with(['roles']);
 
-        return view('admin.users.index', compact('users'));
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('phone', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter by role
+        if ($request->filled('role_id')) {
+            $query->whereHas('roles', function($q) use ($request) {
+                $q->where('id', $request->role_id);
+            });
+        }
+
+        // Filter by email verification status
+        if ($request->filled('email_verified')) {
+            if ($request->email_verified === 'verified') {
+                $query->whereNotNull('email_verified_at');
+            } elseif ($request->email_verified === 'unverified') {
+                $query->whereNull('email_verified_at');
+            }
+        }
+
+        // Filter by registration date
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // Filter by last login
+        if ($request->filled('last_login')) {
+            if ($request->last_login === 'recent') {
+                $query->where('last_login_at', '>=', now()->subDays(7));
+            } elseif ($request->last_login === 'inactive') {
+                $query->where('last_login_at', '<', now()->subDays(30));
+            } elseif ($request->last_login === 'never') {
+                $query->whereNull('last_login_at');
+            }
+        }
+
+        $users = $query->latest()->paginate(10)->withQueryString();
+
+        // Get roles for filter dropdown
+        $roles = Role::pluck('name', 'id');
+
+        // Statistics for cards
+        $totalUsers = User::count();
+        $verifiedUsers = User::whereNotNull('email_verified_at')->count();
+        $unverifiedUsers = User::whereNull('email_verified_at')->count();
+        $recentUsers = User::where('created_at', '>=', now()->subDays(7))->count();
+        $activeUsers = User::where('last_login_at', '>=', now()->subDays(30))->count();
+
+        return view('admin.users.index', compact('users', 'roles', 'totalUsers', 'verifiedUsers', 'unverifiedUsers', 'recentUsers', 'activeUsers'));
     }
 
     public function create()
