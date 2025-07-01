@@ -243,7 +243,7 @@
                                                 <form action="{{ route('admin.bookings.mark-as-paid', $booking) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to mark this booking as paid?')">
-                                                        <i class="fas fa-check"></i> Paid
+                                                        <i class="fas fa-check"></i> Mark as Paid
                                                     </button>
                                                 </form>
                                             @endif
