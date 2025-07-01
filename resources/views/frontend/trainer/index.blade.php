@@ -4,6 +4,28 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
+            <!-- Quick Actions Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{{ route('frontend.checkins.index') }}" class="btn btn-success btn-lg btn-block">
+                                <i class="fas fa-sign-in-alt mr-2"></i>
+                                Manage Check-ins
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ route('frontend.schedules.index') }}" class="btn btn-info btn-lg btn-block">
+                                <i class="fas fa-calendar mr-2"></i>
+                                View All Schedules
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Today's Schedules Card -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
@@ -33,7 +55,12 @@
                                             <p class="card-text text-muted small">
                                                 <i class="fas fa-users"></i> {{ $schedule->bookings->count() }} of {{ $schedule->max_participants }} max
                                             </p>
-                                            <a href="{{ route('frontend.trainer.class-details', $schedule) }}" class="btn btn-primary btn-sm">View Details</a>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('frontend.trainer.class-details', $schedule) }}" class="btn btn-primary btn-sm">View Details</a>
+                                                <a href="{{ route('frontend.checkins.index') }}" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-sign-in-alt"></i> Checkin
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -196,7 +223,12 @@
                                             <p class="card-text">
                                                 <i class="fas fa-users"></i> {{ $schedule->bookings->count() }} / {{ $schedule->max_participants }} participants
                                             </p>
-                                            <a href="{{ route('frontend.trainer.class-details', $schedule) }}" class="btn btn-primary btn-sm">View Details</a>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('frontend.trainer.class-details', $schedule) }}" class="btn btn-primary btn-sm">View Details</a>
+                                                <a href="{{ route('frontend.checkins.index') }}" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-sign-in-alt"></i> Checkin
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
