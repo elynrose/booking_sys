@@ -101,6 +101,10 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     // Children routes
     Route::resource('children', App\Http\Controllers\Frontend\ChildController::class);
 
+    // Recommendation routes
+    Route::resource('recommendations', App\Http\Controllers\Frontend\RecommendationController::class);
+    Route::delete('recommendations/attachments/{attachment}', [App\Http\Controllers\Frontend\RecommendationController::class, 'deleteAttachment'])->name('recommendations.delete-attachment');
+
     // Payment routes
     Route::get('/payments', [App\Http\Controllers\Frontend\PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/create', [App\Http\Controllers\Frontend\PaymentController::class, 'create'])->name('payments.create');

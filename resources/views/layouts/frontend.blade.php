@@ -96,6 +96,11 @@
                                     <i class="fas fa-child"></i> My Children
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('frontend.recommendations.index') }}">
+                                    <i class="fas fa-comments"></i> Recommendations
+                                </a>
+                            </li>
                             @endif
                         @endguest
                     </ul>
