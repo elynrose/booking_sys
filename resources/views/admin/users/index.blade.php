@@ -70,7 +70,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h4 class="mb-0">{{ $activeUsers }}</h4>
-                            <small>Active (30 days)</small>
+                            <small>Recently Updated</small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-user-check fa-2x"></i>
@@ -127,17 +127,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="last_login">Last Login</label>
-                                    <select class="form-control" id="last_login" name="last_login">
-                                        <option value="">All Users</option>
-                                        <option value="recent" {{ request('last_login') == 'recent' ? 'selected' : '' }}>Recent (Last 7 days)</option>
-                                        <option value="inactive" {{ request('last_login') == 'inactive' ? 'selected' : '' }}>Inactive (30+ days)</option>
-                                        <option value="never" {{ request('last_login') == 'never' ? 'selected' : '' }}>Never Logged In</option>
-                                    </select>
-                                </div>
-                            </div>
+
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-3">
@@ -204,7 +194,7 @@
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-clock mr-2"></i>
-                                                    <strong>Last Login:</strong> {{ $user->last_login_at ? $user->last_login_at->format('M d, Y H:i') : 'Never' }}
+                                                    <strong>Last Updated:</strong> {{ $user->updated_at->format('M d, Y H:i') }}
                                                 </p>
                                             </div>
                                             <div class="col-md-6">
@@ -249,7 +239,7 @@
                                 <div class="text-center">
                                     <i class="fas fa-search fa-3x text-muted mb-3"></i>
                                     <h5 class="text-muted">No users found</h5>
-                                    @if(request()->hasAny(['search', 'role_id', 'email_verified', 'last_login', 'start_date', 'end_date']))
+                                    @if(request()->hasAny(['search', 'role_id', 'email_verified', 'start_date', 'end_date']))
                                         <p class="text-muted">Try adjusting your search criteria or filters.</p>
                                         <a href="{{ route('admin.users.index') }}" class="btn btn-primary">
                                             <i class="fas fa-times"></i> Clear All Filters

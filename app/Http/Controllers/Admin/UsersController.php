@@ -54,16 +54,7 @@ class UsersController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // Filter by last login
-        if ($request->filled('last_login')) {
-            if ($request->last_login === 'recent') {
-                $query->where('last_login_at', '>=', now()->subDays(7));
-            } elseif ($request->last_login === 'inactive') {
-                $query->where('last_login_at', '<', now()->subDays(30));
-            } elseif ($request->last_login === 'never') {
-                $query->whereNull('last_login_at');
-            }
-        }
+
 
         $users = $query->latest()->paginate(10)->withQueryString();
 
@@ -75,7 +66,7 @@ class UsersController extends Controller
         $verifiedUsers = User::whereNotNull('email_verified_at')->count();
         $unverifiedUsers = User::whereNull('email_verified_at')->count();
         $recentUsers = User::where('created_at', '>=', now()->subDays(7))->count();
-        $activeUsers = User::where('last_login_at', '>=', now()->subDays(30))->count();
+        $activeUsers = User::where('updated_at', '>=', now()->subDays(30))->count();
 
         return view('admin.users.index', compact('users', 'roles', 'totalUsers', 'verifiedUsers', 'unverifiedUsers', 'recentUsers', 'activeUsers'));
     }
