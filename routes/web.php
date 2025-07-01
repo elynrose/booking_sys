@@ -123,6 +123,7 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::middleware(['auth', 'role:Trainer'])->group(function () {
         Route::get('/trainer', [App\Http\Controllers\Frontend\TrainerController::class, 'index'])->name('trainer.index');
         Route::get('/trainer/class/{schedule}', [App\Http\Controllers\Frontend\TrainerController::class, 'showClassDetails'])->name('trainer.class-details');
+        Route::get('/trainer/student-details', [App\Http\Controllers\Frontend\TrainerController::class, 'showStudentDetails'])->name('trainer.student-details');
         // COMMENTED OUT: Trainer payment confirmation route
         // Route::post('/trainer/payments/{payment}/confirm', [App\Http\Controllers\Frontend\TrainerController::class, 'confirmPayment'])->name('trainer.confirm-payment');
     });

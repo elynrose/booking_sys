@@ -125,6 +125,72 @@ class TrainerController extends Controller
         return view('frontend.trainer.class-details', compact('schedule', 'bookingsWithStats'));
     }
 
+    public function showStudentDetails(Request $request)
+    {
+        abort_if(Gate::denies('trainer_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user = auth()->user();
+        $trainer = Trainer::where('user_id', $user->id)->first();
+        
+        if (!$trainer) {
+            return redirect()->route('frontend.home')
+                ->with('error', 'Trainer profile not found.');
+        }
+
+        $student = null;
+        $schedule = null;
+        $recommendations = collect();
+
+        // Check if we're looking at a child or user
+        if ($request->has('child')) {
+            $student = \App\Models\Child::with('user')->find($request->child);
+            if ($student) {
+                // Get recommendations for this child
+                $recommendations = \App\Models\Recommendation::where('child_id', $student->id)
+                    ->where('trainer_id', $trainer->id)
+                    ->with(['attachments'])
+                    ->latest()
+                    ->get();
+            }
+        } elseif ($request->has('user')) {
+            $student = \App\Models\User::find($request->user);
+            if ($student) {
+                // Get recommendations for this user (if any)
+                $recommendations = \App\Models\Recommendation::where('child_id', null)
+                    ->where('trainer_id', $trainer->id)
+                    ->latest()
+                    ->get();
+            }
+        }
+
+        if ($request->has('schedule')) {
+            $schedule = Schedule::find($request->schedule);
+        }
+
+        if (!$student) {
+            return redirect()->route('frontend.trainer.index')
+                ->with('error', 'Student not found.');
+        }
+
+        // Get booking information
+        $booking = null;
+        if ($schedule) {
+            if ($student instanceof \App\Models\Child) {
+                $booking = Booking::where('schedule_id', $schedule->id)
+                    ->where('child_id', $student->id)
+                    ->where('status', 'confirmed')
+                    ->first();
+            } else {
+                $booking = Booking::where('schedule_id', $schedule->id)
+                    ->where('user_id', $student->id)
+                    ->where('status', 'confirmed')
+                    ->first();
+            }
+        }
+
+        return view('frontend.trainer.student-details', compact('student', 'schedule', 'booking', 'recommendations', 'trainer'));
+    }
+
     // COMMENTED OUT: Payment confirmation method
     /*
     public function confirmPayment(Request $request, Payment $payment)

@@ -76,14 +76,18 @@
                                                 @if($booking->child)
                                                     <div class="mb-1">
                                                         <i class="fas fa-child mr-2"></i>
-                                                        <strong>{{ $booking->child->name }}</strong>
+                                                        <a href="{{ route('frontend.trainer.student-details', ['child' => $booking->child->id, 'schedule' => $schedule->id]) }}" class="text-primary font-weight-bold">
+                                                            {{ $booking->child->name }}
+                                                        </a>
                                                         @if($booking->child->age)
                                                             <small class="text-muted">({{ $booking->child->age }} years)</small>
                                                         @endif
                                                     </div>
                                                 @else
                                                     <i class="fas fa-user mr-2"></i>
-                                                    <strong>{{ $booking->user->name }}</strong>
+                                                    <a href="{{ route('frontend.trainer.student-details', ['user' => $booking->user->id, 'schedule' => $schedule->id]) }}" class="text-primary font-weight-bold">
+                                                        {{ $booking->user->name }}
+                                                    </a>
                                                 @endif
                                             </td>
                                             <td>
