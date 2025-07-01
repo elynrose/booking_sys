@@ -51,7 +51,7 @@
                                 </span>
                                 <br>
                                 <small class="text-muted">
-                                    Verified on {{ $user->email_verified_at->format('M d, Y H:i') }}
+                                    Verified on {{ $user->email_verified_at }}
                                 </small>
                             @else
                                 <span class="badge badge-warning">
