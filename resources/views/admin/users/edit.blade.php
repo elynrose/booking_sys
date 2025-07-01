@@ -12,8 +12,8 @@
             @csrf
             <div class="form-group">
                 <label class="required" for="name">{{ trans('cruds.user.fields.name') }}</label>
-                <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required>
-                @if($errors->has('name'))
+                <input class="form-control {{ isset($errors) && $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required>
+                @if(isset($errors) && $errors->has('name'))
                     <div class="invalid-feedback">
                         {{ $errors->first('name') }}
                     </div>
@@ -22,8 +22,8 @@
             </div>
             <div class="form-group">
                 <label class="required" for="email">{{ trans('cruds.user.fields.email') }}</label>
-                <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required>
-                @if($errors->has('email'))
+                <input class="form-control {{ isset($errors) && $errors->has('email') ? 'is-invalid' : '' }}" type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required>
+                @if(isset($errors) && $errors->has('email'))
                     <div class="invalid-feedback">
                         {{ $errors->first('email') }}
                     </div>
@@ -32,8 +32,8 @@
             </div>
             <div class="form-group">
                 <label for="password">{{ trans('cruds.user.fields.password') }}</label>
-                <input class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" type="password" name="password" id="password" placeholder="Leave blank to keep current password">
-                @if($errors->has('password'))
+                <input class="form-control {{ isset($errors) && $errors->has('password') ? 'is-invalid' : '' }}" type="password" name="password" id="password" placeholder="Leave blank to keep current password">
+                @if(isset($errors) && $errors->has('password'))
                     <div class="invalid-feedback">
                         {{ $errors->first('password') }}
                     </div>
@@ -56,7 +56,7 @@
                     <div class="mt-2">
                         <small class="text-success">
                             <i class="fas fa-info-circle"></i>
-                            Email was verified on {{ $user->email_verified_at->format('M d, Y H:i') }}
+                            Email was verified on {{ $user->email_verified_at }}
                         </small>
                     </div>
                 @endif
@@ -67,12 +67,12 @@
                     <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
                     <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
                 </div>
-                <select class="form-control select2 {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple required>
+                <select class="form-control select2 {{ isset($errors) && $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple required>
                     @foreach($roles as $id => $role)
                         <option value="{{ $id }}" {{ (in_array($id, old('roles', [])) || $user->roles->contains($id)) ? 'selected' : '' }}>{{ $role }}</option>
                     @endforeach
                 </select>
-                @if($errors->has('roles'))
+                @if(isset($errors) && $errors->has('roles'))
                     <div class="invalid-feedback">
                         {{ $errors->first('roles') }}
                     </div>
