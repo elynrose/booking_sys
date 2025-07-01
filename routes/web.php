@@ -26,6 +26,7 @@ Route::middleware(['auth', '2fa'])->group(function () {
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', '2fa']], function () {
     Route::get('/', 'HomeController@index')->name('home');
     Route::resource('users', 'UsersController');
+    Route::post('/users/{user}/verify-email', [App\Http\Controllers\Admin\UsersController::class, 'verifyEmail'])->name('users.verify-email');
     Route::resource('roles', 'RolesController');
     Route::resource('permissions', 'PermissionsController');
     Route::resource('schedules', 'ScheduleController');

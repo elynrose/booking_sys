@@ -223,6 +223,14 @@
                                             <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-primary">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
+                                            @if(!$user->email_verified_at)
+                                                <form action="{{ route('admin.users.verify-email', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to verify this user\'s email?');">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success">
+                                                        <i class="fas fa-check-circle"></i> Verify Email
+                                                    </button>
+                                                </form>
+                                            @endif
                                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                                 @csrf
                                                 @method('DELETE')

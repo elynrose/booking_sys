@@ -31,14 +31,35 @@
                 <span class="help-block">{{ trans('cruds.user.fields.email_helper') }}</span>
             </div>
             <div class="form-group">
-                <label class="required" for="password">{{ trans('cruds.user.fields.password') }}</label>
-                <input class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" type="password" name="password" id="password">
+                <label for="password">{{ trans('cruds.user.fields.password') }}</label>
+                <input class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" type="password" name="password" id="password" placeholder="Leave blank to keep current password">
                 @if($errors->has('password'))
                     <div class="invalid-feedback">
                         {{ $errors->first('password') }}
                     </div>
                 @endif
                 <span class="help-block">{{ trans('cruds.user.fields.password_helper') }}</span>
+            </div>
+            
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="email_verified" name="email_verified" value="1" {{ $user->email_verified_at ? 'checked' : '' }}>
+                    <label class="custom-control-label" for="email_verified">
+                        <i class="fas fa-check-circle text-success mr-1"></i>
+                        Email Verified
+                    </label>
+                </div>
+                <small class="form-text text-muted">
+                    Check this box to manually verify the user's email address. This will allow the user to access all features without email verification.
+                </small>
+                @if($user->email_verified_at)
+                    <div class="mt-2">
+                        <small class="text-success">
+                            <i class="fas fa-info-circle"></i>
+                            Email was verified on {{ $user->email_verified_at->format('M d, Y H:i') }}
+                        </small>
+                    </div>
+                @endif
             </div>
             <div class="form-group">
                 <label class="required" for="roles">{{ trans('cruds.user.fields.roles') }}</label>

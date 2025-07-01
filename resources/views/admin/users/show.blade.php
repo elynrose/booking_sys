@@ -41,10 +41,24 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.user.fields.email_verified_at') }}
+                            Email Verification Status
                         </th>
                         <td>
-                            {{ $user->email_verified_at }}
+                            @if($user->email_verified_at)
+                                <span class="badge badge-success">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Verified
+                                </span>
+                                <br>
+                                <small class="text-muted">
+                                    Verified on {{ $user->email_verified_at->format('M d, Y H:i') }}
+                                </small>
+                            @else
+                                <span class="badge badge-warning">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    Not Verified
+                                </span>
+                            @endif
                         </td>
                     </tr>
                     <tr>

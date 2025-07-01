@@ -230,6 +230,18 @@
                     </div>
                 </div>
             @endif
+            @if(session('success'))
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="alert alert-success" role="alert">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                {{ session('success') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
             @if($errors->count() > 0)
                 <div class="container">
                     <div class="row">

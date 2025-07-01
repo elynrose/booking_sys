@@ -101,10 +101,25 @@ class UsersController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        $user->update($request->all());
+        $data = $request->all();
+        
+        // Handle email verification
+        if ($request->has('email_verified')) {
+            $data['email_verified_at'] = now();
+        } else {
+            $data['email_verified_at'] = null;
+        }
+        
+        // Handle password (only update if provided)
+        if (empty($data['password'])) {
+            unset($data['password']);
+        }
+        
+        $user->update($data);
         $user->roles()->sync($request->input('roles', []));
 
-        return redirect()->route('admin.users.index');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User updated successfully.');
     }
 
     public function show(User $user)
@@ -134,5 +149,15 @@ class UsersController extends Controller
         }
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function verifyEmail(User $user)
+    {
+        abort_if(Gate::denies('user_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user->update(['email_verified_at' => now()]);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User email has been verified successfully.');
     }
 }
