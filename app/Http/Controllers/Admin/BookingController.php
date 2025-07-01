@@ -279,6 +279,7 @@ class BookingController extends Controller
 
             if (!$payment) {
                 // Create payment record if it doesn't exist
+                $childName = $booking->child ? $booking->child->name : 'Unknown Child';
                 $payment = Payment::create([
                     'user_id' => $booking->user_id,
                     'booking_id' => $booking->id,
@@ -286,7 +287,7 @@ class BookingController extends Controller
                     'amount' => $booking->schedule->price,
                     'payment_method' => 'admin_marked',
                     'status' => 'paid',
-                    'description' => 'Payment for ' . $booking->schedule->title . ' - ' . $booking->child->name,
+                    'description' => 'Payment for ' . $booking->schedule->title . ' - ' . $childName,
                     'paid_at' => now()
                 ]);
 
@@ -321,7 +322,11 @@ class BookingController extends Controller
                 \Log::info('Admin notifications sent successfully for admin-marked payment');
             } catch (\Exception $e) {
                 // Log email error but don't fail the payment
-                \Log::error('Failed to send payment confirmation email for admin-marked payment', ['error' => $e->getMessage()]);
+                \Log::error('Failed to send payment confirmation email for admin-marked payment', [
+                    'error' => $e->getMessage(),
+                    'booking_id' => $booking->id,
+                    'payment_id' => $payment->id
+                ]);
             }
 
             \DB::commit();

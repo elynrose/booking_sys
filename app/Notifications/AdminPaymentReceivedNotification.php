@@ -44,7 +44,7 @@ class AdminPaymentReceivedNotification extends Notification implements ShouldQue
             ->line('Amount: $' . number_format($this->payment->amount, 2))
             ->line('Payment Method: ' . ucfirst($this->payment->payment_method))
             ->line('Class: ' . $this->payment->booking->schedule->title)
-            ->line('Student: ' . $this->payment->booking->child->name)
+            ->line('Student: ' . ($this->payment->booking->child ? $this->payment->booking->child->name : 'Unknown Child'))
             ->line('Parent: ' . $this->payment->booking->user->name)
             ->line('Booking ID: #' . $this->payment->booking_id)
             ->action('View Payment Details', route('admin.payments.show', $this->payment))
@@ -64,7 +64,7 @@ class AdminPaymentReceivedNotification extends Notification implements ShouldQue
             'payment_method' => $this->payment->payment_method,
             'booking_id' => $this->payment->booking_id,
             'schedule_title' => $this->payment->booking->schedule->title,
-            'child_name' => $this->payment->booking->child->name,
+            'child_name' => $this->payment->booking->child ? $this->payment->booking->child->name : 'Unknown Child',
             'user_name' => $this->payment->booking->user->name,
             'message' => 'New payment received for ' . $this->payment->booking->schedule->title
         ];

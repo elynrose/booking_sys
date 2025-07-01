@@ -31,7 +31,7 @@ class PaymentConfirmedNotification extends Notification implements ShouldQueue
             ->greeting('Hello ' . $notifiable->name . '!')
             ->line('Your payment of $' . number_format($this->payment->amount, 2) . ' has been confirmed.')
             ->line('Class: ' . $this->payment->booking->schedule->title)
-            ->line('Child: ' . $this->payment->booking->child->name)
+            ->line('Child: ' . ($this->payment->booking->child ? $this->payment->booking->child->name : 'Unknown Child'))
             ->line('Description: ' . $this->payment->description)
             ->action('View Booking', route('frontend.bookings.show', $this->payment->booking))
             ->line('Thank you for your payment!');
@@ -44,7 +44,7 @@ class PaymentConfirmedNotification extends Notification implements ShouldQueue
             'amount' => $this->payment->amount,
             'booking_id' => $this->payment->booking_id,
             'schedule_title' => $this->payment->booking->schedule->title,
-            'child_name' => $this->payment->booking->child->name,
+            'child_name' => $this->payment->booking->child ? $this->payment->booking->child->name : 'Unknown Child',
             'description' => $this->payment->description,
         ];
     }
