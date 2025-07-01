@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('is_public')->default(true);
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
