@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             AssignPermissionsToAdminSeeder::class,
             CategorySeeder::class,
             SiteSettingsSeeder::class,
+            StripeSettingsSeeder::class,
         ]);
 
         // Create admin user
