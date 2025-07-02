@@ -212,11 +212,12 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    background: #28a745;
     border: none;
 }
 
 .btn-primary:hover {
+    background: #1e7e34;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
@@ -241,22 +242,22 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .alert-success {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: #28a745;
     color: white;
 }
 
 .alert-danger {
-    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+    background: #dc3545;
     color: white;
 }
 
 .alert-warning {
-    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    background: #ffc107;
     color: #212529;
 }
 
 .alert-info {
-    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+    background: #17a2b8;
     color: white;
 }
 
@@ -267,7 +268,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .table thead th {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: #f8f9fa;
     border: none;
     font-weight: 600;
     color: #495057;
@@ -279,7 +280,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 
 /* Stats Cards */
 .stats-card {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    background: #28a745;
     color: white;
     border-radius: 12px;
     padding: 1.5rem;
@@ -348,14 +349,11 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 
 /* Utility Classes */
 .text-gradient {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #28a745;
 }
 
 .bg-gradient {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    background: #28a745;
 }
 
 /* Enhanced Modal Styling */
@@ -366,7 +364,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .modal-header {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    background: #28a745;
     color: white;
     border: none;
     border-radius: 12px 12px 0 0;
@@ -385,7 +383,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    background: #28a745;
     border: none;
 }
 
@@ -394,28 +392,51 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     font-weight: 500;
     padding: 0.5em 0.75em;
     border-radius: 6px;
+    color: white !important;
 }
 
 .badge-success {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: #28a745;
+    color: white !important;
 }
 
 .badge-warning {
-    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    background: #ffc107;
+    color: white !important;
 }
 
 .badge-danger {
-    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+    background: #dc3545;
+    color: white !important;
 }
 
 .badge-info {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    background: #28a745;
+    color: white !important;
+}
+
+/* Bootstrap Badge Overrides for White Text */
+.badge-primary {
+    color: white !important;
+}
+
+.badge-secondary {
+    color: white !important;
+}
+
+.badge-light {
+    color: #212529 !important; /* Keep dark text for light badges */
+}
+
+.badge-dark {
+    color: white !important;
 }
 
 /* Accordion Links - Make White and Bold */
 .accordion .btn-link,
 #faqAccordion .btn-link,
-.collapse .btn-link {
+.collapse .btn-link,
+.card-header .btn-link {
     color: white !important;
     text-decoration: none;
     font-weight: bold !important;
@@ -424,7 +445,8 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 
 .accordion .btn-link:hover,
 #faqAccordion .btn-link:hover,
-.collapse .btn-link:hover {
+.collapse .btn-link:hover,
+.card-header .btn-link:hover {
     color: rgba(255, 255, 255, 0.8) !important;
     text-decoration: none;
     font-weight: bold !important;
@@ -432,7 +454,8 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 
 .accordion .btn-link:focus,
 #faqAccordion .btn-link:focus,
-.collapse .btn-link:focus {
+.collapse .btn-link:focus,
+.card-header .btn-link:focus {
     color: white !important;
     text-decoration: none;
     font-weight: bold !important;
@@ -470,7 +493,7 @@ a .badge:hover,
 /* SVG Placeholder Styles - Green Theme */
 .svg-placeholder {
     display: block;
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    background: #d4edda;
     border-radius: 8px;
     border: 1px solid #28a745;
     transition: all 0.3s ease;
@@ -479,18 +502,18 @@ a .badge:hover,
 .svg-placeholder:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
-    background: linear-gradient(135deg, #c3e6cb 0%, #b1dfbb 100%);
+    background: #c3e6cb;
 }
 
 /* Specific placeholder types */
 .svg-placeholder.avatar,
 .svg-placeholder.profile-picture {
     border-radius: 50%;
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    background: #d4edda;
 }
 
 .svg-placeholder.logo {
-    background: linear-gradient(135deg, #ffffff 0%, #d4edda 100%);
+    background: #ffffff;
     border: 2px solid #28a745;
 }
 
