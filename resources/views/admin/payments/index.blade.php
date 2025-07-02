@@ -179,11 +179,11 @@
                                                             </button>
                                                         </form>
                                                     @endif
-                                                    <div class="btn-group-vertical w-100">
-                                                        <a href="{{ route('admin.payments.show', $payment) }}" class="btn btn-info btn-sm">
+                                                    <div class="d-flex flex-column">
+                                                        <a href="{{ route('admin.payments.show', $payment) }}" class="btn btn-info btn-sm w-100 mb-1">
                                                             <i class="fas fa-eye"></i> View Details
                                                         </a>
-                                                        <a href="{{ route('admin.payments.edit', $payment) }}" class="btn btn-primary btn-sm">
+                                                        <a href="{{ route('admin.payments.edit', $payment) }}" class="btn btn-primary btn-sm w-100 mb-1">
                                                             <i class="fas fa-edit"></i> Edit
                                                         </a>
                                                         <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST">
