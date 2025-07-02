@@ -27,8 +27,6 @@ return new class extends Migration
 
         Schema::table('checkins', function (Blueprint $table) {
             $table->index(['booking_id']);
-            $table->index(['user_id']);
-            $table->index(['status']);
             $table->index(['checkin_time']);
         });
 
@@ -41,8 +39,6 @@ return new class extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->index(['email']);
-            $table->index(['role']);
-            $table->index(['verified']);
             $table->index(['created_at']);
         });
 
@@ -51,7 +47,8 @@ return new class extends Migration
         });
 
         Schema::table('recommendations', function (Blueprint $table) {
-            $table->index(['user_id']);
+            $table->index(['trainer_id']);
+            $table->index(['child_id']);
             $table->index(['created_at']);
         });
     }
@@ -77,8 +74,6 @@ return new class extends Migration
 
         Schema::table('checkins', function (Blueprint $table) {
             $table->dropIndex(['booking_id']);
-            $table->dropIndex(['user_id']);
-            $table->dropIndex(['status']);
             $table->dropIndex(['checkin_time']);
         });
 
@@ -91,8 +86,6 @@ return new class extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->dropIndex(['email']);
-            $table->dropIndex(['role']);
-            $table->dropIndex(['verified']);
             $table->dropIndex(['created_at']);
         });
 
@@ -101,7 +94,8 @@ return new class extends Migration
         });
 
         Schema::table('recommendations', function (Blueprint $table) {
-            $table->dropIndex(['user_id']);
+            $table->dropIndex(['trainer_id']);
+            $table->dropIndex(['child_id']);
             $table->dropIndex(['created_at']);
         });
     }
