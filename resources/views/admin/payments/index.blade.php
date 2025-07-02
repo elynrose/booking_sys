@@ -139,8 +139,16 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <p class="mb-1">
+                                                    <i class="fas fa-user mr-2"></i>
+                                                    <strong>Parent:</strong> {{ $payment->booking->user->name ?? 'N/A' }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-child mr-2"></i>
+                                                    <strong>Child:</strong> {{ $payment->booking->child->name ?? 'N/A' }}
+                                                </p>
+                                                <p class="mb-1">
                                                     <i class="fas fa-calendar mr-2"></i>
-                                                    <strong>Booking:</strong> {{ $payment->booking->schedule->title ?? 'N/A' }}
+                                                    <strong>Class:</strong> {{ $payment->booking->schedule->title ?? 'N/A' }}
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-money-bill mr-2"></i>
@@ -155,6 +163,10 @@
                                                 <p class="mb-1">
                                                     <i class="fas fa-clock mr-2"></i>
                                                     <strong>Created:</strong> {{ $payment->created_at->format('M d, Y H:i') }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-user-tie mr-2"></i>
+                                                    <strong>Trainer:</strong> {{ $payment->booking->schedule->trainer->user->name ?? 'N/A' }}
                                                 </p>
                                             </div>
                                         </div>

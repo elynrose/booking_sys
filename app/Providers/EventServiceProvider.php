@@ -54,9 +54,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         
         // Booking Events
-        BookingCreated::class => [
-            SendBookingCreatedNotification::class,
-        ],
+        // BookingCreated::class => [
+        //     SendBookingCreatedNotification::class,
+        // ],
         BookingCancelled::class => [
             SendBookingCancelledNotification::class,
         ],
@@ -98,9 +98,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         
         // User Events
-        NewSignup::class => [
-            SendNewSignupNotification::class,
-        ],
+        // 'App\\Events\\NewSignup' => [
+        //     'App\\Listeners\\SendNewSignupNotification',
+        // ],
         UserVerified::class => [
             SendVerifyUserNotification::class,
         ],

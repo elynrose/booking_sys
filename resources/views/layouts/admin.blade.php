@@ -165,6 +165,11 @@
                                     <i class="fas fa-tachometer-alt"></i> Dashboard
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.live-dashboard') }}">
+                                    <i class="fas fa-broadcast-tower"></i> Live Dashboard
+                                </a>
+                            </li>
                             @endcan
                             @can('trainer_access')
                             <li class="nav-item">

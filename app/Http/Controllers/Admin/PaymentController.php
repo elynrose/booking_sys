@@ -15,7 +15,7 @@ class PaymentController extends Controller
     {
         abort_if(Gate::denies('payment_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $query = Payment::with(['booking.user', 'booking.schedule.trainer.user']);
+        $query = Payment::with(['booking.user', 'booking.child', 'booking.schedule.trainer.user']);
 
         // Apply date filters if provided
         if ($request->filled('start_date')) {

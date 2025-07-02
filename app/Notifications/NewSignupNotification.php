@@ -40,8 +40,8 @@ class NewSignupNotification extends Notification implements ShouldQueue
             ->greeting('Hello ' . $notifiable->name . '!')
             ->line('Thank you for signing up with our gym app.')
             ->line('You can now start booking sessions for your child.');
-        if (Route::has('bookings.create')) {
-            $mail->action('Book a Session', route('bookings.create'));
+        if (Route::has('schedules.index')) {
+            $mail->action('View Classes', route('schedules.index'));
         }
         $mail->line('If you have any questions, please don\'t hesitate to contact us.');
         return $mail;
