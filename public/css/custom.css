@@ -88,12 +88,36 @@ table.dataTable thead .sorting_desc {
     border-color: #d1dbe1;
 }
 
+/* Button Group Override - Ungroup all buttons */
+.btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.btn-group .btn {
+    border-radius: 8px !important;
+    margin: 0 !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+.btn-group .btn:not(:first-child) {
+    margin-left: 0.5rem !important;
+    border-top-left-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+}
+
+.btn-group .btn:not(:last-child) {
+    border-top-right-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+}
+
 .btn-group-xs > .btn,
 .btn-xs {
     padding: 1px 5px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px;
+    border-radius: 8px !important;
 }
 
 .searchable-title {
@@ -209,6 +233,8 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     border-radius: 8px;
     font-weight: 500;
     transition: all 0.2s ease;
+    margin: 0.25rem;
+    border: 1px solid #dee2e6;
 }
 
 .btn-primary {
@@ -437,12 +463,12 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     color: #343a40 !important;
 }
 
-/* Accordion Links - Make White and Bold */
+/* Accordion Links - Make Black and Bold */
 .accordion .btn-link,
 #faqAccordion .btn-link,
 .collapse .btn-link,
 .card-header .btn-link {
-    color: white !important;
+    color: #000000 !important;
     text-decoration: none;
     font-weight: bold !important;
     font-size: 1.1em;
@@ -452,7 +478,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 #faqAccordion .btn-link:hover,
 .collapse .btn-link:hover,
 .card-header .btn-link:hover {
-    color: rgba(255, 255, 255, 0.8) !important;
+    color: #333333 !important;
     text-decoration: none;
     font-weight: bold !important;
 }
@@ -461,7 +487,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 #faqAccordion .btn-link:focus,
 .collapse .btn-link:focus,
 .card-header .btn-link:focus {
-    color: white !important;
+    color: #000000 !important;
     text-decoration: none;
     font-weight: bold !important;
     box-shadow: none;
