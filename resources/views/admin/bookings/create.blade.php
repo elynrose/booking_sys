@@ -68,7 +68,7 @@
 
                         <div class="row">
                             <!-- Status -->
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="status">Status <span class="text-danger">*</span></label>
                                     <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" required>
@@ -83,11 +83,26 @@
                             </div>
 
                             <!-- Payment Status -->
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="payment_status">Payment Status <span class="text-danger">*</span></label>
+                                    <select name="payment_status" id="payment_status" class="form-control @error('payment_status') is-invalid @enderror" required>
+                                        <option value="pending" {{ old('payment_status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="paid" {{ old('payment_status') == 'paid' ? 'selected' : '' }}>Paid</option>
+                                        <option value="refunded" {{ old('payment_status') == 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                    </select>
+                                    @error('payment_status')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Payment Received (Optional) -->
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox mt-4">
                                         <input type="checkbox" class="custom-control-input" id="is_paid" name="is_paid" value="1" {{ old('is_paid') ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="is_paid">Payment Received</label>
+                                        <label class="custom-control-label" for="is_paid">Payment Received (Optional)</label>
                                     </div>
                                 </div>
                             </div>
@@ -146,6 +161,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const isPaidCheckbox = document.getElementById('is_paid');
+    const paymentStatusSelect = document.getElementById('payment_status');
     const paymentMethodContainer = document.getElementById('payment_method_container');
     const paymentMethodSelect = document.getElementById('payment_method');
 
@@ -153,7 +169,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isPaidCheckbox.checked) {
             paymentMethodContainer.style.display = 'block';
             paymentMethodSelect.setAttribute('required', 'required');
+            // Auto-select "paid" status when payment received is checked
+            paymentStatusSelect.value = 'paid';
         } else {
+            paymentMethodContainer.style.display = 'none';
+            paymentMethodSelect.removeAttribute('required');
+            paymentMethodSelect.value = '';
+            // Reset to pending if payment received is unchecked
+            if (paymentStatusSelect.value === 'paid') {
+                paymentStatusSelect.value = 'pending';
+            }
+        }
+    }
+
+    function syncPaymentStatus() {
+        if (paymentStatusSelect.value === 'paid') {
+            isPaidCheckbox.checked = true;
+            paymentMethodContainer.style.display = 'block';
+            paymentMethodSelect.setAttribute('required', 'required');
+        } else {
+            isPaidCheckbox.checked = false;
             paymentMethodContainer.style.display = 'none';
             paymentMethodSelect.removeAttribute('required');
             paymentMethodSelect.value = '';
@@ -161,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     isPaidCheckbox.addEventListener('change', togglePaymentMethod);
+    paymentStatusSelect.addEventListener('change', syncPaymentStatus);
     togglePaymentMethod(); // Initial state
 });
 </script>
