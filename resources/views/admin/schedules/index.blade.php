@@ -16,61 +16,61 @@
                 <div class="card-body">
                     <!-- Stat Cards -->
                     <div class="row mb-4">
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body bg-info text-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="mb-0">{{ $totalSchedules ?? 0 }}</h3>
-                                            <p class="mb-0">Total Schedules</p>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Schedules</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalSchedules ?? 0 }}</div>
                                         </div>
-                                        <div class="icon">
-                                            <i class="fas fa-calendar fa-2x"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body bg-success text-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="mb-0">{{ $activeSchedules ?? 0 }}</h3>
-                                            <p class="mb-0">Active</p>
-                                        </div>
-                                        <div class="icon">
-                                            <i class="fas fa-check-circle fa-2x"></i>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body bg-danger text-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="mb-0">{{ $inactiveSchedules ?? 0 }}</h3>
-                                            <p class="mb-0">Inactive</p>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $activeSchedules ?? 0 }}</div>
                                         </div>
-                                        <div class="icon">
-                                            <i class="fas fa-times-circle fa-2x"></i>
+                                        <div class="col-auto">
+                                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body bg-warning text-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="mb-0">{{ $upcomingSchedules ?? 0 }}</h3>
-                                            <p class="mb-0">Upcoming</p>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Inactive</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $inactiveSchedules ?? 0 }}</div>
                                         </div>
-                                        <div class="icon">
-                                            <i class="fas fa-clock fa-2x"></i>
+                                        <div class="col-auto">
+                                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Upcoming</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $upcomingSchedules ?? 0 }}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
