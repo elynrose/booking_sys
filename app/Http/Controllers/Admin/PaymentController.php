@@ -195,4 +195,83 @@ class PaymentController extends Controller
         return redirect()->route('admin.payments.index')
             ->with('success', 'Payment deleted successfully.');
     }
+
+    public function markAsPaid(Payment $payment)
+    {
+        abort_if(Gate::denies('payment_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        try {
+            \DB::beginTransaction();
+
+            // Update payment status
+            $payment->update([
+                'status' => 'paid',
+                'paid_at' => now()
+            ]);
+
+            \Log::info('Admin marked payment as paid', [
+                'payment_id' => $payment->id,
+                'admin_user_id' => auth()->id()
+            ]);
+
+            // Update booking payment status if booking exists
+            if ($payment->booking) {
+                $payment->booking->update([
+                    'status' => 'confirmed',
+                    'payment_status' => 'paid',
+                    'is_paid' => true
+                ]);
+
+                \Log::info('Booking payment status updated by admin', [
+                    'booking_id' => $payment->booking->id,
+                    'payment_id' => $payment->id
+                ]);
+
+                // Send payment confirmation email
+                try {
+                    \Log::info('Attempting to send payment confirmation email for admin-marked payment');
+                    $payment->booking->user->notify(new \App\Notifications\PaymentConfirmedNotification($payment));
+                    \Log::info('Payment confirmation email sent successfully for admin-marked payment');
+                    
+                    // Notify admins about the payment (excluding the current admin)
+                    \Log::info('Attempting to send admin notifications for admin-marked payment');
+                    $admins = \App\Models\User::whereHas('roles', function($query) {
+                        $query->where('title', 'Admin');
+                    })->where('id', '!=', auth()->id())->get();
+                    
+                    \Log::info('Found admins to notify for admin-marked payment', ['admin_count' => $admins->count()]);
+                    
+                    foreach ($admins as $admin) {
+                        $admin->notify(new \App\Notifications\AdminPaymentReceivedNotification($payment));
+                    }
+                    \Log::info('Admin notifications sent successfully for admin-marked payment');
+                } catch (\Exception $e) {
+                    // Log email error but don't fail the payment
+                    \Log::error('Failed to send payment confirmation email for admin-marked payment', [
+                        'error' => $e->getMessage(),
+                        'payment_id' => $payment->id
+                    ]);
+                }
+            }
+
+            \DB::commit();
+
+            \Log::info('Admin payment marking completed successfully', [
+                'payment_id' => $payment->id
+            ]);
+
+            return redirect()->route('admin.payments.index')
+                ->with('success', 'Payment marked as paid successfully. Payment confirmation emails have been sent.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error marking payment as paid by admin', [
+                'payment_id' => $payment->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->route('admin.payments.index')
+                ->with('error', 'Failed to mark payment as paid. Please try again.');
+        }
+    }
 } 

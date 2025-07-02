@@ -159,7 +159,31 @@
                                             </div>
                                         </div>
                                     </div>
-                                   
+                                    <div class="ml-3">
+                                        <div class="btn-group">
+                                            @if($payment->status !== 'paid')
+                                                <form action="{{ route('admin.payments.mark-as-paid', $payment) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to mark this payment as paid?')">
+                                                        <i class="fas fa-check"></i> Mark as Paid
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            <a href="{{ route('admin.payments.show', $payment) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.payments.edit', $payment) }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this payment?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @empty

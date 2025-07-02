@@ -81,8 +81,13 @@ class RecommendationController extends Controller
         }
 
         // Send notification to parent
-        $child = Child::find($validated['child_id']);
-        $child->user->notify(new NewRecommendationNotification($recommendation));
+        try {
+            $child = Child::find($validated['child_id']);
+            $child->user->notify(new NewRecommendationNotification($recommendation));
+        } catch (\Exception $e) {
+            \Log::warning('Failed to send recommendation notification: ' . $e->getMessage());
+            // Continue with the redirect even if notification fails
+        }
 
         return redirect()->route('frontend.recommendations.index')
             ->with('success', 'Recommendation created successfully!');

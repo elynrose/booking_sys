@@ -57,6 +57,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     // Payment routes
     Route::resource('payments', App\Http\Controllers\Admin\PaymentController::class);
+    Route::post('/payments/{payment}/mark-as-paid', [App\Http\Controllers\Admin\PaymentController::class, 'markAsPaid'])->name('payments.mark-as-paid');
 
     // Category routes
     Route::resource('categories', CategoryController::class);

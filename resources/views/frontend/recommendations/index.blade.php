@@ -8,13 +8,13 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="fas fa-comments"></i>
-                        @if(auth()->user()->hasRole('Trainer'))
+                        @if(auth()->check() && auth()->user()->hasRole('Trainer'))
                             My Recommendations
                         @else
                             Recommendations for My Children
                         @endif
                     </h3>
-                    @if(auth()->user()->hasRole('Trainer'))
+                    @if(auth()->check() && auth()->user()->hasRole('Trainer'))
                         <div class="card-tools">
                             <a href="{{ route('frontend.recommendations.create') }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i> Create New Recommendation
@@ -35,7 +35,7 @@
                                                 <span class="badge badge-{{ $recommendation->priority_color }} ml-2">
                                                     {{ ucfirst($recommendation->priority) }}
                                                 </span>
-                                                @if(!$recommendation->isRead() && !auth()->user()->hasRole('Trainer'))
+                                                @if(!$recommendation->isRead() && auth()->check() && !auth()->user()->hasRole('Trainer'))
                                                     <span class="badge badge-danger ml-2">New</span>
                                                 @endif
                                             </div>
@@ -46,7 +46,7 @@
                                                         <i class="fas fa-child mr-2"></i>
                                                         <strong>Child:</strong> {{ $recommendation->child->name }}
                                                     </p>
-                                                    @if(auth()->user()->hasRole('Trainer'))
+                                                    @if(auth()->check() && auth()->user()->hasRole('Trainer'))
                                                         <p class="mb-1">
                                                             <i class="fas fa-user mr-2"></i>
                                                             <strong>Parent:</strong> {{ $recommendation->child->user->name }}
@@ -90,7 +90,7 @@
                                                    class="btn btn-sm btn-info">
                                                     <i class="fas fa-eye"></i> View
                                                 </a>
-                                                @if(auth()->user()->hasRole('Trainer'))
+                                                @if(auth()->check() && auth()->user()->hasRole('Trainer'))
                                                     <a href="{{ route('frontend.recommendations.edit', $recommendation) }}" 
                                                        class="btn btn-sm btn-primary">
                                                         <i class="fas fa-edit"></i> Edit
@@ -120,7 +120,7 @@
                         <div class="text-center py-5">
                             <i class="fas fa-comments fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">No recommendations found</h5>
-                            @if(auth()->user()->hasRole('Trainer'))
+                            @if(auth()->check() && auth()->user()->hasRole('Trainer'))
                                 <p class="text-muted">Start by creating your first recommendation for a student.</p>
                                 <a href="{{ route('frontend.recommendations.create') }}" class="btn btn-primary">
                                     <i class="fas fa-plus"></i> Create Recommendation
