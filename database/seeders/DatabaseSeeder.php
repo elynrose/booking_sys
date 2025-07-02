@@ -12,7 +12,7 @@ use App\Models\Role;
 use App\Models\Category;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Hash;
-use Faker\Factory as Faker;
+use Faker\Factory;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
+        $faker = Factory::create();
 
         // First run the basic seeders
         $this->call([

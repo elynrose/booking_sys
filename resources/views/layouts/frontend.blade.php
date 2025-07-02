@@ -33,6 +33,14 @@
     {!! $dynamicCSS ?? '' !!}
     
     <style>
+        :root {
+            --primary-color: #28a745;
+            --primary-dark: #1e7e34;
+            --primary-light: #20c997;
+            --primary-gradient: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            --primary-hover: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+        }
+        
         /* Frontend navigation specific styling */
         .navbar-nav .nav-link {
             font-size: 0.875rem;
@@ -242,6 +250,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
     <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('js/image-placeholder.js') }}"></script>
     @yield('scripts')
 </body>
 </html>

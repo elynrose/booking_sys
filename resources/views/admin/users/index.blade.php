@@ -85,7 +85,7 @@
                                 <div class="form-group">
                                     <label for="search">Search</label>
                                     <input type="text" class="form-control" id="search" name="search" 
-                                           placeholder="Search by name, email, or phone" 
+                                           placeholder="Search by name, email, phone, or member ID" 
                                            value="{{ request('search') }}">
                                 </div>
                             </div>
@@ -197,6 +197,15 @@
                                                         {{ $user->email_verified_at ? 'Verified' : 'Unverified' }}
                                                     </span>
                                                 </p>
+                                                @if($user->member_id)
+                                                <p class="mb-1">
+                                                    <i class="fas fa-id-card mr-2"></i>
+                                                    <strong>Member ID:</strong> 
+                                                    <span class="badge badge-info">
+                                                        {{ $user->member_id }}
+                                                    </span>
+                                                </p>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

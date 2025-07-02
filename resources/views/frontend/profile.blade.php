@@ -29,6 +29,13 @@
                                 </div>
                             @endif
                         </div>
+                        @if(auth()->user()->member_id)
+                        <div class="form-group">
+                            <label for="member_id">Member ID</label>
+                            <input class="form-control" type="text" name="member_id" id="member_id" value="{{ auth()->user()->member_id }}" readonly>
+                            <small class="form-text text-muted">Your unique member identification number</small>
+                        </div>
+                        @endif
                         <div class="form-group">
                             <label class="required" for="timezone">Timezone</label>
                             <select class="form-control {{ $errors->has('timezone') ? 'is-invalid' : '' }}" name="timezone" id="timezone" required>

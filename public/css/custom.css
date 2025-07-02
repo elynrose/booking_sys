@@ -166,7 +166,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .navbar-nav .nav-link:hover {
-    color: #007bff !important;
+    color: #28a745 !important;
 }
 
 /* Ensure consistent spacing in dropdown menus */
@@ -212,13 +212,13 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
     border: none;
 }
 
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
 
 /* Form Improvements */
@@ -229,8 +229,8 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .form-control:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
 
 /* Alert Enhancements */
@@ -241,23 +241,23 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .alert-success {
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    color: #155724;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
 }
 
 .alert-danger {
-    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-    color: #721c24;
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+    color: white;
 }
 
 .alert-warning {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    color: #856404;
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+    color: #212529;
 }
 
 .alert-info {
-    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-    color: #0c5460;
+    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+    color: white;
 }
 
 /* Table Improvements */
@@ -274,12 +274,12 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .table tbody tr:hover {
-    background-color: rgba(102, 126, 234, 0.05);
+    background-color: rgba(40, 167, 69, 0.05);
 }
 
 /* Stats Cards */
 .stats-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
     color: white;
     border-radius: 12px;
     padding: 1.5rem;
@@ -317,7 +317,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     height: 20px;
     margin: -10px 0 0 -10px;
     border: 2px solid #f3f3f3;
-    border-top: 2px solid #667eea;
+    border-top: 2px solid #28a745;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -348,14 +348,14 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 
 /* Utility Classes */
 .text-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 .bg-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
 }
 
 /* Enhanced Modal Styling */
@@ -366,7 +366,7 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
     color: white;
     border: none;
     border-radius: 12px 12px 0 0;
@@ -379,13 +379,13 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 /* Better Pagination */
 .pagination .page-link {
     border: none;
-    color: #667eea;
+    color: #28a745;
     margin: 0 2px;
     border-radius: 6px;
 }
 
 .pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
     border: none;
 }
 
@@ -409,5 +409,106 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
 }
 
 .badge-info {
-    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+/* Accordion Links - Make White and Bold */
+.accordion .btn-link,
+#faqAccordion .btn-link,
+.collapse .btn-link {
+    color: white !important;
+    text-decoration: none;
+    font-weight: bold !important;
+    font-size: 1.1em;
+}
+
+.accordion .btn-link:hover,
+#faqAccordion .btn-link:hover,
+.collapse .btn-link:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none;
+    font-weight: bold !important;
+}
+
+.accordion .btn-link:focus,
+#faqAccordion .btn-link:focus,
+.collapse .btn-link:focus {
+    color: white !important;
+    text-decoration: none;
+    font-weight: bold !important;
+    box-shadow: none;
+}
+
+/* Badge Links - Make White */
+.badge a,
+a .badge,
+.badge-link {
+    color: white !important;
+    text-decoration: none;
+}
+
+.badge a:hover,
+a .badge:hover,
+.badge-link:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none;
+}
+
+/* Table Badge Links */
+.table .badge a,
+.table a .badge {
+    color: white !important;
+    text-decoration: none;
+}
+
+.table .badge a:hover,
+.table a .badge:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none;
+}
+
+/* SVG Placeholder Styles - Green Theme */
+.svg-placeholder {
+    display: block;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-radius: 8px;
+    border: 1px solid #28a745;
+    transition: all 0.3s ease;
+}
+
+.svg-placeholder:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+    background: linear-gradient(135deg, #c3e6cb 0%, #b1dfbb 100%);
+}
+
+/* Specific placeholder types */
+.svg-placeholder.avatar,
+.svg-placeholder.profile-picture {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+}
+
+.svg-placeholder.logo {
+    background: linear-gradient(135deg, #ffffff 0%, #d4edda 100%);
+    border: 2px solid #28a745;
+}
+
+.svg-placeholder.card-img-top {
+    border-radius: 8px 8px 0 0;
+}
+
+.svg-placeholder.img-thumbnail {
+    border-radius: 4px;
+}
+
+/* Animation for placeholder loading */
+@keyframes placeholderPulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+.svg-placeholder.loading {
+    animation: placeholderPulse 2s infinite;
 }

@@ -68,6 +68,24 @@ class RegisterController extends Controller
                  'name'     => $data['name'],
                  'email'    => $data['email'],
                  'password' => Hash::make($data['password']),
+                 'member_id' => $this->generateUniqueMemberId(),
              ]);
+         }
+
+         /**
+          * Generate a unique member ID
+          *
+          * @return string
+          */
+         private function generateUniqueMemberId()
+         {
+             do {
+                 // Generate a member ID with format: GYM-YYYY-XXXX (e.g., GYM-2024-0001)
+                 $year = date('Y');
+                 $randomNumber = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+                 $memberId = "GYM-{$year}-{$randomNumber}";
+             } while (User::where('member_id', $memberId)->exists());
+
+             return $memberId;
          }
 }

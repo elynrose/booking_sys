@@ -39,6 +39,11 @@
     <style>
         :root {
             --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --primary-color: #28a745;
+            --primary-dark: #1e7e34;
+            --primary-light: #20c997;
+            --primary-gradient: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            --primary-hover: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
         }
 
         body {
@@ -138,6 +143,7 @@
         </div>
     </div>
     @yield('scripts')
+    <script src="{{ asset('js/image-placeholder.js') }}"></script>
 </body>
 
 </html>

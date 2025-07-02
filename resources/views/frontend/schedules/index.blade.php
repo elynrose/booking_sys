@@ -89,10 +89,7 @@
                     @if($schedule->photo)
                         <img src="{{ $schedule->photo_url }}" alt="{{ $schedule->title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     @else
-                        <svg class="card-img-top" width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="100%" height="100%" fill="#f8f9fa"/>
-                            <text x="50%" y="50%" font-family="Arial" font-size="24" fill="#6c757d" text-anchor="middle" dominant-baseline="middle">No Image Available</text>
-                        </svg>
+                        <x-svg-placeholder type="schedule" text="No Class Image" width="100%" height="200px" class="card-img-top" />
                     @endif
                     @if($schedule->trainer && $schedule->trainer->user)
                         <div class="position-absolute" style="top: 100%; left: 86%; transform: translate(-50%, -50%); z-index: 2;">

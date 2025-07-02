@@ -194,4 +194,23 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->photo ? Storage::url($this->photo) : null;
     }
+
+    /**
+     * Generate a unique member ID for the user
+     */
+    public function generateMemberId()
+    {
+        if ($this->member_id) {
+            return $this->member_id;
+        }
+
+        do {
+            $year = date('Y');
+            $randomNumber = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $memberId = "GYM-{$year}-{$randomNumber}";
+        } while (User::where('member_id', $memberId)->exists());
+
+        $this->update(['member_id' => $memberId]);
+        return $memberId;
+    }
 }

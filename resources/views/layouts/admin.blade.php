@@ -40,6 +40,11 @@
     <style>
         :root {
             --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --primary-color: #28a745;
+            --primary-dark: #1e7e34;
+            --primary-light: #20c997;
+            --primary-gradient: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            --primary-hover: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
         }
 
         body {
@@ -109,7 +114,7 @@
         }
 
         .navbar-nav .nav-link:hover {
-            color: #007bff !important;
+            color: #28a745 !important;
         }
 
         /* Ensure consistent spacing in dropdown menus */
@@ -322,6 +327,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.5.0/perfect-scrollbar.min.js"></script>
+    <script src="{{ asset('js/image-placeholder.js') }}"></script>
     @yield('scripts')
 </body>
 </html>

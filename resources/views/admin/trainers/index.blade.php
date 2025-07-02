@@ -24,12 +24,7 @@
                                             @if($trainer->profile_picture)
                                                 <img src="{{ Storage::url($trainer->profile_picture) }}" alt="{{ $trainer->user->name }}" class="img-thumbnail rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
                                             @else
-                                                <div class="img-thumbnail rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background-color: #f8f9fa;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted">
-                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                                        <circle cx="12" cy="7" r="4"></circle>
-                                                    </svg>
-                                                </div>
+                                                <x-svg-placeholder type="trainer" text="No Photo" width="60px" height="60px" class="img-thumbnail rounded-circle" />
                                             @endif
                                         </div>
                                         <div class="flex-grow-1">

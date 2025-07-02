@@ -11,6 +11,14 @@
                         <div>
                             <h2 class="mb-1">Welcome back, {{ Auth::user()->name }}!</h2>
                             <p class="mb-0">Here's an overview of your fitness journey</p>
+                            @if(Auth::user()->member_id)
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark fs-6">
+                                        <i class="fas fa-id-card me-2"></i>
+                                        Member ID: {{ Auth::user()->member_id }}
+                                    </span>
+                                </div>
+                            @endif
                         </div>
                         <div class="text-end">
                             <h3 class="mb-0">{{ now()->format('l, F j, Y') }}</h3>
