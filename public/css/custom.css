@@ -387,49 +387,54 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     border: none;
 }
 
-/* Enhanced Badge Styling */
+/* Enhanced Badge Styling - Outline Style */
 .badge {
     font-weight: 500;
     padding: 0.5em 0.75em;
     border-radius: 6px;
-    color: white !important;
+    background: transparent !important;
+    border: 2px solid;
 }
 
 .badge-success {
-    background: #28a745;
-    color: white !important;
+    border-color: #28a745;
+    color: #28a745 !important;
 }
 
 .badge-warning {
-    background: #ffc107;
-    color: white !important;
+    border-color: #ffc107;
+    color: #856404 !important;
 }
 
 .badge-danger {
-    background: #dc3545;
-    color: white !important;
+    border-color: #dc3545;
+    color: #dc3545 !important;
 }
 
 .badge-info {
-    background: #28a745;
-    color: white !important;
+    border-color: #17a2b8;
+    color: #17a2b8 !important;
 }
 
-/* Bootstrap Badge Overrides for White Text */
+/* Bootstrap Badge Overrides - Outline Style */
 .badge-primary {
-    color: white !important;
+    border-color: #007bff;
+    color: #007bff !important;
 }
 
 .badge-secondary {
-    color: white !important;
+    border-color: #6c757d;
+    color: #6c757d !important;
 }
 
 .badge-light {
-    color: #212529 !important; /* Keep dark text for light badges */
+    border-color: #f8f9fa;
+    color: #6c757d !important;
 }
 
 .badge-dark {
-    color: white !important;
+    border-color: #343a40;
+    color: #343a40 !important;
 }
 
 /* Accordion Links - Make White and Bold */
@@ -462,32 +467,34 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     box-shadow: none;
 }
 
-/* Badge Links - Make White */
+/* Badge Links - Outline Style */
 .badge a,
 a .badge,
 .badge-link {
-    color: white !important;
+    color: inherit !important;
     text-decoration: none;
 }
 
 .badge a:hover,
 a .badge:hover,
 .badge-link:hover {
-    color: rgba(255, 255, 255, 0.8) !important;
+    color: inherit !important;
     text-decoration: none;
+    opacity: 0.8;
 }
 
 /* Table Badge Links */
 .table .badge a,
 .table a .badge {
-    color: white !important;
+    color: inherit !important;
     text-decoration: none;
 }
 
 .table .badge a:hover,
 .table a .badge:hover {
-    color: rgba(255, 255, 255, 0.8) !important;
+    color: inherit !important;
     text-decoration: none;
+    opacity: 0.8;
 }
 
 /* SVG Placeholder Styles - Green Theme */
