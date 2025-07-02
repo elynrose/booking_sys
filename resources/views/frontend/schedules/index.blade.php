@@ -26,7 +26,7 @@
             <div class="card">
                 <div class="card-body">
                     <form action="{{ route('frontend.schedules.index') }}" method="GET" class="row g-3 align-items-end">
-                        <div class="col-md-3">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <label for="category" class="form-label">Category</label>
                             <select name="category" id="category" class="form-control">
                                 <option value="">All Categories</option>
@@ -37,7 +37,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <label for="type" class="form-label">Class Type</label>
                             <select name="type" id="type" class="form-control">
                                 <option value="">All Types</option>
@@ -45,7 +45,7 @@
                                 <option value="private" {{ request('type') == 'private' ? 'selected' : '' }}>Private/Individual Training</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <label for="age_group" class="form-label">Age Group</label>
                             <select name="age_group" id="age_group" class="form-control">
                                 <option value="">All Ages</option>
@@ -54,7 +54,7 @@
                                 <option value="9-12">9-12 years</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <label for="day" class="form-label">Day</label>
                             <select name="day" id="day" class="form-control">
                                 <option value="">Any Day</option>
@@ -67,8 +67,11 @@
                                 <option value="sunday">Sunday</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-lg-2 col-md-4 col-sm-6">
                             <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <a href="{{ route('frontend.schedules.index') }}" class="btn btn-secondary w-100">Clear Filters</a>
                         </div>
                     </form>
                 </div>
