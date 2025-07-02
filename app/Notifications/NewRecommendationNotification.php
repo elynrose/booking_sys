@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Recommendation;
+use Illuminate\Support\Facades\Route;
 
 class NewRecommendationNotification extends Notification implements ShouldQueue
 {
@@ -42,15 +43,18 @@ class NewRecommendationNotification extends Notification implements ShouldQueue
         $recommendationType = ucfirst($this->recommendation->type);
         $priority = ucfirst($this->recommendation->priority);
 
-        return (new MailMessage)
+        $mail = (new MailMessage)
             ->subject("New {$recommendationType} Recommendation for {$childName}")
             ->greeting("Hello {$notifiable->name}!")
             ->line("Your trainer {$trainerName} has posted a new {$recommendationType} recommendation for {$childName}.")
             ->line("Priority: {$priority}")
             ->line("Title: {$this->recommendation->title}")
-            ->line("Content: " . substr($this->recommendation->content, 0, 200) . "...")
-            ->action('View Recommendation', route('frontend.recommendations.show', $this->recommendation))
-            ->line('Please log in to your dashboard to view the full recommendation and any attached files.');
+            ->line("Content: " . substr($this->recommendation->content, 0, 200) . "...");
+        if (Route::has('recommendations.show')) {
+            $mail->action('View Recommendation', route('recommendations.show', $this->recommendation));
+        }
+        $mail->line('Please log in to your dashboard to view the full recommendation and any attached files.');
+        return $mail;
     }
 
     /**

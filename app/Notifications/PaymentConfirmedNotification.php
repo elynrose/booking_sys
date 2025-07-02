@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Payment;
+use Illuminate\Support\Facades\Route;
 
 class PaymentConfirmedNotification extends Notification implements ShouldQueue
 {
@@ -26,15 +27,18 @@ class PaymentConfirmedNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        $mail = (new MailMessage)
             ->subject('Payment Confirmed')
             ->greeting('Hello ' . $notifiable->name . '!')
             ->line('Your payment of $' . number_format($this->payment->amount, 2) . ' has been confirmed.')
             ->line('Class: ' . $this->payment->booking->schedule->title)
             ->line('Child: ' . ($this->payment->booking->child ? $this->payment->booking->child->name : 'Unknown Child'))
-            ->line('Description: ' . $this->payment->description)
-            ->action('View Booking', route('frontend.bookings.show', $this->payment->booking))
-            ->line('Thank you for your payment!');
+            ->line('Description: ' . $this->payment->description);
+        if (Route::has('bookings.show')) {
+            $mail->action('View Booking', route('bookings.show', $this->payment->booking));
+        }
+        $mail->line('Thank you for your payment!');
+        return $mail;
     }
 
     public function toArray($notifiable)

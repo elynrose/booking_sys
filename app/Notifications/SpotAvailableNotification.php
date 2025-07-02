@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Route;
 
 class SpotAvailableNotification extends Notification implements ShouldQueue
 {
@@ -37,15 +38,18 @@ class SpotAvailableNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        $mail = (new MailMessage)
             ->subject('Spot Available in Class')
             ->greeting('Hello ' . $notifiable->name . '!')
             ->line('A spot has become available in the class you were waitlisted for.')
             ->line('Class: ' . $this->waitlist->schedule->title)
             ->line('Child: ' . $this->waitlist->child->name)
-            ->line('You have 24 hours to book this spot before it\'s offered to the next person on the waitlist.')
-            ->action('Book Now', route('bookings.create', $this->waitlist->schedule))
-            ->line('Thank you for your patience!');
+            ->line('You have 24 hours to book this spot before it\'s offered to the next person on the waitlist.');
+        if (Route::has('bookings.create')) {
+            $mail->action('Book Now', route('bookings.create', $this->waitlist->schedule));
+        }
+        $mail->line('Thank you for your patience!');
+        return $mail;
     }
 
     /**

@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Route;
 
 class NewSignupNotification extends Notification implements ShouldQueue
 {
@@ -34,13 +35,16 @@ class NewSignupNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        $mail = (new MailMessage)
             ->subject('Welcome to Our Gym App!')
             ->greeting('Hello ' . $notifiable->name . '!')
             ->line('Thank you for signing up with our gym app.')
-            ->line('You can now start booking sessions for your child.')
-            ->action('Book a Session', url('/bookings/create'))
-            ->line('If you have any questions, please don\'t hesitate to contact us.');
+            ->line('You can now start booking sessions for your child.');
+        if (Route::has('bookings.create')) {
+            $mail->action('Book a Session', route('bookings.create'));
+        }
+        $mail->line('If you have any questions, please don\'t hesitate to contact us.');
+        return $mail;
     }
 
     /**

@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Route;
 
 class TwoFactorCodeNotification extends Notification
 {
@@ -30,10 +31,13 @@ class TwoFactorCodeNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-            ->line(__('global.two_factor.your_code_is', ['code' => $notifiable->two_factor_code]))
-            ->action(__('global.two_factor.verify_here'), route('twoFactor.show'))
-            ->line(__('global.two_factor.will_expire_in', ['minutes' => 15]))
+        $mail = (new MailMessage)
+            ->line(__('global.two_factor.your_code_is', ['code' => $notifiable->two_factor_code]));
+        if (Route::has('twoFactor.show')) {
+            $mail->action(__('global.two_factor.verify_here'), route('twoFactor.show'));
+        }
+        $mail->line(__('global.two_factor.will_expire_in', ['minutes' => 15]))
             ->line(__('global.two_factor.ignore_this'));
+        return $mail;
     }
 }

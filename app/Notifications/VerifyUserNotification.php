@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Route;
 
 class VerifyUserNotification extends Notification
 {
@@ -25,10 +26,13 @@ class VerifyUserNotification extends Notification
 
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-            ->line(trans('global.verifyYourUser'))
-            ->action(trans('global.clickHereToVerify'), route('userVerification', $this->user->verification_token))
-            ->line(trans('global.thankYouForUsingOurApplication'));
+        $mail = (new MailMessage)
+            ->line(trans('global.verifyYourUser'));
+        if (Route::has('userVerification')) {
+            $mail->action(trans('global.clickHereToVerify'), route('userVerification', $this->user->verification_token));
+        }
+        $mail->line(trans('global.thankYouForUsingOurApplication'));
+        return $mail;
     }
 
     public function toArray($notifiable)
