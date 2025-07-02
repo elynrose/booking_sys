@@ -16,6 +16,12 @@
                 </div>
                 <div class="col-md-4">
                     <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="{{ route('admin.live-dashboard') }}" class="btn btn-outline-success ml-2 live-dashboard-link" title="Live Dashboard">
+                        <span class="live-flash-icon" style="display:inline-block;vertical-align:middle;margin-right:4px;">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </span>
+                        Live Dashboard
+                    </a>
                 </div>
             </form>
         </div>
@@ -366,4 +372,16 @@ if (!bookingCtx) {
     });
 }
 </script>
-@endsection 
+@endsection
+
+@push('styles')
+<style>
+.live-flash-icon {
+    animation: flash 1s infinite alternate;
+}
+@keyframes flash {
+    0% { color: #28a745; opacity: 1; }
+    100% { color: #fff; opacity: 0.3; }
+}
+</style>
+@endpush 
