@@ -4,49 +4,57 @@ require_once 'vendor/autoload.php';
 
 // Bootstrap Laravel
 $app = require_once 'bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
+echo "=== Password Reset Test ===\n\n";
+
+// Check current mail configuration
+echo "Current Mail Configuration:\n";
+echo "MAIL_MAILER: " . env('MAIL_MAILER') . "\n";
+echo "MAIL_FROM_ADDRESS: " . env('MAIL_FROM_ADDRESS') . "\n";
+echo "MAIL_FROM_NAME: " . env('MAIL_FROM_NAME') . "\n\n";
+
+// Test password reset for admin user
 try {
-    echo "Testing password reset functionality...\n";
+    $user = \App\Models\User::where('email', 'admin@example.com')->first();
     
-    // Test 1: Check if User model exists
-    $user = \App\Models\User::first();
-    if ($user) {
-        echo "✓ User model found: " . $user->email . "\n";
-    } else {
-        echo "✗ No users found in database\n";
-        exit(1);
+    if (!$user) {
+        echo "❌ Admin user not found\n";
+        exit;
     }
     
-    // Test 2: Check if ForgotPasswordNotification exists
-    $notification = new \App\Notifications\ForgotPasswordNotification('test-token');
-    echo "✓ ForgotPasswordNotification created successfully\n";
+    echo "✅ Found user: " . $user->name . " (" . $user->email . ")\n";
     
-    // Test 3: Check mail configuration
-    $mailConfig = config('mail');
-    echo "✓ Mail driver: " . $mailConfig['default'] . "\n";
-    echo "✓ Mail from address: " . $mailConfig['from']['address'] . "\n";
+    // Create password reset token
+    $token = \Illuminate\Support\Facades\Password::createToken($user);
+    echo "✅ Password reset token created: " . substr($token, 0, 10) . "...\n";
     
-    // Test 4: Check if password reset routes exist
-    $routes = \Illuminate\Support\Facades\Route::getRoutes();
-    $passwordRoutes = [];
-    foreach ($routes as $route) {
-        if (str_contains($route->uri(), 'password')) {
-            $passwordRoutes[] = $route->uri() . ' (' . implode('|', $route->methods()) . ')';
+    // Send password reset email
+    $user->sendPasswordResetNotification($token);
+    echo "✅ Password reset email sent successfully\n";
+    
+    // Check if email was logged
+    $logFile = storage_path('logs/laravel.log');
+    if (file_exists($logFile)) {
+        $logContent = file_get_contents($logFile);
+        if (strpos($logContent, 'Password reset email') !== false || strpos($logContent, 'admin@example.com') !== false) {
+            echo "✅ Email logged to laravel.log\n";
+        } else {
+            echo "⚠️  Email might not be logged - check laravel.log manually\n";
         }
     }
-    echo "✓ Password routes found: " . count($passwordRoutes) . "\n";
-    foreach ($passwordRoutes as $route) {
-        echo "  - " . $route . "\n";
-    }
     
-    // Test 5: Check if rate limiting is working
-    $rateLimitConfig = config('cache.default');
-    echo "✓ Cache driver: " . $rateLimitConfig . "\n";
+    echo "\n=== Password Reset URL ===\n";
+    echo "Reset URL: " . url('/reset-password?token=' . $token . '&email=' . urlencode($user->email)) . "\n\n";
     
-    echo "\nAll tests passed! Password reset should work.\n";
+    echo "=== Next Steps ===\n";
+    echo "1. Check storage/logs/laravel.log for the email content\n";
+    echo "2. Use the reset URL above to test the password reset form\n";
+    echo "3. The email content will be in the log file instead of being sent\n\n";
     
 } catch (Exception $e) {
-    echo "✗ Error: " . $e->getMessage() . "\n";
-    echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
-} 
+    echo "❌ Error: " . $e->getMessage() . "\n";
+    echo "Stack trace: " . $e->getTraceAsString() . "\n";
+}
+
+echo "=== Test Complete ===\n"; 
