@@ -657,4 +657,38 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const stripeEnabledCheckbox = document.getElementById('stripe_enabled');
+    
+    // Debug logging for form submission
+    form.addEventListener('submit', function(e) {
+        console.log('Form submitted');
+        console.log('Stripe enabled checkbox checked:', stripeEnabledCheckbox.checked);
+        console.log('Stripe enabled checkbox value:', stripeEnabledCheckbox.value);
+        
+        // Ensure the checkbox value is properly set
+        if (stripeEnabledCheckbox.checked) {
+            stripeEnabledCheckbox.value = '1';
+        } else {
+            // Create a hidden input to ensure the field is sent as false
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'stripe_enabled';
+            hiddenInput.value = '0';
+            form.appendChild(hiddenInput);
+        }
+    });
+    
+    // Debug logging for checkbox changes
+    stripeEnabledCheckbox.addEventListener('change', function(e) {
+        console.log('Stripe enabled checkbox changed:', e.target.checked);
+    });
+});
+</script>
+@endpush
+
 @endsection 

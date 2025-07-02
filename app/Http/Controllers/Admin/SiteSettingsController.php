@@ -25,6 +25,16 @@ class SiteSettingsController extends Controller
         
         $settings = SiteSettings::getSettings();
         $data = $request->except(['logo', 'banner', 'favicon', 'og_image', 'welcome_cover_image']);
+        
+        // Handle checkbox fields that might not be present in the request
+        $data['stripe_enabled'] = $request->has('stripe_enabled');
+        
+        // Debug logging
+        \Log::info('Site Settings Update Request', [
+            'stripe_enabled_request' => $request->has('stripe_enabled'),
+            'stripe_enabled_data' => $data['stripe_enabled'],
+            'all_request_data' => $request->all()
+        ]);
 
         // Handle logo upload
         if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
