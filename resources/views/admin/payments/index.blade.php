@@ -16,61 +16,61 @@
                 <div class="card-body">
                     <!-- Stat Cards -->
                     <div class="row mb-4">
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body bg-info text-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="mb-0">${{ number_format($totalAmount, 2) }}</h3>
-                                            <p class="mb-0">Total Payments</p>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Payments</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($totalAmount, 2) }}</div>
                                         </div>
-                                        <div class="icon">
-                                            <i class="fas fa-money-bill fa-2x"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body bg-warning text-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="mb-0">${{ number_format($pendingAmount, 2) }}</h3>
-                                            <p class="mb-0">Pending</p>
-                                        </div>
-                                        <div class="icon">
-                                            <i class="fas fa-clock fa-2x"></i>
+                                        <div class="col-auto">
+                                            <i class="fas fa-money-bill fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body bg-success text-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="mb-0">${{ number_format($refundedAmount, 2) }}</h3>
-                                            <p class="mb-0">Refunded</p>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($pendingAmount, 2) }}</div>
                                         </div>
-                                        <div class="icon">
-                                            <i class="fas fa-undo fa-2x"></i>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body bg-danger text-white">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="mb-0">{{ $failedPayments ?? 0 }}</h3>
-                                            <p class="mb-0">Failed</p>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Refunded</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($refundedAmount, 2) }}</div>
                                         </div>
-                                        <div class="icon">
-                                            <i class="fas fa-times-circle fa-2x"></i>
+                                        <div class="col-auto">
+                                            <i class="fas fa-undo fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Failed</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $failedPayments ?? 0 }}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
