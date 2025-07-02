@@ -244,7 +244,7 @@
 
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 let refreshInterval;
 let lastActivityId = 0;
@@ -484,4 +484,4 @@ $(window).on('beforeunload', function() {
     }
 });
 </script>
-@endpush 
+@endsection 
