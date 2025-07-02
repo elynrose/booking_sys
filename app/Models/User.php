@@ -102,7 +102,7 @@ class User extends Authenticatable implements HasMedia
 
     public function sendPasswordResetNotification($token)
     {
-        $this->notify(new ResetPassword($token));
+        $this->notify(new \App\Notifications\ForgotPasswordNotification($token));
     }
 
     public function getVerifiedAtAttribute($value)

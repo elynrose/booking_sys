@@ -2,12 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\BookingCreated;
-use App\Notifications\BookingCreatedNotification;
+use App\Events\BookingReminder;
+use App\Notifications\BookingReminderNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class SendBookingCreatedNotification
+class SendBookingReminderNotification
 {
     /**
      * Create the event listener.
@@ -20,12 +20,12 @@ class SendBookingCreatedNotification
     /**
      * Handle the event.
      */
-    public function handle(BookingCreated $event): void
+    public function handle(BookingReminder $event): void
     {
         $booking = $event->booking;
         $user = $booking->user;
 
-        // Send booking created notification
-        $user->notify(new BookingCreatedNotification($booking));
+        // Send booking reminder notification
+        $user->notify(new BookingReminderNotification($booking));
     }
 } 

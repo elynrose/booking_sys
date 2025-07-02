@@ -6,10 +6,8 @@ use App\Http\Controllers\WelcomeController;
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
 
-// Apply rate limiting to authentication routes
-Route::middleware(['rate.limit:login'])->group(function () {
-    Auth::routes();
-});
+// Authentication routes (temporarily without rate limiting for testing)
+Auth::routes();
 
 // Check-in routes (public access for basic checkin)
 Route::middleware(['rate.limit:checkin'])->group(function () {

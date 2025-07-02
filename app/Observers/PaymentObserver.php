@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Events\PaymentFailed;
 use App\Events\PaymentReceived;
 use App\Events\PaymentRefunded;
 use App\Models\Payment;
@@ -25,6 +26,11 @@ class PaymentObserver
         // Check if status changed to refunded
         if ($payment->wasChanged('status') && $payment->status === 'refunded') {
             event(new PaymentRefunded($payment));
+        }
+        
+        // Check if status changed to failed
+        if ($payment->wasChanged('status') && $payment->status === 'failed') {
+            event(new PaymentFailed($payment));
         }
     }
 

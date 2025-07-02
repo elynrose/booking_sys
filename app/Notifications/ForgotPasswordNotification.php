@@ -3,11 +3,10 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ForgotPasswordNotification extends Notification implements ShouldQueue
+class ForgotPasswordNotification extends Notification
 {
     use Queueable;
 
@@ -41,7 +40,7 @@ class ForgotPasswordNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Reset Your Password')
             ->line('You are receiving this email because we received a password reset request for your account.')
-            ->action('Reset Password', url('password/reset', $this->token))
+            ->action('Reset Password', route('password.reset', $this->token, false))
             ->line('If you did not request a password reset, no further action is required.');
     }
 
