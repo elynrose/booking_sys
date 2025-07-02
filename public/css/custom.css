@@ -442,6 +442,12 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     color: #17a2b8 !important;
 }
 
+/* Refunded badge - Blue color */
+.badge-refunded {
+    border-color: #007bff;
+    color: #007bff !important;
+}
+
 /* Bootstrap Badge Overrides - Outline Style */
 .badge-primary {
     border-color: #007bff;

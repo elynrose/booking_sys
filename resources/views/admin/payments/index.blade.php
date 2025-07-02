@@ -131,7 +131,7 @@
                                             <span class="badge badge-{{
                                                 $payment->status === 'completed' ? 'success' :
                                                 ($payment->status === 'pending' ? 'warning' :
-                                                ($payment->status === 'refunded' ? 'info' : 'danger'))
+                                                ($payment->status === 'refunded' ? 'refunded' : 'danger'))
                                             }}">
                                                 {{ ucfirst($payment->status) }}
                                             </span>

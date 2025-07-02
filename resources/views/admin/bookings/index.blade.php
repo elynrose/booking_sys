@@ -196,7 +196,7 @@
                                                         <i class="fas fa-calendar-check mr-1"></i>
                                                         <span>{{ ucfirst($booking->status) }}</span>
                                                     </span>
-                                                    <span class="badge badge-{{ $booking->payment_status === 'paid' ? 'success' : ($booking->payment_status === 'refunded' ? 'danger' : 'warning') }} d-flex align-items-center d-inline-flex">
+                                                    <span class="badge badge-{{ $booking->payment_status === 'paid' ? 'success' : ($booking->payment_status === 'refunded' ? 'refunded' : 'warning') }} d-flex align-items-center d-inline-flex">
                                                         <i class="fas fa-credit-card mr-1"></i>
                                                         <span>{{ ucfirst($booking->payment_status) }}</span>
                                                     </span>

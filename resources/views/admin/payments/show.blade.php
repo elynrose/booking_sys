@@ -37,7 +37,7 @@
                                         <span class="badge badge-{{
                                             $payment->status === 'paid' ? 'success' :
                                             ($payment->status === 'pending' ? 'warning' :
-                                            ($payment->status === 'refunded' ? 'info' : 'danger'))
+                                            ($payment->status === 'refunded' ? 'refunded' : 'danger'))
                                         }}">
                                             {{ ucfirst($payment->status) }}
                                         </span>
@@ -143,7 +143,7 @@
                                     <tr>
                                         <td><strong>Payment Status:</strong></td>
                                         <td>
-                                            <span class="badge badge-{{ $payment->booking->payment_status === 'paid' ? 'success' : ($payment->booking->payment_status === 'refunded' ? 'danger' : 'warning') }}">
+                                            <span class="badge badge-{{ $payment->booking->payment_status === 'paid' ? 'success' : ($payment->booking->payment_status === 'refunded' ? 'refunded' : 'warning') }}">
                                                 {{ ucfirst($payment->booking->payment_status) }}
                                             </span>
                                         </td>
