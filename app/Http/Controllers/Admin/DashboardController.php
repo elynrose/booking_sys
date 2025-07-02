@@ -167,4 +167,187 @@ class DashboardController extends Controller
             
         ));
     }
+
+    public function liveDashboard()
+    {
+        abort_if(Gate::denies('dashboard_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        return view('admin.live-dashboard');
+    }
+
+    public function liveDashboardData(Request $request)
+    {
+        abort_if(Gate::denies('dashboard_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        // If only filter options are requested
+        if ($request->has('options_only')) {
+            $classOptions = Schedule::select('id', 'title')->orderBy('title')->get();
+            $trainerOptions = \App\Models\Trainer::with('user')->get()->map(function($t) {
+                return ['id' => $t->id, 'name' => $t->user->name];
+            });
+            return response()->json([
+                'classOptions' => $classOptions,
+                'trainerOptions' => $trainerOptions,
+            ]);
+        }
+
+        $date = $request->input('date', Carbon::today()->format('Y-m-d'));
+        $classId = $request->input('class_id');
+        $trainerId = $request->input('trainer_id');
+        $status = $request->input('status');
+        $now = Carbon::now();
+        $targetDate = Carbon::parse($date);
+
+        // Filtered current classes
+        $currentClassesQuery = Schedule::with(['trainer.user', 'category', 'bookings.user', 'bookings.checkin'])
+            ->whereDate('start_time', $targetDate);
+        if ($classId) {
+            $currentClassesQuery->where('id', $classId);
+        }
+        if ($trainerId) {
+            $currentClassesQuery->where('trainer_id', $trainerId);
+        }
+        $currentClasses = $currentClassesQuery->get()->map(function ($schedule) use ($now, $status) {
+            $sStatus = 'upcoming';
+            if ($schedule->start_time <= $now && $schedule->end_time >= $now) {
+                $sStatus = 'active';
+            } elseif ($schedule->end_time < $now) {
+                $sStatus = 'ended';
+            }
+            if ($status && $sStatus !== $status) return null;
+            $checkedInCount = $schedule->bookings()->whereHas('checkin', function($q) {
+                $q->whereNotNull('checkin_time')->whereNull('checkout_time');
+            })->count();
+            return [
+                'id' => $schedule->id,
+                'title' => $schedule->title,
+                'trainer' => $schedule->trainer->user->name ?? 'Unassigned',
+                'start_time' => $schedule->start_time->format('g:i A'),
+                'end_time' => $schedule->end_time->format('g:i A'),
+                'status' => $sStatus,
+                'current_participants' => $schedule->bookings()->where('status', 'confirmed')->count(),
+                'max_participants' => $schedule->max_participants ?? 20,
+                'checked_in_count' => $checkedInCount,
+            ];
+        })->filter()->values();
+
+        // Filtered trainer assignments
+        $trainerAssignmentsQuery = Trainer::with(['user', 'schedules.bookings.user', 'schedules.bookings.checkin']);
+        if ($trainerId) {
+            $trainerAssignmentsQuery->where('id', $trainerId);
+        }
+        $trainerAssignments = $trainerAssignmentsQuery->get()->map(function ($trainer) use ($targetDate, $now, $classId) {
+            $currentClass = $trainer->schedules()
+                ->whereDate('start_time', $targetDate->toDateString())
+                ->where('start_time', '<=', $now)
+                ->where('end_time', '>=', $now);
+            if ($classId) $currentClass->where('id', $classId);
+            $currentClass = $currentClass->first();
+            $students = $trainer->schedules()
+                ->with(['bookings.user'])
+                ->whereDate('start_time', $targetDate->toDateString());
+            if ($classId) $students->where('id', $classId);
+            $students = $students->get()->flatMap(function ($schedule) {
+                return $schedule->bookings()->where('status', 'confirmed')->with('user')->get()->map(function ($booking) {
+                    return [
+                        'id' => $booking->user->id,
+                        'name' => $booking->user->name,
+                    ];
+                });
+            })->unique('id')->values();
+            return [
+                'id' => $trainer->id,
+                'name' => $trainer->user->name,
+                'status' => $currentClass ? 'active' : 'available',
+                'current_class' => $currentClass ? $currentClass->title : null,
+                'student_count' => $students->count(),
+                'students' => $students->take(10)->toArray(),
+            ];
+        });
+
+        // Filtered recent check-ins
+        $recentCheckinsQuery = \App\Models\Checkin::with(['booking.user', 'booking.schedule'])
+            ->whereDate('created_at', $targetDate);
+        if ($classId) {
+            $recentCheckinsQuery->whereHas('booking', function($q) use ($classId) {
+                $q->where('schedule_id', $classId);
+            });
+        }
+        if ($trainerId) {
+            $recentCheckinsQuery->whereHas('booking.schedule', function($q) use ($trainerId) {
+                $q->where('trainer_id', $trainerId);
+            });
+        }
+        $recentCheckins = $recentCheckinsQuery->orderBy('created_at', 'desc')->take(20)->get()->map(function ($checkin) {
+            return [
+                'id' => $checkin->id,
+                'student_name' => $checkin->booking->user->name ?? 'Unknown User',
+                'class_name' => $checkin->booking->schedule->title ?? 'Unknown Class',
+                'type' => $checkin->checkout_time ? 'out' : 'in',
+                'time' => $checkin->created_at->format('g:i A'),
+            ];
+        });
+
+        // Filtered activity feed
+        $activityFeed = collect();
+        $recentBookings = Booking::with(['user', 'schedule'])
+            ->whereDate('created_at', $targetDate);
+        if ($classId) $recentBookings->where('schedule_id', $classId);
+        $recentBookings = $recentBookings->orderBy('created_at', 'desc')->take(10)->get();
+        foreach ($recentBookings as $booking) {
+            $activityFeed->push([
+                'id' => $booking->id,
+                'user' => $booking->user->name,
+                'action' => 'booked',
+                'details' => $booking->schedule->title,
+                'time' => $booking->created_at->format('g:i A'),
+            ]);
+        }
+        foreach ($recentCheckins as $checkin) {
+            $activityFeed->push([
+                'id' => 'checkin_' . $checkin['id'],
+                'user' => $checkin['student_name'],
+                'action' => 'checked ' . $checkin['type'],
+                'details' => $checkin['class_name'],
+                'time' => $checkin['time'],
+            ]);
+        }
+        $recentPayments = Payment::with(['booking.user', 'booking.schedule'])
+            ->whereDate('created_at', $targetDate)
+            ->where('status', 'paid');
+        if ($classId) $recentPayments->whereHas('booking', function($q) use ($classId) { $q->where('schedule_id', $classId); });
+        $recentPayments = $recentPayments->orderBy('created_at', 'desc')->take(10)->get();
+        foreach ($recentPayments as $payment) {
+            $activityFeed->push([
+                'id' => 'payment_' . $payment->id,
+                'user' => $payment->booking->user->name,
+                'action' => 'paid',
+                'details' => '$' . number_format($payment->amount, 2) . ' for ' . $payment->booking->schedule->title,
+                'time' => $payment->created_at->format('g:i A'),
+            ]);
+        }
+        $activityFeed = $activityFeed->sortByDesc('time')->take(50)->values();
+
+        // Statistics
+        $statistics = [
+            'activeClasses' => $currentClasses->where('status', 'active')->count(),
+            'checkedInStudents' => \App\Models\Checkin::whereDate('created_at', $targetDate)
+                ->whereNotNull('checkin_time')
+                ->whereNull('checkout_time')
+                ->count(),
+            'activeTrainers' => $trainerAssignments->where('status', 'active')->count(),
+            'pendingCheckouts' => \App\Models\Checkin::whereDate('created_at', $targetDate)
+                ->whereNotNull('checkin_time')
+                ->whereNull('checkout_time')
+                ->count(),
+        ];
+
+        return response()->json([
+            'statistics' => $statistics,
+            'currentClasses' => $currentClasses->values(),
+            'trainerAssignments' => $trainerAssignments->values(),
+            'recentCheckins' => $recentCheckins->values(),
+            'activityFeed' => $activityFeed->values(),
+        ]);
+    }
 } 
