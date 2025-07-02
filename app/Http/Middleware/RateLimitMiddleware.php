@@ -17,6 +17,11 @@ class RateLimitMiddleware
      */
     public function handle(Request $request, Closure $next, string $type = 'default'): Response
     {
+        // Skip rate limiting in local development
+        if (app()->environment('local')) {
+            return $next($request);
+        }
+        
         $key = $this->resolveRequestSignature($request, $type);
         
         if (RateLimiter::tooManyAttempts($key, $this->getMaxAttempts($type))) {
@@ -62,13 +67,14 @@ class RateLimitMiddleware
      */
     protected function getMaxAttempts(string $type): int
     {
+        // More lenient limits for development/testing
         return match($type) {
-            'login' => 5,
-            'register' => 3,
-            'checkin' => 10,
-            'payment' => 5,
-            'api' => 60,
-            default => 30
+            'login' => 20,
+            'register' => 10,
+            'checkin' => 50,
+            'payment' => 20,
+            'api' => 200,
+            default => 100
         };
     }
     
@@ -77,11 +83,12 @@ class RateLimitMiddleware
      */
     protected function getDecayMinutes(string $type): int
     {
+        // Shorter decay times for development/testing
         return match($type) {
-            'login' => 15,
-            'register' => 60,
+            'login' => 5,
+            'register' => 10,
             'checkin' => 1,
-            'payment' => 5,
+            'payment' => 2,
             'api' => 1,
             default => 1
         };
