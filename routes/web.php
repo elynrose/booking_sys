@@ -5,11 +5,17 @@ use App\Http\Controllers\WelcomeController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
-Auth::routes();
+
+// Apply rate limiting to authentication routes
+Route::middleware(['rate.limit:login'])->group(function () {
+    Auth::routes();
+});
 
 // Check-in routes (public access for basic checkin)
-Route::get('/checkin', [App\Http\Controllers\Frontend\CheckinController::class, 'index'])->name('frontend.checkins.index');
-Route::match(['get', 'post'], '/checkin/verify', [App\Http\Controllers\Frontend\CheckinController::class, 'verify'])->name('frontend.checkins.verify');
+Route::middleware(['rate.limit:checkin'])->group(function () {
+    Route::get('/checkin', [App\Http\Controllers\Frontend\CheckinController::class, 'index'])->name('frontend.checkins.index');
+    Route::match(['get', 'post'], '/checkin/verify', [App\Http\Controllers\Frontend\CheckinController::class, 'verify'])->name('frontend.checkins.verify');
+});
 
 // Check-in routes that require user role
 Route::middleware(['auth', '2fa'])->group(function () {

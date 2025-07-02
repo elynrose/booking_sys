@@ -49,5 +49,6 @@ class Kernel extends HttpKernel
         'admin'            => \App\Http\Middleware\IsAdmin::class,
         '2fa'              => \App\Http\Middleware\TwoFactorMiddleware::class,
         'role'             => \App\Http\Middleware\CheckRole::class,
+        'rate.limit'       => \App\Http\Middleware\RateLimitMiddleware::class,
     ];
 }
