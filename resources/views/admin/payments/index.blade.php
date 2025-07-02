@@ -137,7 +137,7 @@
                                             </span>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <p class="mb-1">
                                                     <i class="fas fa-user mr-2"></i>
                                                     <strong>Parent:</strong> {{ $payment->booking->user->name ?? 'N/A' }}
@@ -155,7 +155,7 @@
                                                     <strong>Amount:</strong> ${{ number_format($payment->amount, 2) }}
                                                 </p>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <p class="mb-1">
                                                     <i class="fas fa-credit-card mr-2"></i>
                                                     <strong>Payment Method:</strong> {{ $payment->booking->payment_method ?? 'N/A' }}
@@ -169,31 +169,33 @@
                                                     <strong>Trainer:</strong> {{ $payment->booking->schedule->trainer->user->name ?? 'N/A' }}
                                                 </p>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="ml-3">
-                                        <div class="btn-group">
-                                            @if($payment->status !== 'paid')
-                                                <form action="{{ route('admin.payments.mark-as-paid', $payment) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to mark this payment as paid?')">
-                                                        <i class="fas fa-check"></i> Mark as Paid
-                                                    </button>
-                                                </form>
-                                            @endif
-                                            <a href="{{ route('admin.payments.show', $payment) }}" class="btn btn-sm btn-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.payments.edit', $payment) }}" class="btn btn-sm btn-primary">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this payment?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <div class="col-md-4">
+                                                <div class="d-flex flex-column align-items-end">
+                                                    @if($payment->status !== 'paid')
+                                                        <form action="{{ route('admin.payments.mark-as-paid', $payment) }}" method="POST" class="mb-2">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-success btn-sm w-100" onclick="return confirm('Are you sure you want to mark this payment as paid?')">
+                                                                <i class="fas fa-check"></i> Mark as Paid
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                    <div class="btn-group-vertical w-100">
+                                                        <a href="{{ route('admin.payments.show', $payment) }}" class="btn btn-info btn-sm">
+                                                            <i class="fas fa-eye"></i> View Details
+                                                        </a>
+                                                        <a href="{{ route('admin.payments.edit', $payment) }}" class="btn btn-primary btn-sm">
+                                                            <i class="fas fa-edit"></i> Edit
+                                                        </a>
+                                                        <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Are you sure you want to delete this payment?')">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
