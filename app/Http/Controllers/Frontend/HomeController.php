@@ -74,8 +74,9 @@ class HomeController extends Controller
             
         $paidBookingsTotal = $paidBookingsTotal - $refundedAmount;
 
-        // Get payment history
+        // Get payment history with booking relationships
         $paymentHistory = Payment::where('user_id', $user->id)
+            ->with(['booking.user', 'booking.child', 'booking.schedule'])
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();

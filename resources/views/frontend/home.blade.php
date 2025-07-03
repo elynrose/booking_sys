@@ -186,6 +186,8 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Description</th>
+                                    <th>Parent</th>
+                                    <th>Child</th>
                                     <th>Amount</th>
                                     <th>Status</th>
                                 </tr>
@@ -194,17 +196,39 @@
                                 @forelse($paymentHistory as $payment)
                                 <tr>
                                     <td>{{ $payment->created_at->format('M d, Y') }}</td>
-                                    <td>{{ $payment->description }}</td>
+                                    <td>
+                                        @if($payment->booking && $payment->booking->schedule)
+                                            {{ $payment->booking->schedule->title }}
+                                        @else
+                                            {{ $payment->description ?? 'Payment' }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($payment->booking && $payment->booking->user)
+                                            <i class="fas fa-user me-1"></i>
+                                            {{ $payment->booking->user->name }}
+                                        @else
+                                            <span class="text-muted">N/A</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($payment->booking && $payment->booking->child)
+                                            <i class="fas fa-child me-1"></i>
+                                            {{ $payment->booking->child->name }}
+                                        @else
+                                            <span class="text-muted">N/A</span>
+                                        @endif
+                                    </td>
                                     <td>${{ number_format($payment->amount, 2) }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $payment->status === 'completed' ? 'success' : 'warning' }}">
+                                        <span class="badge bg-{{ $payment->status === 'completed' ? 'success' : ($payment->status === 'refunded' ? 'refunded' : 'warning') }}">
                                             {{ ucfirst($payment->status) }}
                                         </span>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-4">
+                                    <td colspan="6" class="text-center py-4">
                                         <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
                                         <p class="text-muted mb-0">No payment history found</p>
                                     </td>
