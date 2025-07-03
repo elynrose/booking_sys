@@ -44,8 +44,12 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
+            'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'sms_notifications_enabled' => 'boolean',
+            'sms_notification_preferences' => 'array',
+            'sms_notification_preferences.*' => 'boolean',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -55,6 +59,10 @@ class ProfileController extends Controller
             }
             $validated['photo'] = $request->file('photo')->store('users', 'public');
         }
+
+        // Handle SMS notification preferences
+        $validated['sms_notifications_enabled'] = $request->boolean('sms_notifications_enabled');
+        $validated['sms_notification_preferences'] = $request->sms_notification_preferences ?? [];
 
         $user->update($validated);
 
