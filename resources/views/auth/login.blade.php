@@ -32,9 +32,9 @@
                                 <i class="fas fa-user mr-1"></i>
                                 Demo Parent Account
                             </h6>
-                            <p class="mb-1"><strong>Email:</strong> hellodicehunter@gmail.com</p>
+                            <p class="mb-1"><strong>Email:</strong> oking@example.com</p>
                             <p class="mb-1"><strong>Password:</strong> password</p>
-                            <button class="btn btn-sm btn-outline-success mt-2" onclick="fillCredentials('hellodicehunter@gmail.com', 'password')">
+                            <button class="btn btn-sm btn-outline-success mt-2" onclick="fillCredentials('oking@example.com', 'password')">
                                 <i class="fas fa-mouse-pointer mr-1"></i>
                                 Use This Account
                             </button>
@@ -46,9 +46,9 @@
                                 <i class="fas fa-user-tie mr-1"></i>
                                 Trainer Account
                             </h6>
-                            <p class="mb-1"><strong>Email:</strong> trainer@gymapp.com</p>
+                            <p class="mb-1"><strong>Email:</strong> trainer@example.com</p>
                             <p class="mb-1"><strong>Password:</strong> password</p>
-                            <button class="btn btn-sm btn-outline-warning mt-2" onclick="fillCredentials('trainer@gymapp.com', 'password')">
+                            <button class="btn btn-sm btn-outline-warning mt-2" onclick="fillCredentials('trainer@example.com', 'password')">
                                 <i class="fas fa-mouse-pointer mr-1"></i>
                                 Use This Account
                             </button>
