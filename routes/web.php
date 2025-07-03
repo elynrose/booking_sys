@@ -106,6 +106,11 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::post('frontend/profile/password', 'ProfileController@password')->name('profile.password');
     Route::post('profile/toggle-two-factor', 'ProfileController@toggleTwoFactor')->name('profile.toggle-two-factor');
 
+    // Profile Settings (SMS Notifications)
+    Route::get('/profile/settings', [App\Http\Controllers\Frontend\ProfileSettingsController::class, 'index'])->name('profile.settings');
+    Route::put('/profile/settings', [App\Http\Controllers\Frontend\ProfileSettingsController::class, 'update'])->name('profile.settings.update');
+    Route::put('/profile/settings/password', [App\Http\Controllers\Frontend\ProfileSettingsController::class, 'updatePassword'])->name('profile.settings.password');
+
     // Children routes
     Route::resource('children', App\Http\Controllers\Frontend\ChildController::class);
 

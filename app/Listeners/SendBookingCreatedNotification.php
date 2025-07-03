@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\BookingCreated;
 use App\Notifications\BookingCreatedNotification;
+use App\Notifications\BookingCreatedSmsNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -25,7 +26,12 @@ class SendBookingCreatedNotification
         $booking = $event->booking;
         $user = $booking->user;
 
-        // Send booking created notification
+        // Send email notification
         $user->notify(new BookingCreatedNotification($booking));
+
+        // Send SMS notification if user has enabled SMS notifications
+        if ($user->wantsSmsNotification('booking_created')) {
+            $user->notify(new BookingCreatedSmsNotification($booking));
+        }
     }
 } 

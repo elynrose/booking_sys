@@ -56,10 +56,13 @@ class User extends Authenticatable implements HasMedia
         'two_factor_expires_at',
         'role',
         'phone',
+        'phone_number',
         'address',
         'photo',
         'member_id',
         'timezone',
+        'sms_notifications_enabled',
+        'sms_notification_preferences',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -212,5 +215,49 @@ class User extends Authenticatable implements HasMedia
 
         $this->update(['member_id' => $memberId]);
         return $memberId;
+    }
+
+    /**
+     * Get SMS notification preferences
+     */
+    public function getSmsNotificationPreferencesAttribute($value)
+    {
+        return $value ? json_decode($value, true) : [
+            'booking_created' => true,
+            'booking_confirmed' => true,
+            'booking_cancelled' => true,
+            'payment_received' => true,
+            'payment_failed' => true,
+            'class_reminder' => true,
+            'class_cancelled' => true,
+            'class_rescheduled' => true,
+        ];
+    }
+
+    /**
+     * Set SMS notification preferences
+     */
+    public function setSmsNotificationPreferencesAttribute($value)
+    {
+        $this->attributes['sms_notification_preferences'] = json_encode($value);
+    }
+
+    /**
+     * Check if user wants to receive specific SMS notification
+     */
+    public function wantsSmsNotification($type)
+    {
+        $preferences = $this->sms_notification_preferences;
+        return $this->sms_notifications_enabled && 
+               isset($preferences[$type]) && 
+               $preferences[$type];
+    }
+
+    /**
+     * Route notifications for the Twilio SMS channel
+     */
+    public function routeNotificationForTwilioSms()
+    {
+        return $this->phone_number;
     }
 }
