@@ -126,14 +126,16 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::delete('/payments/{payment}', [App\Http\Controllers\Frontend\PaymentController::class, 'destroy'])->name('payments.destroy');
     Route::get('/bookings/payment/success', [App\Http\Controllers\Frontend\PaymentController::class, 'success'])->name('bookings.payment.success');
 
-    // Trainer routes
-    Route::middleware(['auth', 'role:Trainer'])->group(function () {
-        Route::get('/trainer', [App\Http\Controllers\Frontend\TrainerController::class, 'index'])->name('trainer.index');
-        Route::get('/trainer/class/{schedule}', [App\Http\Controllers\Frontend\TrainerController::class, 'showClassDetails'])->name('trainer.class-details');
-        Route::get('/trainer/student-details', [App\Http\Controllers\Frontend\TrainerController::class, 'showStudentDetails'])->name('trainer.student-details');
-        // COMMENTED OUT: Trainer payment confirmation route
-        // Route::post('/trainer/payments/{payment}/confirm', [App\Http\Controllers\Frontend\TrainerController::class, 'confirmPayment'])->name('trainer.confirm-payment');
-    });
+
+});
+
+// Trainer routes (outside frontend group to avoid namespace conflicts)
+Route::middleware(['auth', 'role:Trainer'])->group(function () {
+    Route::get('/trainer', [App\Http\Controllers\Frontend\TrainerController::class, 'index'])->name('frontend.trainer.index');
+    Route::get('/trainer/class/{schedule}', [App\Http\Controllers\Frontend\TrainerController::class, 'showClassDetails'])->name('frontend.trainer.class-details');
+    Route::get('/trainer/student-details', [App\Http\Controllers\Frontend\TrainerController::class, 'showStudentDetails'])->name('frontend.trainer.student-details');
+    // COMMENTED OUT: Trainer payment confirmation route
+    // Route::post('/trainer/payments/{payment}/confirm', [App\Http\Controllers\Frontend\TrainerController::class, 'confirmPayment'])->name('frontend.trainer.confirm-payment');
 });
 
 // Booking routes (moved outside the frontend group)
