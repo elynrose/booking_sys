@@ -12,7 +12,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="demo-account">
                             <h6 class="text-primary">
                                 <i class="fas fa-user-shield mr-1"></i>
@@ -26,7 +26,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="demo-account">
                             <h6 class="text-success">
                                 <i class="fas fa-user mr-1"></i>
@@ -40,7 +40,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="demo-account">
                             <h6 class="text-warning">
                                 <i class="fas fa-user-tie mr-1"></i>
@@ -54,20 +54,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="demo-account">
-                            <h6 class="text-info">
-                                <i class="fas fa-graduation-cap mr-1"></i>
-                                Student Account
-                            </h6>
-                            <p class="mb-1"><strong>Email:</strong> student1@gymapp.com</p>
-                            <p class="mb-1"><strong>Password:</strong> password</p>
-                            <button class="btn btn-sm btn-outline-info mt-2" onclick="fillCredentials('student1@gymapp.com', 'password')">
-                                <i class="fas fa-mouse-pointer mr-1"></i>
-                                Use This Account
-                            </button>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
