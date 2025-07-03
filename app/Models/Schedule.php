@@ -173,7 +173,7 @@ class Schedule extends Model
         
         // Check each condition separately
         $isActive = $this->status === 'active';
-        $isAvailableForBooking = $now->lte($endDate);
+        $isAvailableForBooking = $now->startOfDay()->lte($endDate->startOfDay());
         $hasSpotsAvailable = $this->max_participants > $activeBookings;
         
         // Store the status for debugging
