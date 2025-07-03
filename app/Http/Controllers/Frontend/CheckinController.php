@@ -15,8 +15,7 @@ class CheckinController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'verify']);
-        $this->middleware('role:user')->only(['checkin', 'checkout']);
+        $this->middleware('auth')->except(['index', 'verify', 'checkin', 'checkout', 'autoCheckout', 'autoCheckoutSuccess']);
     }
 
     public function index()
@@ -109,7 +108,6 @@ class CheckinController extends Controller
 
     public function checkin(Request $request)
     {
-        abort_if(Gate::denies('checkin_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $request->validate([
             'booking_id' => 'required|exists:bookings,id',
@@ -194,7 +192,6 @@ class CheckinController extends Controller
 
     public function checkout(Request $request)
     {
-        abort_if(Gate::denies('checkin_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $request->validate([
             'booking_id' => 'required|exists:bookings,id',
