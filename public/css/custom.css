@@ -484,6 +484,9 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     text-decoration: none;
     font-weight: bold !important;
     font-size: 0.37em;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .accordion .btn-link:hover,
@@ -493,6 +496,9 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     color: #333333 !important;
     text-decoration: none;
     font-weight: bold !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .accordion .btn-link:focus,
@@ -502,7 +508,9 @@ i, .fas, .far, .fab, .fa, [class*="icon-"] {
     color: #000000 !important;
     text-decoration: none;
     font-weight: bold !important;
-    box-shadow: none;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 /* Badge Links - Outline Style */
