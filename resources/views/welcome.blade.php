@@ -1,6 +1,7 @@
 @extends('layouts.frontend')
 
 @section('content')
+<div class="welcome-page">
 <!-- Hero Banner -->
 <section class="position-relative">
     @if($siteSettings->welcome_cover_image_url)
@@ -342,6 +343,7 @@
         </div>
     </div>
 </footer>
+</div>
 
 @push('styles')
 <style>
