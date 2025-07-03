@@ -49,22 +49,22 @@
                             <label for="age_group" class="form-label">Age Group</label>
                             <select name="age_group" id="age_group" class="form-control">
                                 <option value="">All Ages</option>
-                                <option value="3-5">3-5 years</option>
-                                <option value="6-8">6-8 years</option>
-                                <option value="9-12">9-12 years</option>
+                                <option value="3-5" {{ request('age_group') == '3-5' ? 'selected' : '' }}>3-5 years</option>
+                                <option value="6-8" {{ request('age_group') == '6-8' ? 'selected' : '' }}>6-8 years</option>
+                                <option value="9-12" {{ request('age_group') == '9-12' ? 'selected' : '' }}>9-12 years</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-4 col-sm-6">
                             <label for="day" class="form-label">Day</label>
                             <select name="day" id="day" class="form-control">
                                 <option value="">Any Day</option>
-                                <option value="monday">Monday</option>
-                                <option value="tuesday">Tuesday</option>
-                                <option value="wednesday">Wednesday</option>
-                                <option value="thursday">Thursday</option>
-                                <option value="friday">Friday</option>
-                                <option value="saturday">Saturday</option>
-                                <option value="sunday">Sunday</option>
+                                <option value="monday" {{ request('day') == 'monday' ? 'selected' : '' }}>Monday</option>
+                                <option value="tuesday" {{ request('day') == 'tuesday' ? 'selected' : '' }}>Tuesday</option>
+                                <option value="wednesday" {{ request('day') == 'wednesday' ? 'selected' : '' }}>Wednesday</option>
+                                <option value="thursday" {{ request('day') == 'thursday' ? 'selected' : '' }}>Thursday</option>
+                                <option value="friday" {{ request('day') == 'friday' ? 'selected' : '' }}>Friday</option>
+                                <option value="saturday" {{ request('day') == 'saturday' ? 'selected' : '' }}>Saturday</option>
+                                <option value="sunday" {{ request('day') == 'sunday' ? 'selected' : '' }}>Sunday</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-4 col-sm-6">
@@ -168,7 +168,14 @@
     <!-- Pagination -->
     <div class="row mt-4">
         <div class="col-12">
-            {{ $schedules->links() }}
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted">
+                    Showing {{ $schedules->firstItem() ?? 0 }} to {{ $schedules->lastItem() ?? 0 }} of {{ $schedules->total() }} classes
+                </div>
+                <div>
+                    {{ $schedules->links('pagination::bootstrap-4') }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -183,6 +190,37 @@
     }
     .badge {
         font-size: 0.8rem;
+    }
+    
+    /* Custom pagination styling */
+    .pagination {
+        margin-bottom: 0;
+    }
+    .page-link {
+        color: #007bff;
+        border: 1px solid #dee2e6;
+        padding: 0.5rem 0.75rem;
+        margin-left: -1px;
+        line-height: 1.25;
+        background-color: #fff;
+        border-radius: 0.25rem;
+    }
+    .page-link:hover {
+        color: #0056b3;
+        text-decoration: none;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+    .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #fff;
+        border-color: #dee2e6;
     }
 </style>
 @endpush

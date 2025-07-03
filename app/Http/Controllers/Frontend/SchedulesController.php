@@ -48,7 +48,17 @@ class SchedulesController extends Controller
             $query->where('type', '=', $request->type);
         }
 
-        $schedules = $query->latest()->paginate(10);
+        // Apply age group filter if provided
+        if ($request->filled('age_group')) {
+            $query->where('age_group', '=', $request->age_group);
+        }
+
+        // Apply day filter if provided
+        if ($request->filled('day')) {
+            $query->whereRaw('LOWER(DAYNAME(start_date)) = ?', [strtolower($request->day)]);
+        }
+
+        $schedules = $query->latest()->paginate(9)->withQueryString();
 
         // Get trainers for filter
         $trainers = Trainer::with('user')
