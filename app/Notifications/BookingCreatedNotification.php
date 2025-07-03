@@ -41,7 +41,7 @@ class BookingCreatedNotification extends Notification implements ShouldQueue
             ->subject('Booking Created Successfully')
             ->greeting('Hello ' . $notifiable->name . '!')
             ->line('Your booking has been created successfully.')
-            ->line('Child: ' . $this->booking->child->name)
+            ->line('Child: ' . ($this->booking->child ? $this->booking->child->name : 'N/A'))
             ->line('Class: ' . $this->booking->schedule->title)
             ->line('Date: ' . $this->booking->schedule->start_time->format('F j, Y'))
             ->line('Time: ' . $this->booking->schedule->start_time->format('g:i A'))
@@ -61,7 +61,7 @@ class BookingCreatedNotification extends Notification implements ShouldQueue
             'message' => 'Booking created for ' . $this->booking->schedule->title,
             'booking_id' => $this->booking->id,
             'schedule_title' => $this->booking->schedule->title,
-            'child_name' => $this->booking->child->name,
+            'child_name' => $this->booking->child ? $this->booking->child->name : 'N/A',
             'action_url' => '/bookings/' . $this->booking->id,
         ];
     }
