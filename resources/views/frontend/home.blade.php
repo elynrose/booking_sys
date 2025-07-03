@@ -186,13 +186,8 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Description</th>
-                                    @if(Auth::user()->hasRole('Trainer'))
-                                        <th>Parent</th>
-                                        <th>Child</th>
-                                    @else
-                                        <th>Trainer</th>
-                                        <th>Child</th>
-                                    @endif
+                                    <th>Parent</th>
+                                    <th>Child</th>
                                     <th>Amount</th>
                                     <th>Status</th>
                                 </tr>
@@ -209,20 +204,11 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if(Auth::user()->hasRole('Trainer'))
-                                            @if($payment->booking && $payment->booking->user)
-                                                <i class="fas fa-user me-1"></i>
-                                                {{ $payment->booking->user->name }}
-                                            @else
-                                                <span class="text-muted">N/A</span>
-                                            @endif
+                                        @if($payment->booking && $payment->booking->user)
+                                            <i class="fas fa-user me-1"></i>
+                                            {{ $payment->booking->user->name }}
                                         @else
-                                            @if($payment->booking && $payment->booking->schedule && $payment->booking->schedule->trainer)
-                                                <i class="fas fa-user-tie me-1"></i>
-                                                {{ $payment->booking->schedule->trainer->user->name ?? 'N/A' }}
-                                            @else
-                                                <span class="text-muted">N/A</span>
-                                            @endif
+                                            <span class="text-muted">N/A</span>
                                         @endif
                                     </td>
                                     <td>

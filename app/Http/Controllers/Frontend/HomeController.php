@@ -56,69 +56,30 @@ class HomeController extends Controller
                 return $booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining;
             });
 
-        // Calculate pending payments and totals - different logic for trainers vs parents
-        if ($user->hasRole('Trainer')) {
-            // For trainers: calculate payments for their classes
-            $pendingPayments = Payment::whereHas('booking.schedule.trainer', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+        // Calculate pending payments
+        $pendingPayments = Payment::where('user_id', $user->id)
             ->where('status', 'pending')
             ->sum('amount');
 
-            // Calculate total paid for trainer's classes
-            $paidBookingsTotal = Booking::whereHas('schedule.trainer', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+        // Calculate paid bookings total amount (minus refunds and cancellations)
+        $paidBookingsTotal = Booking::where('user_id', $user->id)
             ->where('is_paid', true)
             ->where('status', '!=', 'cancelled')
             ->sum('total_cost');
             
-            // Subtract refunded payments for trainer's classes
-            $refundedAmount = Payment::whereHas('booking.schedule.trainer', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+        // Subtract refunded payments
+        $refundedAmount = Payment::where('user_id', $user->id)
             ->where('status', 'refunded')
             ->sum('amount');
             
-            $paidBookingsTotal = $paidBookingsTotal - $refundedAmount;
-        } else {
-            // For parents: calculate their own payments
-            $pendingPayments = Payment::where('user_id', $user->id)
-                ->where('status', 'pending')
-                ->sum('amount');
+        $paidBookingsTotal = $paidBookingsTotal - $refundedAmount;
 
-            // Calculate paid bookings total amount (minus refunds and cancellations)
-            $paidBookingsTotal = Booking::where('user_id', $user->id)
-                ->where('is_paid', true)
-                ->where('status', '!=', 'cancelled')
-                ->sum('total_cost');
-                
-            // Subtract refunded payments
-            $refundedAmount = Payment::where('user_id', $user->id)
-                ->where('status', 'refunded')
-                ->sum('amount');
-                
-            $paidBookingsTotal = $paidBookingsTotal - $refundedAmount;
-        }
-
-        // Get payment history - different logic for trainers vs parents
-        if ($user->hasRole('Trainer')) {
-            // For trainers: show payments made by parents for their classes
-            $paymentHistory = Payment::whereHas('booking.schedule.trainer', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->with(['booking.user', 'booking.child', 'booking.schedule.trainer.user'])
+        // Get payment history with booking relationships
+        $paymentHistory = Payment::where('user_id', $user->id)
+            ->with(['booking.user', 'booking.child', 'booking.schedule'])
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
-        } else {
-            // For parents: show their own payments
-            $paymentHistory = Payment::where('user_id', $user->id)
-                ->with(['booking.user', 'booking.child', 'booking.schedule'])
-                ->orderBy('created_at', 'desc')
-                ->take(10)
-                ->get();
-        }
 
         // Get featured schedules
         $featuredSchedules = Schedule::with(['trainer.user', 'bookings'])
