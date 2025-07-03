@@ -135,6 +135,16 @@ class CheckinController extends Controller
                 ->with('error', 'Unauthorized access to this booking.');
         }
 
+        // Check if class has started (prevent checkin for future classes)
+        $currentTime = Carbon::now($user->timezone ?? 'UTC');
+        $scheduleStartTime = Carbon::parse($booking->schedule->start_time, $user->timezone ?? 'UTC');
+        
+        if ($currentTime->lt($scheduleStartTime)) {
+            $timeUntilStart = $currentTime->diffForHumans($scheduleStartTime, ['parts' => 2]);
+            return redirect()->route('frontend.checkins.index')
+                ->with('error', 'Cannot check in for future classes. This class starts in ' . $timeUntilStart . '.');
+        }
+
         // Check if sessions_remaining is 0 or less (only for non-unlimited schedules)
         if (!$booking->schedule->allow_unlimited_bookings && $booking->sessions_remaining <= 0) {
             return redirect()->route('frontend.checkins.index')
@@ -158,8 +168,6 @@ class CheckinController extends Controller
         }
 
         // Check for late check-in
-        $currentTime = Carbon::now($user->timezone ?? 'UTC');
-        $scheduleStartTime = Carbon::parse($booking->schedule->start_time, $user->timezone ?? 'UTC');
         $scheduleEndTime = Carbon::parse($booking->schedule->end_time, $user->timezone ?? 'UTC');
         
         $isLateCheckin = $currentTime->gt($scheduleStartTime);
