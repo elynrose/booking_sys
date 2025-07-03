@@ -14,8 +14,8 @@ class BookingObserver
      */
     public function created(Booking $booking): void
     {
-        // Fire booking created event - temporarily disabled to prevent 500 errors
-        // event(new BookingCreated($booking));
+        // Fire booking created event
+        event(new BookingCreated($booking));
     }
 
     /**
@@ -23,15 +23,15 @@ class BookingObserver
      */
     public function updated(Booking $booking): void
     {
-        // Check if status changed to confirmed - temporarily disabled to prevent 500 errors
-        // if ($booking->wasChanged('status') && $booking->status === 'confirmed') {
-        //     event(new BookingConfirmed($booking));
-        // }
+        // Check if status changed to confirmed
+        if ($booking->wasChanged('status') && $booking->status === 'confirmed') {
+            event(new BookingConfirmed($booking));
+        }
         
-        // Check if status changed to cancelled - temporarily disabled to prevent 500 errors
-        // if ($booking->wasChanged('status') && $booking->status === 'cancelled') {
-        //     event(new BookingCancelled($booking));
-        // }
+        // Check if status changed to cancelled
+        if ($booking->wasChanged('status') && $booking->status === 'cancelled') {
+            event(new BookingCancelled($booking));
+        }
     }
 
     /**
