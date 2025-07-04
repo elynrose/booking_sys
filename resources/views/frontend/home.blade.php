@@ -114,16 +114,7 @@
                     <div class="schedule-item mb-3 p-3 border rounded">
                         <div class="row align-items-center">
                             <div class="col-md-2">
-                                @if($booking->schedule->photo)
-                                    <img src="{{ $booking->schedule->photo_url }}" alt="{{ $booking->schedule->title }}" class="img-fluid rounded schedule-image" style="max-height: 100px; width: 100%; object-fit: cover;">
-                                @else
-                                    <div class="img-fluid rounded bg-light d-flex align-items-center justify-content-center" style="max-height: 100px; width: 100%; min-height: 100px;">
-                                        <div class="text-center text-muted">
-                                            <i class="fas fa-calendar fa-2x mb-2"></i>
-                                            <div class="small">{{ $booking->schedule->title }}</div>
-                                        </div>
-                                    </div>
-                                @endif
+                                <img src="{{ $booking->schedule->photo_url }}" alt="{{ $booking->schedule->title }}" class="img-fluid rounded" style="max-height: 100px; width: 100%; object-fit: cover;">
                             </div>
                             <div class="col-md-3">
                                 <h6 class="mb-1">{{ $booking->schedule->title }}</h6>
