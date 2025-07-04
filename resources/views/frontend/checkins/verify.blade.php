@@ -239,9 +239,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded');
     
-    // Get the user's timezone
-    const userTimezone = '{{ $userTimezone }}';
-    console.log('User timezone:', userTimezone);
+    // Get the site timezone from settings
+    const siteTimezone = '{{ \App\Models\SiteSettings::getTimezone() }}';
+    console.log('Site timezone:', siteTimezone);
     
     // Get the check-in time as ISO string (already in UTC)
     const checkinTimeStr = '{{ $activeCheckin->formatted_checkin_time }}';
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create a date object from the ISO string (this will be in UTC)
     const checkinTime = new Date(checkinTimeStr);
     console.log('Check-in time (UTC):', checkinTime.toISOString());
-    console.log('Check-in time (user timezone):', checkinTime.toLocaleString('en-US', { timeZone: userTimezone }));
+    console.log('Check-in time (site timezone):', checkinTime.toLocaleString('en-US', { timeZone: siteTimezone }));
 
     // Get session start and end times from the schedule (these are in UTC)
     const sessionStartTime = new Date('{{ $activeCheckin->booking->schedule->start_time->toISOString() }}');
