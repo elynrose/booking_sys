@@ -18,7 +18,15 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="mb-0">Amount Due</h6>
-                                        <h4 class="mb-0">${{ number_format($booking->schedule->price, 2) }}</h4>
+                                        @if($booking->schedule->hasDiscount())
+                                            <h4 class="mb-0">
+                                                <span class="text-decoration-line-through text-muted">${{ number_format($booking->schedule->price, 2) }}</span>
+                                                <span class="text-danger font-weight-bold">${{ number_format($booking->schedule->discounted_price, 2) }}</span>
+                                                <span class="badge badge-danger ml-1">{{ $booking->schedule->discount_percentage }}% OFF</span>
+                                            </h4>
+                                        @else
+                                            <h4 class="mb-0">${{ number_format($booking->schedule->price, 2) }}</h4>
+                                        @endif
                                     </div>
                                     <span class="badge bg-warning">Pending Payment</span>
                                 </div>

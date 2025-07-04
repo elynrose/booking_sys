@@ -30,7 +30,7 @@
                         <form action="{{ route('bookings.store', $schedule) }}" method="POST">
                             @csrf
                             <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
-                            <input type="hidden" name="price_per_session" value="{{ $schedule->price }}">
+                            <input type="hidden" name="price_per_session" value="{{ $schedule->current_price }}">
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -44,7 +44,15 @@
                                                     <span class="text-muted">No dates set</span>
                                                 @endif
                                             </p>
-                                            <p><i class="fas fa-dollar-sign text-primary me-2"></i> <strong>Price per session:</strong> ${{ number_format($schedule->price, 2) }}</p>
+                                            <p><i class="fas fa-dollar-sign text-primary me-2"></i> <strong>Price per session:</strong> 
+                                                @if($schedule->hasDiscount())
+                                                    <span class="text-decoration-line-through text-muted">${{ number_format($schedule->price, 2) }}</span>
+                                                    <span class="text-danger font-weight-bold">${{ number_format($schedule->discounted_price, 2) }}</span>
+                                                    <span class="badge badge-danger ml-1">{{ $schedule->discount_percentage }}% OFF</span>
+                                                @else
+                                                    ${{ number_format($schedule->price, 2) }}
+                                                @endif
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -111,7 +119,7 @@
                                                         <ul class="mb-0">
                                                             <li><strong>Email:</strong> your-zelle-email@example.com</li>
                                                             <li><strong>Name:</strong> Your Business Name</li>
-                                                            <li><strong>Amount:</strong> $<span id="zelle-amount">{{ number_format($schedule->price, 2) }}</span></li>
+                                                            <li><strong>Amount:</strong> $<span id="zelle-amount">{{ number_format($schedule->current_price, 2) }}</span></li>
                                                         </ul>
                                                         <hr>
                                                         <p class="mb-0"><small>Please include your name and booking reference <strong>username</strong> in the memo field.</small></p>
@@ -138,7 +146,7 @@
                                 <div class="card border-0 bg-light mb-3">
                                     <div class="card-body">
                                         <h6 class="card-title text-muted mb-3">Total Cost</h6>
-                                        <h3 class="mb-0" id="totalCost">$ {{ number_format($schedule->price, 2) }}</h3>
+                                        <h3 class="mb-0" id="totalCost">$ {{ number_format($schedule->current_price, 2) }}</h3>
                                     </div>
                                 </div>
 
@@ -159,7 +167,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const sessionsSelect = document.getElementById('sessions');
-        const pricePerSession = {{ $schedule->price }};
+        const pricePerSession = {{ $schedule->current_price }};
         
         function updateTotal(value) {
             const total = pricePerSession * value;

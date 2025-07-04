@@ -226,7 +226,13 @@
                                                     <i class="fas fa-dollar-sign mr-2"></i>
                                                     <strong>Price:</strong> 
                                                     @if($booking->schedule)
-                                                        ${{ number_format($booking->schedule->price, 2) }}
+                                                        @if($booking->schedule->hasDiscount())
+                                                            <span class="text-decoration-line-through text-muted">${{ number_format($booking->schedule->price, 2) }}</span>
+                                                            <span class="text-danger font-weight-bold">${{ number_format($booking->schedule->discounted_price, 2) }}</span>
+                                                            <span class="badge badge-danger ml-1">{{ $booking->schedule->discount_percentage }}% OFF</span>
+                                                        @else
+                                                            ${{ number_format($booking->schedule->price, 2) }}
+                                                        @endif
                                                     @else
                                                         <span class="text-danger">N/A</span>
                                                     @endif
