@@ -4,24 +4,47 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <!-- Quick Actions Card -->
+            <!-- Trainer Profile Card -->
             <div class="card mb-4">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Quick Actions</h5>
+                    <h5 class="mb-0">Trainer Profile</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <a href="{{ route('frontend.checkins.index') }}" class="btn btn-success btn-lg btn-block">
-                                <i class="fas fa-sign-in-alt mr-2"></i>
-                                Manage Check-ins
-                            </a>
+                        <div class="col-md-3 text-center">
+                            @if($trainer->profile_picture)
+                                <img src="{{ asset('storage/' . $trainer->profile_picture) }}" alt="{{ $trainer->user->name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            @else
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 150px; height: 150px;">
+                                    <i class="fas fa-user-tie fa-3x text-muted"></i>
+                                </div>
+                            @endif
                         </div>
-                        <div class="col-md-6">
-                            <a href="{{ route('frontend.schedules.index') }}" class="btn btn-info btn-lg btn-block">
-                                <i class="fas fa-calendar mr-2"></i>
-                                View All Schedules
-                            </a>
+                        <div class="col-md-9">
+                            <h4 class="mb-2">{{ $trainer->user->name }}</h4>
+                            @if($trainer->bio)
+                                <p class="text-muted mb-3">{{ $trainer->bio }}</p>
+                            @else
+                                <p class="text-muted mb-3">No bio information available.</p>
+                            @endif
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5 class="text-success mb-1">{{ $totalClasses }}</h5>
+                                            <small class="text-muted">Total Classes Assigned</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5 class="text-primary mb-1">{{ $activeClasses }}</h5>
+                                            <small class="text-muted">Active Classes</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -71,7 +71,16 @@ class TrainerController extends Controller
         // Set empty collection for pending payments
         $pendingPayments = collect();
 
-        return view('frontend.trainer.index', compact('todaySchedules', 'upcomingSchedules', 'todayCheckins', 'pendingPayments'));
+        // Get total classes assigned to this trainer
+        $totalClasses = Schedule::where('trainer_id', $trainer->id)->count();
+        
+        // Get active classes (schedules that haven't ended yet)
+        $activeClasses = Schedule::where('trainer_id', $trainer->id)
+            ->where('status', '=', 'active')
+            ->whereDate('end_date', '>=', Carbon::today())
+            ->count();
+
+        return view('frontend.trainer.index', compact('trainer', 'todaySchedules', 'upcomingSchedules', 'todayCheckins', 'pendingPayments', 'totalClasses', 'activeClasses'));
     }
 
     public function showClassDetails(Schedule $schedule)

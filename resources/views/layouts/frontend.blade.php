@@ -131,6 +131,11 @@
                                     <i class="fas fa-user-tie"></i> Trainer Dashboard
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('frontend.schedules.index') }}">
+                                    <i class="fas fa-calendar-alt"></i> View All Schedules
+                                </a>
+                            </li>
                             @endif
                             @if(auth()->user()->hasRole('Admin') || auth()->user()->hasRole('User') || auth()->user()->hasRole('Member'))
                             <li class="nav-item">
