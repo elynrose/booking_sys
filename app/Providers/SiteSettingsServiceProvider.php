@@ -21,6 +21,17 @@ class SiteSettingsServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Set application timezone from site settings
+        try {
+            $timezone = SiteSettings::getTimezone();
+            config(['app.timezone' => $timezone]);
+            date_default_timezone_set($timezone);
+        } catch (\Exception $e) {
+            // Fallback to default timezone if site settings are not available
+            config(['app.timezone' => 'America/New_York']);
+            date_default_timezone_set('America/New_York');
+        }
+
         // Share site settings with all views
         View::composer('*', function ($view) {
             $settings = SiteSettings::getSettings();

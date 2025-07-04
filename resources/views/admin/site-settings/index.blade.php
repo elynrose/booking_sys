@@ -35,6 +35,28 @@
                             </div>
                         </div>
 
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="timezone">Site Timezone</label>
+                                    <select class="form-control" id="timezone" name="timezone">
+                                        <option value="America/New_York" {{ ($settings->timezone ?? 'America/New_York') == 'America/New_York' ? 'selected' : '' }}>Eastern Time (ET)</option>
+                                        <option value="America/Chicago" {{ ($settings->timezone ?? 'America/New_York') == 'America/Chicago' ? 'selected' : '' }}>Central Time (CT)</option>
+                                        <option value="America/Denver" {{ ($settings->timezone ?? 'America/New_York') == 'America/Denver' ? 'selected' : '' }}>Mountain Time (MT)</option>
+                                        <option value="America/Los_Angeles" {{ ($settings->timezone ?? 'America/New_York') == 'America/Los_Angeles' ? 'selected' : '' }}>Pacific Time (PT)</option>
+                                        <option value="America/Anchorage" {{ ($settings->timezone ?? 'America/New_York') == 'America/Anchorage' ? 'selected' : '' }}>Alaska Time (AKT)</option>
+                                        <option value="Pacific/Honolulu" {{ ($settings->timezone ?? 'America/New_York') == 'Pacific/Honolulu' ? 'selected' : '' }}>Hawaii Time (HT)</option>
+                                        <option value="UTC" {{ ($settings->timezone ?? 'America/New_York') == 'UTC' ? 'selected' : '' }}>UTC</option>
+                                        <option value="Europe/London" {{ ($settings->timezone ?? 'America/New_York') == 'Europe/London' ? 'selected' : '' }}>London (GMT)</option>
+                                        <option value="Europe/Paris" {{ ($settings->timezone ?? 'America/New_York') == 'Europe/Paris' ? 'selected' : '' }}>Paris (CET)</option>
+                                        <option value="Asia/Tokyo" {{ ($settings->timezone ?? 'America/New_York') == 'Asia/Tokyo' ? 'selected' : '' }}>Tokyo (JST)</option>
+                                        <option value="Australia/Sydney" {{ ($settings->timezone ?? 'America/New_York') == 'Australia/Sydney' ? 'selected' : '' }}>Sydney (AEST)</option>
+                                    </select>
+                                    <small class="form-text text-muted">This timezone will be used for all date/time displays across the site.</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Branding -->
                         <div class="row mb-4">
                             <div class="col-12">

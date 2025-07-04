@@ -80,6 +80,7 @@ class SiteSettingsSeeder extends Seeder
             'welcome_hero_description' => 'Your journey to fitness starts here. Join our community and achieve your goals.',
             'stripe_enabled' => false,
             'stripe_currency' => 'usd',
+            'timezone' => 'America/New_York',
         ]);
 
         $this->command->info('Site settings seeded successfully!');
