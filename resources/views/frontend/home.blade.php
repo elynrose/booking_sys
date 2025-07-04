@@ -151,7 +151,7 @@
                                 @if($booking->checkins->where('checkout_time', null)->isNotEmpty())
                                     <span class="badge bg-success">Checked In</span>
                                 @else
-                                    <a href="{{ route('frontend.checkins.verify') }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('frontend.checkins.index') }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-qrcode me-1"></i> Check In
                                     </a>
                                 @endif
