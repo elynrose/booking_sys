@@ -42,6 +42,19 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" 
+                                   class="form-control @error('location') is-invalid @enderror" 
+                                   id="location" 
+                                   name="location" 
+                                   value="{{ old('location') }}" 
+                                   placeholder="e.g., Main Gym, Studio A, Outdoor Field">
+                            @error('location')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="photo" class="form-label">Schedule Photo</label>
                             <input type="file" 
                                    class="form-control @error('photo') is-invalid @enderror" 
@@ -69,19 +82,6 @@
                                 @endforeach
                             </select>
                             @error('trainer_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="location" class="form-label">Location</label>
-                            <input type="text" 
-                                   class="form-control @error('location') is-invalid @enderror" 
-                                   id="location" 
-                                   name="location" 
-                                   value="{{ old('location') }}" 
-                                   placeholder="Enter class location">
-                            @error('location')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

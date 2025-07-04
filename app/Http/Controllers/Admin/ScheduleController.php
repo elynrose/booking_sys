@@ -89,6 +89,7 @@ class ScheduleController extends Controller
             'allow_unlimited_bookings' => 'boolean',
             'is_discounted' => 'boolean',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'location' => 'nullable|string|max:255',
         ]);
 
         // Handle checkbox values
@@ -132,6 +133,7 @@ class ScheduleController extends Controller
             'allow_unlimited_bookings' => 'boolean',
             'is_discounted' => 'boolean',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'location' => 'nullable|string|max:255',
         ]);
 
         // Handle checkbox values
