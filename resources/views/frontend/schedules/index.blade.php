@@ -128,7 +128,15 @@
                         @endif
                     </div>
                     <div class="mt-auto d-flex justify-content-between align-items-center">
-                        <span class="badge" style="background-color: #2ecc71;">${{ number_format($schedule->price, 2) }}</span>
+                        <div>
+                            @if($schedule->hasDiscount())
+                                <span class="badge text-decoration-line-through text-muted" style="background-color: #6c757d;">${{ number_format($schedule->price, 2) }}</span>
+                                <span class="badge text-white" style="background-color: #dc3545;">${{ number_format($schedule->discounted_price, 2) }}</span>
+                                <span class="badge badge-danger ml-1">{{ $schedule->discount_percentage }}% OFF</span>
+                            @else
+                                <span class="badge" style="background-color: #2ecc71;">${{ number_format($schedule->price, 2) }}</span>
+                            @endif
+                        </div>
                         <span class="badge bg-primary text-white">{{ $schedule->max_participants - $schedule->bookings->count() }} spots left</span>
                     </div>
                     <div class="mt-2">

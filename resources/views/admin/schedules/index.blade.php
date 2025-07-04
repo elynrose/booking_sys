@@ -180,7 +180,14 @@
                                                 </p>
                                                 <p class="mb-1">
                                                     <i class="fas fa-dollar-sign mr-2"></i>
-                                                    <strong>Price:</strong> ${{ number_format($schedule->price, 2) }}
+                                                    <strong>Price:</strong> 
+                                                    @if($schedule->hasDiscount())
+                                                        <span class="text-decoration-line-through text-muted">${{ number_format($schedule->price, 2) }}</span>
+                                                        <span class="text-danger font-weight-bold">${{ number_format($schedule->discounted_price, 2) }}</span>
+                                                        <span class="badge badge-danger ml-1">{{ $schedule->discount_percentage }}% OFF</span>
+                                                    @else
+                                                        ${{ number_format($schedule->price, 2) }}
+                                                    @endif
                                                 </p>
                                             </div>
                                         </div>

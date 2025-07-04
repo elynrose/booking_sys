@@ -56,7 +56,14 @@
                                 </p>
                                 <p class="mb-1">
                                     <i class="fas fa-dollar-sign text-primary me-2"></i>
-                                    ${{ number_format($schedule->price, 2) }} per session
+                                    @if($schedule->hasDiscount())
+                                        <span class="text-decoration-line-through text-muted">${{ number_format($schedule->price, 2) }}</span>
+                                        <span class="text-danger font-weight-bold">${{ number_format($schedule->discounted_price, 2) }}</span>
+                                        <span class="badge badge-danger ml-1">{{ $schedule->discount_percentage }}% OFF</span>
+                                    @else
+                                        ${{ number_format($schedule->price, 2) }}
+                                    @endif
+                                    per session
                                 </p>
                             </div>
                         </div>
@@ -70,7 +77,13 @@
                 <div class="card-body">
                     <div class="text-center mb-4">
                         <h4 class="card-title">Book This Class</h4>
-                        <div class="h2 text-primary mb-2">${{ number_format($schedule->price, 2) }}</div>
+                        @if($schedule->hasDiscount())
+                            <div class="h2 text-decoration-line-through text-muted mb-1">${{ number_format($schedule->price, 2) }}</div>
+                            <div class="h2 text-danger font-weight-bold mb-2">${{ number_format($schedule->discounted_price, 2) }}</div>
+                            <div class="text-danger mb-2">{{ $schedule->discount_percentage }}% OFF</div>
+                        @else
+                            <div class="h2 text-primary mb-2">${{ number_format($schedule->price, 2) }}</div>
+                        @endif
                         <div class="text-muted">per session</div>
                     </div>
 

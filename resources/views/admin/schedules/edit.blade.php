@@ -216,6 +216,49 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input @error('is_discounted') is-invalid @enderror" 
+                                               type="checkbox" 
+                                               id="is_discounted" 
+                                               name="is_discounted" 
+                                               value="1" 
+                                               {{ old('is_discounted', $schedule->is_discounted) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="is_discounted">
+                                            Apply Discount
+                                        </label>
+                                        <div class="form-text">Check this to enable discount pricing for this schedule.</div>
+                                        @error('is_discounted')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="discount_percentage" class="form-label">Discount Percentage</label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control @error('discount_percentage') is-invalid @enderror" 
+                                               id="discount_percentage" 
+                                               name="discount_percentage" 
+                                               value="{{ old('discount_percentage', $schedule->discount_percentage) }}" 
+                                               step="0.01" 
+                                               min="0" 
+                                               max="100">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <div class="form-text">Enter the discount percentage (e.g., 20 for 20% off)</div>
+                                    @error('discount_percentage')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select @error('status') is-invalid @enderror" 

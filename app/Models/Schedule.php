@@ -29,6 +29,8 @@ class Schedule extends Model
         'is_featured',
         'status',
         'allow_unlimited_bookings',
+        'is_discounted',
+        'discount_percentage',
     ];
 
     protected $casts = [
@@ -38,6 +40,8 @@ class Schedule extends Model
         'end_time' => 'datetime',
         'is_featured' => 'boolean',
         'allow_unlimited_bookings' => 'boolean',
+        'is_discounted' => 'boolean',
+        'discount_percentage' => 'decimal:2',
     ];
 
     public function category()
@@ -204,5 +208,46 @@ class Schedule extends Model
     public function getAvailabilityStatus()
     {
         return $this->availabilityStatus ?? [];
+    }
+
+    /**
+     * Get the discounted price
+     */
+    public function getDiscountedPriceAttribute()
+    {
+        if (!$this->is_discounted || !$this->discount_percentage) {
+            return $this->price;
+        }
+
+        $discountAmount = $this->price * ($this->discount_percentage / 100);
+        return $this->price - $discountAmount;
+    }
+
+    /**
+     * Get the discount amount
+     */
+    public function getDiscountAmountAttribute()
+    {
+        if (!$this->is_discounted || !$this->discount_percentage) {
+            return 0;
+        }
+
+        return $this->price * ($this->discount_percentage / 100);
+    }
+
+    /**
+     * Check if schedule has a discount
+     */
+    public function hasDiscount()
+    {
+        return $this->is_discounted && $this->discount_percentage > 0;
+    }
+
+    /**
+     * Get the current price (discounted or original)
+     */
+    public function getCurrentPriceAttribute()
+    {
+        return $this->hasDiscount() ? $this->discounted_price : $this->price;
     }
 }
