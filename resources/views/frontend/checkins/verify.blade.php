@@ -247,25 +247,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkinTimeStr = '{{ $activeCheckin->formatted_checkin_time }}';
     console.log('Check-in time (ISO):', checkinTimeStr);
     
-    // Create a date object from the ISO string
+    // Create a date object from the ISO string (this will be in UTC)
     const checkinTime = new Date(checkinTimeStr);
     console.log('Check-in time (UTC):', checkinTime.toISOString());
     console.log('Check-in time (user timezone):', checkinTime.toLocaleString('en-US', { timeZone: userTimezone }));
 
-    // Get session start and end times from the schedule
+    // Get session start and end times from the schedule (these are in UTC)
     const sessionStartTime = new Date('{{ $activeCheckin->booking->schedule->start_time->toISOString() }}');
     const sessionEndTime = new Date('{{ $activeCheckin->booking->schedule->end_time->toISOString() }}');
     
     // Calculate session duration in seconds
     const sessionDurationSeconds = Math.floor((sessionEndTime.getTime() - sessionStartTime.getTime()) / 1000);
     console.log('Session duration (seconds):', sessionDurationSeconds);
-    console.log('Session start:', sessionStartTime.toISOString());
-    console.log('Session end:', sessionEndTime.toISOString());
+    console.log('Session start (UTC):', sessionStartTime.toISOString());
+    console.log('Session end (UTC):', sessionEndTime.toISOString());
     
     // Calculate when auto-checkout should happen (check-in time + session duration)
+    // All times are in UTC, so this calculation is correct
     const autoCheckoutTime = new Date(checkinTime.getTime() + (sessionDurationSeconds * 1000));
-    console.log('Auto checkout time:', autoCheckoutTime.toISOString());
-    console.log('Current time:', new Date().toISOString());
+    console.log('Auto checkout time (UTC):', autoCheckoutTime.toISOString());
+    console.log('Current time (UTC):', new Date().toISOString());
     console.log('Auto checkout time is in the past:', autoCheckoutTime < new Date());
     console.log('Time until auto checkout (ms):', autoCheckoutTime.getTime() - new Date().getTime());
     console.log('Time until auto checkout (hours):', (autoCheckoutTime.getTime() - new Date().getTime()) / (1000 * 60 * 60));
@@ -276,10 +277,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const now = new Date();
         
         // Calculate the time difference in milliseconds
+        // Both times are in UTC, so the difference calculation is correct
         const diff = now.getTime() - checkinTime.getTime();
         
-        console.log('Current time:', now.toISOString());
-        console.log('Check-in time:', checkinTime.toISOString());
+        console.log('Current time (UTC):', now.toISOString());
+        console.log('Check-in time (UTC):', checkinTime.toISOString());
         console.log('Difference (ms):', diff);
         
         // Convert to hours, minutes, seconds
