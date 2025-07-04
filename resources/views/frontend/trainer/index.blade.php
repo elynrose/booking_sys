@@ -13,7 +13,7 @@
                     <div class="row">
                         <div class="col-md-3 text-center">
                             @if($trainer->profile_picture)
-                                <img src="{{ asset('storage/' . $trainer->profile_picture) }}" alt="{{ $trainer->user->name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                                <img src="{{ Storage::url($trainer->profile_picture) }}" alt="{{ $trainer->user->name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                             @else
                                 <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 150px; height: 150px;">
                                     <i class="fas fa-user-tie fa-3x text-muted"></i>
