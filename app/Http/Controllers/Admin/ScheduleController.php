@@ -87,10 +87,13 @@ class ScheduleController extends Controller
             'is_featured' => 'boolean',
             'status' => 'required|string',
             'allow_unlimited_bookings' => 'boolean',
+            'is_discounted' => 'boolean',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        // Handle checkbox value
+        // Handle checkbox values
         $validated['allow_unlimited_bookings'] = $request->has('allow_unlimited_bookings');
+        $validated['is_discounted'] = $request->has('is_discounted');
 
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request->file('photo')->store('schedules', 'public');
@@ -127,10 +130,13 @@ class ScheduleController extends Controller
             'is_featured' => 'boolean',
             'status' => 'required|string',
             'allow_unlimited_bookings' => 'boolean',
+            'is_discounted' => 'boolean',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        // Handle checkbox value
+        // Handle checkbox values
         $validated['allow_unlimited_bookings'] = $request->has('allow_unlimited_bookings');
+        $validated['is_discounted'] = $request->has('is_discounted');
 
         if ($request->hasFile('photo')) {
             // Delete old photo if exists
