@@ -91,6 +91,10 @@ class CheckinController extends Controller
                           $scheduleQuery->where('allow_unlimited_bookings', true);
                       });
             })
+            ->whereHas('schedule', function($scheduleQuery) use ($siteTimezone) {
+                // Only show classes that have started (current time >= start time)
+                $scheduleQuery->where('start_time', '<=', Carbon::now($siteTimezone));
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

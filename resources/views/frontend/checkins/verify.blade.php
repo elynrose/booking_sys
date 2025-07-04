@@ -136,6 +136,25 @@
                                                     <i class="fas fa-child text-muted me-2 mr-2"></i>
                                                     <span>{{ $booking->child->name }} ({{ $booking->child->age }} years old)</span>
                                                 </div>
+                                                @php
+                                                    $currentTime = \Carbon\Carbon::now(\App\Models\SiteSettings::getTimezone());
+                                                    $scheduleStartTime = \Carbon\Carbon::parse($booking->schedule->start_time, \App\Models\SiteSettings::getTimezone());
+                                                    $scheduleEndTime = \Carbon\Carbon::parse($booking->schedule->end_time, \App\Models\SiteSettings::getTimezone());
+                                                    $classHasStarted = $currentTime->gte($scheduleStartTime);
+                                                    $classHasEnded = $currentTime->gt($scheduleEndTime);
+                                                @endphp
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-info-circle text-muted me-2 mr-2"></i>
+                                                    <span>
+                                                        @if($classHasEnded)
+                                                            <span class="badge bg-secondary">Class Ended</span>
+                                                        @elseif($classHasStarted)
+                                                            <span class="badge bg-success">Class Running</span>
+                                                        @else
+                                                            <span class="badge bg-warning">Class Not Started</span>
+                                                        @endif
+                                                    </span>
+                                                </div>
                                                 @if($booking->schedule->allow_unlimited_bookings)
                                                     <div class="d-flex align-items-center">
                                                         <i class="fas fa-infinity text-success me-2 mr-2"></i>
@@ -150,9 +169,21 @@
                                             </div>
 
                                             <div class="d-grid">
+                                                @php
+                                                    $currentTime = \Carbon\Carbon::now(\App\Models\SiteSettings::getTimezone());
+                                                    $scheduleStartTime = \Carbon\Carbon::parse($booking->schedule->start_time, \App\Models\SiteSettings::getTimezone());
+                                                    $scheduleEndTime = \Carbon\Carbon::parse($booking->schedule->end_time, \App\Models\SiteSettings::getTimezone());
+                                                    $classHasStarted = $currentTime->gte($scheduleStartTime);
+                                                    $classHasEnded = $currentTime->gt($scheduleEndTime);
+                                                @endphp
+                                                
                                                 @if(isset($activeCheckin))
                                                     <button class="btn btn-secondary w-100" disabled>
                                                         <i class="fas fa-info-circle me-2"></i> Already Checked In
+                                                    </button>
+                                                @elseif($classHasEnded)
+                                                    <button class="btn btn-secondary w-100" disabled>
+                                                        <i class="fas fa-clock me-2"></i> Class Has Ended
                                                     </button>
                                                 @elseif($booking->schedule->allow_unlimited_bookings || ($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining))
                                                     <form action="{{ route('frontend.checkins.checkin') }}" method="POST">
