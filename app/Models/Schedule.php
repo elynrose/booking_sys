@@ -31,6 +31,7 @@ class Schedule extends Model
         'allow_unlimited_bookings',
         'is_discounted',
         'discount_percentage',
+        'location',
     ];
 
     protected $casts = [

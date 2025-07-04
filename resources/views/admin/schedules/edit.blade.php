@@ -62,7 +62,7 @@
 
                         <div class="mb-3">
                             <label for="trainer_id" class="form-label">Trainer</label>
-                            <select class="form-select @error('trainer_id') is-invalid @enderror" 
+                            <select class="form-select form-control @error('trainer_id') is-invalid @enderror" 
                                     id="trainer_id" 
                                     name="trainer_id" 
                                     required>
@@ -75,6 +75,19 @@
                                 @endforeach
                             </select>
                             @error('trainer_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" 
+                                   class="form-control @error('location') is-invalid @enderror" 
+                                   id="location" 
+                                   name="location" 
+                                   value="{{ old('location', $schedule->location) }}" 
+                                   placeholder="Enter class location">
+                            @error('location')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
