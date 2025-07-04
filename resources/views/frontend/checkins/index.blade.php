@@ -26,8 +26,14 @@
                         <div class="mb-3">
                             <label for="member_id" class="form-label">Enter Your Member ID</label>
                             <input type="text" class="form-control @error('member_id') is-invalid @enderror" 
-                                id="member_id" name="member_id" value="{{ old('member_id') }}" 
+                                id="member_id" name="member_id" 
+                                value="{{ old('member_id', auth()->check() ? auth()->user()->member_id : '') }}" 
                                 placeholder="Enter your member ID" required>
+                            @if(auth()->check() && auth()->user()->member_id)
+                                <div class="form-text text-success">
+                                    <i class="fas fa-check-circle me-1"></i> Pre-filled with your member ID
+                                </div>
+                            @endif
                             @error('member_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
