@@ -41,6 +41,7 @@
                                     <tr>
                                         <th>Class</th>
                                         <th>Schedule</th>
+                                        <th>Location</th>
                                         <th>Status</th>
                                         <th>Payment</th>
                                         <th>Sessions</th>
@@ -81,6 +82,16 @@
                                                             Times not set
                                                         @endif
                                                     </small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    @if($booking->schedule->location)
+                                                        <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                                                        {{ $booking->schedule->location }}
+                                                    @else
+                                                        <span class="text-muted">No location specified</span>
+                                                    @endif
                                                 </div>
                                             </td>
                                             <td>
