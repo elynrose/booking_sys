@@ -91,6 +91,16 @@
                     @else
                         <x-svg-placeholder type="schedule" text="No Class Image" width="100%" height="200px" class="card-img-top" />
                     @endif
+                    
+                    <!-- Discount Badge - Top Right Corner -->
+                    @if($schedule->hasDiscount())
+                        <div class="position-absolute" style="top: 10px; right: 10px; z-index: 3;">
+                            <span class="badge badge-danger shadow-sm" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                                {{ $schedule->discount_percentage }}% OFF
+                            </span>
+                        </div>
+                    @endif
+                    
                     @if($schedule->trainer && $schedule->trainer->user)
                         <div class="position-absolute" style="top: 100%; left: 86%; transform: translate(-50%, -50%); z-index: 2;">
                             @if($schedule->trainer->profile_picture)
@@ -132,7 +142,6 @@
                             @if($schedule->hasDiscount())
                                 <span class="badge text-decoration-line-through text-muted" style="background-color: #6c757d;">${{ number_format($schedule->price, 2) }}</span>
                                 <span class="badge text-white" style="background-color: #dc3545;">${{ number_format($schedule->discounted_price, 2) }}</span>
-                                <span class="badge badge-danger ml-1">{{ $schedule->discount_percentage }}% OFF</span>
                             @else
                                 <span class="badge" style="background-color: #2ecc71;">${{ number_format($schedule->price, 2) }}</span>
                             @endif
