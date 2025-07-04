@@ -102,6 +102,12 @@
                                         @if($class->trainer && $class->trainer->user)
                                             <div class="text-muted small">with {{ $class->trainer->user->name }}</div>
                                         @endif
+                                        @if($class->location)
+                                            <div class="text-muted small">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                {{ $class->location }}
+                                            </div>
+                                        @endif
                                         @if($class->start_date)
                                             <div class="text-muted small">
                                                 <i class="fas fa-calendar-alt me-1"></i>
@@ -143,6 +149,12 @@
                                         <div class="fw-semibold text-dark">{{ $class->title }}</div>
                                         @if($class->trainer && $class->trainer->user)
                                             <div class="text-muted small">with {{ $class->trainer->user->name }}</div>
+                                        @endif
+                                        @if($class->location)
+                                            <div class="text-muted small">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                {{ $class->location }}
+                                            </div>
                                         @endif
                                         @if($class->start_date)
                                             <div class="text-muted small">
