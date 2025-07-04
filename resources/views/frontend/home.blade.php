@@ -119,6 +119,12 @@
                             <div class="col-md-3">
                                 <h6 class="mb-1">{{ $booking->schedule->title }}</h6>
                                 <small class="text-muted">{{ $booking->schedule->trainer ? $booking->schedule->trainer->name : 'No trainer assigned' }}</small>
+                                @if($booking->schedule->location)
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-2"></i>{{ $booking->schedule->location }}
+                                </small>
+                                @endif
                                 <br>
                                 <small class="text-muted">
                                     <i class="far fa-calendar me-2"></i>

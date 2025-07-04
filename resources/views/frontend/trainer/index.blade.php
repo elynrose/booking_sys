@@ -75,6 +75,11 @@
                                                     @endif
                                                 </small>
                                             </p>
+                                            @if($schedule->location)
+                                            <p class="card-text text-muted small">
+                                                <i class="fas fa-map-marker-alt"></i> {{ $schedule->location }}
+                                            </p>
+                                            @endif
                                             <p class="card-text text-muted small">
                                                 <i class="fas fa-users"></i> {{ $schedule->bookings->count() }} of {{ $schedule->max_participants }} max
                                             </p>
@@ -243,6 +248,11 @@
                                                     @endif
                                                 </small>
                                             </p>
+                                            @if($schedule->location)
+                                            <p class="card-text text-muted small">
+                                                <i class="fas fa-map-marker-alt"></i> {{ $schedule->location }}
+                                            </p>
+                                            @endif
                                             <p class="card-text">
                                                 <i class="fas fa-users"></i> {{ $schedule->bookings->count() }} / {{ $schedule->max_participants }} participants
                                             </p>

@@ -45,6 +45,12 @@
                                         Times not set
                                     @endif
                                 </p>
+                                @if($schedule->location)
+                                <p class="mb-1">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    {{ $schedule->location }}
+                                </p>
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-6">

@@ -71,6 +71,9 @@
                                         Not set
                                     @endif
                                 </p>
+                                @if($schedule->location)
+                                <p><strong>Location:</strong> {{ $schedule->location }}</p>
+                                @endif
                                 @if($booking)
                                     <p><strong>Payment Status:</strong> 
                                         <span class="badge badge-{{ $booking->payment_status === 'paid' ? 'success' : ($booking->payment_status === 'pending' ? 'warning' : 'danger') }}">

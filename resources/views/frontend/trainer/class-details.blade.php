@@ -35,6 +35,9 @@
                                 @endif
                             </p>
                             <p><strong>Type:</strong> {{ ucfirst($schedule->type ?? 'Not specified') }}</p>
+                            @if($schedule->location)
+                            <p><strong>Location:</strong> {{ $schedule->location }}</p>
+                            @endif
                         </div>
                         <div class="col-md-6">
                             <h5>Enrollment Statistics</h5>
