@@ -141,7 +141,7 @@ class BookingController extends Controller
                 'child_id' => $request->child_id,
                 'status' => 'pending',
                 'sessions_remaining' => $request->sessions,
-                'total_cost' => $schedule->price * $request->sessions
+                'total_cost' => $schedule->current_price * $request->sessions
             ]);
          
             DB::commit();
