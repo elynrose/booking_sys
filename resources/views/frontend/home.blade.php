@@ -117,7 +117,12 @@
                                 @if($booking->schedule->photo)
                                     <img src="{{ $booking->schedule->photo_url }}" alt="{{ $booking->schedule->title }}" class="img-fluid rounded schedule-image" style="max-height: 100px; width: 100%; object-fit: cover;">
                                 @else
-                                    <x-svg-placeholder type="schedule" text="{{ $booking->schedule->title }}" width="100%" height="100px" class="img-fluid rounded" />
+                                    <div class="img-fluid rounded bg-light d-flex align-items-center justify-content-center" style="max-height: 100px; width: 100%; min-height: 100px;">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-calendar fa-2x mb-2"></i>
+                                            <div class="small">{{ $booking->schedule->title }}</div>
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                             <div class="col-md-3">

@@ -15,7 +15,12 @@
                 @if($schedule->photo)
                     <img src="{{ $schedule->photo_url }}" alt="Current photo" class="img-thumbnail schedule-image" style="max-height: 200px">
                 @else
-                    <x-svg-placeholder type="schedule" text="No Class Image" width="200px" height="200px" class="img-thumbnail" />
+                    <div class="img-thumbnail bg-light d-flex align-items-center justify-content-center" style="max-height: 200px; min-height: 200px;">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-calendar fa-2x mb-2"></i>
+                            <div class="small">No Class Image</div>
+                        </div>
+                    </div>
                 @endif
             </div>
 

@@ -26,7 +26,12 @@
                                 </div>
                             @else
                                 <div class="mb-2">
-                                    <x-svg-placeholder type="trainer" text="No Photo" width="150px" height="150px" class="img-thumbnail" />
+                                    <div class="img-thumbnail bg-light d-flex align-items-center justify-content-center" style="max-width: 150px; min-height: 150px;">
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-user-tie fa-2x mb-2"></i>
+                                            <div class="small">No Photo</div>
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
                             <input type="file" name="profile_picture" id="profile_picture" class="form-control-file @error('profile_picture') is-invalid @enderror">
