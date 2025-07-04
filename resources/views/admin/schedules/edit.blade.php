@@ -55,8 +55,10 @@
                             @enderror
                             @if($schedule->photo)
                                 <div class="mt-2">
-                                    <img src="{{ $schedule->photo_url }}" alt="Current photo" class="img-thumbnail" style="max-height: 200px">
+                                    <img src="{{ $schedule->photo_url }}" alt="Current photo" class="img-thumbnail schedule-image" style="max-height: 200px">
                                 </div>
+                            @else
+                                <x-svg-placeholder type="schedule" text="No Class Image" width="200px" height="200px" class="img-thumbnail" />
                             @endif
                         </div>
 

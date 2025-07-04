@@ -23,6 +23,7 @@ class HomeController extends Controller
 
         $user = Auth::user();
         $today = Carbon::today();
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
         // Get active schedules (schedules that haven't ended yet and have remaining sessions)
         $activeSchedules = Booking::where('user_id', $user->id)
@@ -84,7 +85,7 @@ class HomeController extends Controller
         // Get featured schedules
         $featuredSchedules = Schedule::with(['trainer.user', 'bookings'])
             ->where('status', '=', 'active')
-            ->where('start_date', '>=', Carbon::now()->toDateTimeString())
+            ->where('start_date', '>=', Carbon::now($siteTimezone)->toDateTimeString())
             ->latest()
             ->take(6)
             ->get();
@@ -94,7 +95,7 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->whereHas('schedules', function ($query) {
                 $query->where('status', '=', 'active')
-                    ->where('start_date', '>=', Carbon::now()->toDateTimeString());
+                    ->where('start_date', '>=', Carbon::now($siteTimezone)->toDateTimeString());
             })
             ->take(4)
             ->get();
@@ -102,11 +103,11 @@ class HomeController extends Controller
         // Get categories with active schedules
         $categories = Category::whereHas('schedules', function ($query) {
             $query->where('status', '=', 'active')
-                ->where('start_date', '>=', Carbon::now()->toDateTimeString());
+                ->where('start_date', '>=', Carbon::now($siteTimezone)->toDateTimeString());
         })
         ->withCount(['schedules' => function ($query) {
             $query->where('status', '=', 'active')
-                ->where('start_date', '>=', Carbon::now()->toDateTimeString());
+                ->where('start_date', '>=', Carbon::now($siteTimezone)->toDateTimeString());
         }])
         ->take(6)
         ->get();
@@ -157,8 +158,9 @@ class HomeController extends Controller
     private function getNextSessionDate($schedule)
     {
         $today = Carbon::today();
-        $startDate = Carbon::parse($schedule->start_date);
-        $endDate = Carbon::parse($schedule->end_date);
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
+        $startDate = Carbon::parse($schedule->start_date, $siteTimezone);
+        $endDate = Carbon::parse($schedule->end_date, $siteTimezone);
         
         // If schedule hasn't started yet, return start date
         if ($today->lt($startDate)) {
@@ -194,6 +196,7 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $today = Carbon::today();
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
         
         return $schedule->users()
             ->where('users.id', $user->id)

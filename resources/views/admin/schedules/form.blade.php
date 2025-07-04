@@ -12,10 +12,10 @@
                 @error('photo')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-                @if(isset($schedule) && $schedule->photo)
-                    <div class="mt-2">
-                        <img src="{{ $schedule->photo_url }}" alt="Current photo" class="img-thumbnail" style="max-height: 200px">
-                    </div>
+                @if($schedule->photo)
+                    <img src="{{ $schedule->photo_url }}" alt="Current photo" class="img-thumbnail schedule-image" style="max-height: 200px">
+                @else
+                    <x-svg-placeholder type="schedule" text="No Class Image" width="200px" height="200px" class="img-thumbnail" />
                 @endif
             </div>
 

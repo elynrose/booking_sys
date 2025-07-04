@@ -114,7 +114,11 @@
                     <div class="schedule-item mb-3 p-3 border rounded">
                         <div class="row align-items-center">
                             <div class="col-md-2">
-                                <img src="{{ $booking->schedule->photo_url }}" alt="{{ $booking->schedule->title }}" class="img-fluid rounded" style="max-height: 100px; width: 100%; object-fit: cover;">
+                                @if($booking->schedule->photo)
+                                    <img src="{{ $booking->schedule->photo_url }}" alt="{{ $booking->schedule->title }}" class="img-fluid rounded schedule-image" style="max-height: 100px; width: 100%; object-fit: cover;">
+                                @else
+                                    <x-svg-placeholder type="schedule" text="{{ $booking->schedule->title }}" width="100%" height="100px" class="img-fluid rounded" />
+                                @endif
                             </div>
                             <div class="col-md-3">
                                 <h6 class="mb-1">{{ $booking->schedule->title }}</h6>

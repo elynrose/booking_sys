@@ -22,7 +22,11 @@
                             <label for="profile_picture">Profile Picture</label>
                             @if($trainer->profile_picture)
                                 <div class="mb-2">
-                                    <img src="{{ Storage::url($trainer->profile_picture) }}" alt="{{ $trainer->user->name }}" class="img-thumbnail" style="max-width: 150px;">
+                                    <img src="{{ Storage::url($trainer->profile_picture) }}" alt="{{ $trainer->user->name }}" class="img-thumbnail trainer-image" style="max-width: 150px;">
+                                </div>
+                            @else
+                                <div class="mb-2">
+                                    <x-svg-placeholder type="trainer" text="No Photo" width="150px" height="150px" class="img-thumbnail" />
                                 </div>
                             @endif
                             <input type="file" name="profile_picture" id="profile_picture" class="form-control-file @error('profile_picture') is-invalid @enderror">

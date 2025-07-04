@@ -20,6 +20,8 @@ class SchedulesController extends Controller
     {
         abort_if(Gate::denies('schedule_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
+
         $query = Schedule::with(['trainer.user', 'bookings', 'category'])
             ->where('status', '=', 'active');
 
@@ -99,6 +101,7 @@ class SchedulesController extends Controller
             abort(404, 'Schedule not found.');
         }
 
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
         $schedule->load(['trainer.user', 'bookings.user']);
 
         return view('frontend.schedules.show', compact('schedule'));
@@ -132,10 +135,12 @@ class SchedulesController extends Controller
     {
         abort_if(Gate::denies('schedule_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
+
         $schedules = Schedule::with(['trainer.user', 'bookings'])
             ->where('status', '=', 'active')
             ->where('is_featured', true)
-            ->where('start_date', '>=', Carbon::now()->toDateTimeString())
+            ->where('start_date', '>=', Carbon::now($siteTimezone)->toDateTimeString())
             ->latest()
             ->take(6)
             ->get();
@@ -147,10 +152,12 @@ class SchedulesController extends Controller
     {
         abort_if(Gate::denies('schedule_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
+
         $schedules = Schedule::with(['trainer.user', 'bookings'])
             ->where('trainer_id', $trainer->id)
             ->where('status', '=', 'active')
-            ->where('start_date', '>=', Carbon::now()->toDateTimeString())
+            ->where('start_date', '>=', Carbon::now($siteTimezone)->toDateTimeString())
             ->latest()
             ->paginate(10);
 

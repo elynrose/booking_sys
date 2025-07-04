@@ -30,11 +30,11 @@ class CheckinController extends Controller
         $unpaidBookings = 0;
         $user = null;
         $activeCheckin = null;
-        $userTimezone = 'UTC';
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
         // If it's a GET request, show the form
         if ($request->method() === 'GET') {
-            return view('frontend.checkins.verify', compact('bookings', 'unpaidBookings', 'user', 'request', 'activeCheckin', 'userTimezone'));
+            return view('frontend.checkins.verify', compact('bookings', 'unpaidBookings', 'user', 'request', 'activeCheckin', 'siteTimezone'));
         }
 
         // Handle POST request
@@ -100,14 +100,15 @@ class CheckinController extends Controller
             ->where('status', 'confirmed')
             ->count();
 
-        // Get user's timezone (default to UTC if not set)
-        $userTimezone = $user->timezone ?? 'UTC';
+        // Get site timezone from settings
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
-        return view('frontend.checkins.verify', compact('bookings', 'unpaidBookings', 'user', 'request', 'activeCheckin', 'userTimezone'));
+        return view('frontend.checkins.verify', compact('bookings', 'unpaidBookings', 'user', 'request', 'activeCheckin', 'siteTimezone'));
     }
 
     public function checkin(Request $request)
     {
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
         $request->validate([
             'booking_id' => 'required|exists:bookings,id',
@@ -136,8 +137,8 @@ class CheckinController extends Controller
         }
 
         // Check if class has started (prevent checkin for future classes)
-        $currentTime = Carbon::now($user->timezone ?? 'UTC');
-        $scheduleStartTime = Carbon::parse($booking->schedule->start_time, $user->timezone ?? 'UTC');
+        $currentTime = Carbon::now($siteTimezone);
+        $scheduleStartTime = Carbon::parse($booking->schedule->start_time, $siteTimezone);
         
         if ($currentTime->lt($scheduleStartTime)) {
             $timeUntilStart = $currentTime->diffForHumans($scheduleStartTime, ['parts' => 2]);
@@ -168,7 +169,7 @@ class CheckinController extends Controller
         }
 
         // Check for late check-in
-        $scheduleEndTime = Carbon::parse($booking->schedule->end_time, $user->timezone ?? 'UTC');
+        $scheduleEndTime = Carbon::parse($booking->schedule->end_time, $siteTimezone);
         
         $isLateCheckin = $currentTime->gt($scheduleStartTime);
         $lateMinutes = $isLateCheckin ? $currentTime->diffInMinutes($scheduleStartTime) : 0;
@@ -200,6 +201,7 @@ class CheckinController extends Controller
 
     public function checkout(Request $request)
     {
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
         $request->validate([
             'booking_id' => 'required|exists:bookings,id',
@@ -241,7 +243,7 @@ class CheckinController extends Controller
 
         // Update check-out time
         $checkin->update([
-            'checkout_time' => Carbon::now($user->timezone ?? 'UTC')->utc()
+            'checkout_time' => Carbon::now($siteTimezone)->utc()
         ]);
 
         // Decrement sessions_remaining by 1 (only for non-unlimited schedules)
@@ -261,6 +263,8 @@ class CheckinController extends Controller
     public function autoCheckout(Request $request)
     {
         abort_if(Gate::denies('checkin_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
         $request->validate([
             'booking_id' => 'required|exists:bookings,id',
@@ -295,7 +299,7 @@ class CheckinController extends Controller
 
         // Update check-out time
         $checkin->update([
-            'checkout_time' => Carbon::now($user->timezone ?? 'UTC')->utc()
+            'checkout_time' => Carbon::now($siteTimezone)->utc()
         ]);
 
         // Decrement sessions_remaining by 1 (only for non-unlimited schedules)
@@ -330,6 +334,7 @@ class CheckinController extends Controller
     public function autoCheckoutSuccess()
     {
         // Get the most recent auto checkout for the current user
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
         $checkin = Checkin::with(['booking.schedule', 'booking.child'])
             ->whereHas('booking', function($query) {
                 $query->where('user_id', auth()->id());

@@ -21,19 +21,21 @@ class DashboardController extends Controller
     {
         abort_if(Gate::denies('dashboard_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
+
         // Get date range from request or default to last 30 days
-        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->format('Y-m-d'));
-        $endDate = $request->input('end_date', Carbon::now()->format('Y-m-d'));
+        $startDate = $request->input('start_date', Carbon::now($siteTimezone)->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', Carbon::now($siteTimezone)->format('Y-m-d'));
 
         // Convert to Carbon instances
-        $startDate = Carbon::parse($startDate)->startOfDay();
-        $endDate = Carbon::parse($endDate)->endOfDay();
+        $startDate = Carbon::parse($startDate, $siteTimezone)->startOfDay();
+        $endDate = Carbon::parse($endDate, $siteTimezone)->endOfDay();
 
         // Get total statistics
         $totalBookings = Booking::count();
         $totalRevenue = Payment::where('payments.status', 'paid')->sum('amount');
-        $realizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '<=', now())->sum('amount');
-        $unrealizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '>', now())->sum('amount');
+        $realizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '<=', now($siteTimezone))->sum('amount');
+        $unrealizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '>', now($siteTimezone))->sum('amount');
         $totalUsers = User::count();
         $totalTrainers = Trainer::count();
         $totalSchedules = Schedule::count();
@@ -179,6 +181,8 @@ class DashboardController extends Controller
     {
         abort_if(Gate::denies('dashboard_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
+
         // If only filter options are requested
         if ($request->has('options_only')) {
             $classOptions = Schedule::select('id', 'title')->orderBy('title')->get();
@@ -191,12 +195,12 @@ class DashboardController extends Controller
             ]);
         }
 
-        $date = $request->input('date', Carbon::today()->format('Y-m-d'));
+        $date = $request->input('date', Carbon::now($siteTimezone)->format('Y-m-d'));
         $classId = $request->input('class_id');
         $trainerId = $request->input('trainer_id');
         $status = $request->input('status');
-        $now = Carbon::now();
-        $targetDate = Carbon::parse($date);
+        $now = Carbon::now($siteTimezone);
+        $targetDate = Carbon::parse($date, $siteTimezone);
 
         // Filtered current classes
         $currentClassesQuery = Schedule::with(['trainer.user', 'category', 'bookings.user', 'bookings.checkin'])
