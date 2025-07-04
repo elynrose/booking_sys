@@ -4,11 +4,7 @@
 <div class="container-fluid px-0">
     @if($schedule->photo)
         <div class="position-relative">
-            @if($schedule->photo)
-    <img src="{{ $schedule->photo_url }}" alt="{{ $schedule->title }}" class="w-100 schedule-image" style="height: 400px; object-fit: cover;">
-@else
-    <x-svg-placeholder type="schedule" text="{{ $schedule->title }}" width="100%" height="400px" class="w-100" />
-@endif
+            <img src="{{ $schedule->photo_url }}" alt="{{ $schedule->title }}" class="w-100" style="height: 400px; object-fit: cover;">
             <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));"></div>
             <div class="position-absolute bottom-0 start-0 p-4 text-white">
                 <h1 class="display-5 fw-bold mb-2">{{ $schedule->title }}</h1>

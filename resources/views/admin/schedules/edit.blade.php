@@ -55,14 +55,7 @@
                             @enderror
                             @if($schedule->photo)
                                 <div class="mt-2">
-                                    <img src="{{ $schedule->photo_url }}" alt="Current photo" class="img-thumbnail schedule-image" style="max-height: 200px">
-                                </div>
-                            @else
-                                <div class="img-thumbnail bg-light d-flex align-items-center justify-content-center" style="max-height: 200px; min-height: 200px;">
-                                    <div class="text-center text-muted">
-                                        <i class="fas fa-calendar fa-2x mb-2"></i>
-                                        <div class="small">No Class Image</div>
-                                    </div>
+                                    <img src="{{ $schedule->photo_url }}" alt="Current photo" class="img-thumbnail" style="max-height: 200px">
                                 </div>
                             @endif
                         </div>

@@ -40,26 +40,13 @@
                             
                             @if($activeCheckin->booking->schedule->photo)
                                 <div class="position-relative mb-4">
-                                    <img src="{{ $activeCheckin->booking->schedule->photo_url }}" alt="{{ $activeCheckin->booking->schedule->title }}" class="w-100 rounded schedule-image" style="height: 250px; object-fit: cover;">
+                                    <img src="{{ $activeCheckin->booking->schedule->photo_url }}" alt="{{ $activeCheckin->booking->schedule->title }}" class="w-100 rounded" style="height: 250px; object-fit: cover;">
                                     <div class="position-absolute bottom-0 start-0 p-3 text-white">
                                         <h5 class="mb-1">{{ $activeCheckin->booking->schedule->title }}</h5>
                                         <p class="mb-0">
                                             <i class="fas fa-child me-2"></i>
                                             {{ $activeCheckin->booking->child->name }}
                                         </p>
-                                    </div>
-                                </div>
-                            @else
-                                <div class="position-relative mb-4">
-                                    <div class="w-100 rounded bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
-                                        <div class="text-center text-muted">
-                                            <i class="fas fa-calendar fa-3x mb-3"></i>
-                                            <h5 class="mb-1">{{ $activeCheckin->booking->schedule->title }}</h5>
-                                            <p class="mb-0">
-                                                <i class="fas fa-child me-2"></i>
-                                                {{ $activeCheckin->booking->child->name }}
-                                            </p>
-                                        </div>
                                     </div>
                                 </div>
                             @endif

@@ -120,8 +120,7 @@ class HomeController extends Controller
             'paymentHistory',
             'featuredSchedules',
             'featuredTrainers',
-            'categories',
-            'siteTimezone'
+            'categories'
         ));
     }
 
