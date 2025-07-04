@@ -18,7 +18,7 @@
                     <div class="text-center mb-4">
                         <i class="fas fa-id-card fa-3x text-primary mb-3"></i>
                         <h5>Find Your Classes</h5>
-                        <p class="text-muted">Enter your information to find your classes for today.</p>
+                        <p class="text-muted">Enter your member ID to find your child's classes for today.</p>
                     </div>
 
                     <form action="{{ route('frontend.checkins.verify') }}" method="POST">
@@ -27,13 +27,8 @@
                             <label for="member_id" class="form-label">Enter Your Member ID</label>
                             <input type="text" class="form-control @error('member_id') is-invalid @enderror" 
                                 id="member_id" name="member_id" 
-                                value="{{ old('member_id', auth()->check() ? auth()->user()->member_id : '') }}" 
-                                placeholder="Enter your member ID" required>
-                            @if(auth()->check() && auth()->user()->member_id)
-                                <div class="form-text text-success">
-                                    <i class="fas fa-check-circle me-1"></i> Pre-filled with your member ID
-                                </div>
-                            @endif
+                                value="{{ old('member_id') }}" 
+                                placeholder="Enter the member ID of the parent who booked the class" required>
                             @error('member_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
