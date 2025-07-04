@@ -103,48 +103,6 @@
                             <div class="col-md-12">
                                 <div class="card border-0 bg-light mb-3">
                                     <div class="card-body">
-                                        <h6 class="card-title text-muted mb-3">Payment Method</h6>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-check mb-3">
-                                                    <input class="form-check-input" type="radio" name="payment_method" id="zelle" value="zelle" checked>
-                                                    <label class="form-check-label" for="zelle">
-                                                        <i class="fas fa-university me-2"></i>Zelle
-                                                    </label>
-                                                </div>
-                                                <div id="zelle-info" class="ps-4">
-                                                    <div class="alert alert-info">
-                                                        <h6 class="alert-heading mb-2">Zelle Payment Instructions</h6>
-                                                        <p class="mb-2">Please send your payment to:</p>
-                                                        <ul class="mb-0">
-                                                            <li><strong>Email:</strong> your-zelle-email@example.com</li>
-                                                            <li><strong>Name:</strong> Your Business Name</li>
-                                                            <li><strong>Amount:</strong> $<span id="zelle-amount">{{ number_format($schedule->current_price, 2) }}</span></li>
-                                                        </ul>
-                                                        <hr>
-                                                        <p class="mb-0"><small>Please include your name and booking reference <strong>username</strong> in the memo field.</small></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-check mb-3">
-                                                    <input class="form-check-input" type="radio" name="payment_method" id="stripe" value="stripe">
-                                                    <label class="form-check-label" for="stripe">
-                                                        <i class="fab fa-stripe me-2"></i><br>Credit/Debit Card (Stripe)
-                                                    </label>
-                                                </div>
-                                                <div id="stripe-form" class="ps-4" style="display: none;">
-                                                    <div class="alert alert-info">
-                                                        <p class="mb-0">You will be redirected to Stripe to complete your payment after booking.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card border-0 bg-light mb-3">
-                                    <div class="card-body">
                                         <h6 class="card-title text-muted mb-3">Total Cost</h6>
                                         <h3 class="mb-0" id="totalCost">$ {{ number_format($schedule->current_price, 2) }}</h3>
                                     </div>
@@ -172,7 +130,6 @@
         function updateTotal(value) {
             const total = pricePerSession * value;
             document.getElementById('totalCost').textContent = '$' + total.toFixed(2);
-            document.getElementById('zelle-amount').textContent = total.toFixed(2);
         }
 
         // Update on change
