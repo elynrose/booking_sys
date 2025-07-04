@@ -126,6 +126,11 @@
                             <i class="fas fa-user-tie"></i> {{ $schedule->trainer->user->name }}
                         </p>
                     @endif
+                    @if($schedule->location)
+                        <p class="card-text text-muted mb-2">
+                            <i class="fas fa-map-marker-alt"></i> {{ $schedule->location }}
+                        </p>
+                    @endif
                     <p class="card-text text-muted mb-2">{{ Str::limit($schedule->description, 70) }}</p>
                     <div class="mb-1 small text-secondary">
                         @if($schedule->start_date && $schedule->end_date)
