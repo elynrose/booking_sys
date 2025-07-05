@@ -30,6 +30,11 @@ class Trainer extends Model
 
     public function schedules()
     {
-        return $this->belongsToMany(Schedule::class, 'trainer_schedule');
+        return $this->hasMany(Schedule::class);
+    }
+
+    public function availabilities()
+    {
+        return $this->hasMany(TrainerAvailability::class);
     }
 }

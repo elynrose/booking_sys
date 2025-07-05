@@ -69,6 +69,20 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Category routes
     Route::resource('categories', CategoryController::class);
 
+    // Trainer Availability routes
+    Route::get('trainer-availability', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'index'])->name('trainer-availability.index');
+    Route::get('trainer-availability/{schedule}', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'show'])->name('trainer-availability.show');
+    Route::get('trainer-availability/{schedule}/calendar', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'calendar'])->name('trainer-availability.calendar');
+    Route::post('trainer-availability/{schedule}', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'store'])->name('trainer-availability.store');
+    Route::put('trainer-availability/{availability}', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'update'])->name('trainer-availability.update');
+    Route::delete('trainer-availability/{availability}', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'destroy'])->name('trainer-availability.destroy');
+    Route::post('trainer-availability/{schedule}/bulk-update', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'bulkUpdate'])->name('trainer-availability.bulk-update');
+    Route::post('trainer-availability/{schedule}/create-recurring', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'createRecurring'])->name('trainer-availability.create-recurring');
+    Route::get('trainer-availability/{schedule}/export', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'export'])->name('trainer-availability.export');
+
+    // AJAX: Get all availabilities for a trainer
+    Route::get('trainer-availability/ajax/trainer-availabilities', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'getTrainerAvailabilities'])->name('trainer-availability.ajax.trainer-availabilities');
+
     // Site Settings
     Route::get('site-settings', [App\Http\Controllers\Admin\SiteSettingsController::class, 'index'])->name('site-settings.index');
     Route::put('site-settings', [App\Http\Controllers\Admin\SiteSettingsController::class, 'update'])->name('site-settings.update');
@@ -142,6 +156,12 @@ Route::middleware(['auth', 'role:Trainer'])->group(function () {
     Route::get('/trainer/student-details', [App\Http\Controllers\Frontend\TrainerController::class, 'showStudentDetails'])->name('frontend.trainer.student-details');
     // COMMENTED OUT: Trainer payment confirmation route
     // Route::post('/trainer/payments/{payment}/confirm', [App\Http\Controllers\Frontend\TrainerController::class, 'confirmPayment'])->name('frontend.trainer.confirm-payment');
+    
+    // Trainer Availability Management
+    Route::resource('trainer/availability', 'Frontend\TrainerAvailabilityController', ['as' => 'frontend.trainer'])->except(['show']);
+    Route::get('trainer/availability/calendar', [App\Http\Controllers\Frontend\TrainerAvailabilityController::class, 'calendar'])->name('frontend.trainer.availability.calendar');
+    Route::post('trainer/availability/bulk-update', [App\Http\Controllers\Frontend\TrainerAvailabilityController::class, 'bulkUpdate'])->name('frontend.trainer.availability.bulk-update');
+    Route::post('trainer/availability/create-recurring', [App\Http\Controllers\Frontend\TrainerAvailabilityController::class, 'createRecurring'])->name('frontend.trainer.availability.create-recurring');
 });
 
 // Booking routes (moved outside the frontend group)

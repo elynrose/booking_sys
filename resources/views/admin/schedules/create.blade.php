@@ -121,6 +121,15 @@
                     </div>
 
                     <div class="col-md-6">
+                        {{-- Trainer Availability Dropdown (hidden by default) --}}
+                        <div class="mb-3" id="trainer-availability-group" style="display:none;">
+                            <label for="trainer-availability-select" class="form-label">Trainer Available Dates</label>
+                            <select class="form-select form-control" id="trainer-availability-select">
+                                <option value="">Select an available date...</option>
+                            </select>
+                            <div class="form-text">Selecting a date will auto-fill the date and time fields below.</div>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -309,4 +318,80 @@
         </div>
     </div>
 </div>
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    console.log('Trainer availability script loaded');
+    
+    function resetAvailabilityDropdown() {
+        console.log('Resetting availability dropdown');
+        $('#trainer-availability-group').hide();
+        $('#trainer-availability-select').empty().append('<option value="">Select an available date...</option>');
+    }
+    
+    function populateAvailabilityDropdown(availabilities) {
+        console.log('Populating dropdown with availabilities:', availabilities);
+        resetAvailabilityDropdown();
+        if (availabilities.length === 0) {
+            console.log('No availabilities found');
+            return;
+        }
+        availabilities.forEach(function(a) {
+            var label = moment(a.date).format('MMM D, YYYY (dddd)') + ' ' +
+                moment(a.start_time, 'HH:mm:ss').format('h:mm A') + ' - ' +
+                moment(a.end_time, 'HH:mm:ss').format('h:mm A');
+            $('#trainer-availability-select').append('<option value="'+a.id+'" data-date="'+a.date+'" data-start_time="'+a.start_time+'" data-end_time="'+a.end_time+'">'+label+'</option>');
+        });
+        $('#trainer-availability-group').show();
+        console.log('Dropdown populated and shown');
+    }
+    
+    $('#trainer_id').on('change', function() {
+        var trainerId = $(this).val();
+        console.log('Trainer selected:', trainerId);
+        resetAvailabilityDropdown();
+        if (!trainerId) {
+            console.log('No trainer selected');
+            return;
+        }
+        
+        console.log('Making AJAX request to fetch availabilities...');
+        $.get('/admin/trainer-availability/ajax/trainer-availabilities', {trainer_id: trainerId})
+            .done(function(data) {
+                console.log('AJAX response received:', data);
+                if (data && data.availabilities && Array.isArray(data.availabilities)) {
+                    populateAvailabilityDropdown(data.availabilities);
+                } else if (data && Array.isArray(data)) {
+                    populateAvailabilityDropdown(data);
+                } else {
+                    console.log('Invalid data format received');
+                }
+            })
+            .fail(function(xhr, status, error) {
+                console.error('AJAX request failed:', status, error);
+                console.error('Response:', xhr.responseText);
+            });
+    });
+    
+    $('#trainer-availability-select').on('change', function() {
+        var selected = $(this).find('option:selected');
+        console.log('Availability selected:', selected.val());
+        if (!selected.val()) return;
+        var date = selected.data('date');
+        var startTime = selected.data('start_time');
+        var endTime = selected.data('end_time');
+        
+        // Format the date to YYYY-MM-DD format
+        var formattedDate = moment(date).format('YYYY-MM-DD');
+        
+        console.log('Filling fields with:', {date: date, formattedDate: formattedDate, startTime: startTime, endTime: endTime});
+        $('#start_date').val(formattedDate);
+        $('#end_date').val(formattedDate);
+        $('#start_time').val(startTime);
+        $('#end_time').val(endTime);
+    });
+});
+</script>
+@endsection
 @endsection 

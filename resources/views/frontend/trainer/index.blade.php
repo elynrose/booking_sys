@@ -4,6 +4,39 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tools"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ route('frontend.trainer.availability.index') }}" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-calendar-alt"></i> Manage Availability
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ route('frontend.schedules.index') }}" class="btn btn-outline-info btn-block">
+                                <i class="fas fa-list"></i> View All Schedules
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ route('frontend.checkins.index') }}" class="btn btn-outline-success btn-block">
+                                <i class="fas fa-sign-in-alt"></i> Check-in Students
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ route('frontend.profile.edit') }}" class="btn btn-outline-secondary btn-block">
+                                <i class="fas fa-user-edit"></i> Edit Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Trainer Profile Card -->
             <div class="card mb-4">
                 <div class="card-header bg-success text-white">

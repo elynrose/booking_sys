@@ -118,14 +118,26 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining)
-                                                    <span class="badge bg-info">
-                                                        {{ $booking->sessions_remaining }} remaining
-                                                    </span>
+                                                @if($booking->schedule->allow_unlimited_bookings)
+                                                    @if($booking->schedule->end_date->isPast())
+                                                        <span class="badge bg-secondary">
+                                                            <i class="fas fa-check-circle me-1"></i> Sessions Completed
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-infinity me-1"></i> Unlimited
+                                                        </span>
+                                                    @endif
                                                 @else
-                                                    <span class="badge bg-secondary">
-                                                        <i class="fas fa-check-circle me-1"></i> Sessions Completed
-                                                    </span>
+                                                    @if($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining)
+                                                        <span class="badge bg-info">
+                                                            {{ $booking->sessions_remaining }} remaining
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-secondary">
+                                                            <i class="fas fa-check-circle me-1"></i> Sessions Completed
+                                                        </span>
+                                                    @endif
                                                 @endif
                                             </td>
                                             <td>

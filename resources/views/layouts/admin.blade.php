@@ -135,6 +135,8 @@
         }
     </style>
 
+    @yield('styles')
+
     <!-- Scripts -->
     @vite(['resources/js/app.js'])
 </head>
@@ -168,18 +170,28 @@
 
                             @endcan
                             @can('trainer_access')
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.trainers.index') }}">
-                                    <i class="fas fa-user-tie"></i> Trainers
+                            @can('schedule_access')
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="eventsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-calendar"></i> Events
                                 </a>
+                                <div class="dropdown-menu" aria-labelledby="eventsDropdown">
+                                    @can('trainer_access')
+                                    <a class="dropdown-item" href="{{ route('admin.trainers.index') }}">
+                                        <i class="fas fa-user-tie"></i> Trainers
+                                    </a>
+                                    @endcan
+                                    @can('schedule_access')
+                                    <a class="dropdown-item" href="{{ route('admin.schedules.index') }}">
+                                        <i class="fas fa-calendar-alt"></i> Classes
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('admin.trainer-availability.index') }}">
+                                        <i class="fas fa-calendar-check"></i> Availability
+                                    </a>
+                                    @endcan
+                                </div>
                             </li>
                             @endcan
-                            @can('schedule_access')
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.schedules.index') }}">
-                                    <i class="fas fa-calendar-alt"></i> Classes
-                                </a>
-                            </li>
                             @endcan
                             @can('booking_access')
                             <li class="nav-item">

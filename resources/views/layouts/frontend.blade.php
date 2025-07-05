@@ -132,6 +132,11 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ route('frontend.trainer.availability.index') }}">
+                                    <i class="fas fa-calendar-check"></i> My Availability
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{ route('frontend.schedules.index') }}">
                                     <i class="fas fa-calendar-alt"></i> View All Schedules
                                 </a>

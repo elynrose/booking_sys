@@ -101,6 +101,53 @@ class CheckinController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // For unlimited classes, get trainer availability data
+        foreach ($bookings as $booking) {
+            if ($booking->schedule->allow_unlimited_bookings && $booking->schedule->trainer) {
+                $currentTime = Carbon::now($siteTimezone);
+                $currentDate = $currentTime->format('Y-m-d');
+                $currentTimeStr = $currentTime->format('H:i:s');
+
+                // Get today's availability
+                $todayAvailability = \App\Models\TrainerAvailability::where('trainer_id', $booking->schedule->trainer->id)
+                    ->where('schedule_id', $booking->schedule->id)
+                    ->where('date', $currentDate)
+                    ->where('status', 'available')
+                    ->where('start_time', '<=', $currentTimeStr)
+                    ->where('end_time', '>', $currentTimeStr)
+                    ->first();
+
+                // Get next available session
+                $nextAvailable = \App\Models\TrainerAvailability::where('trainer_id', $booking->schedule->trainer->id)
+                    ->where('schedule_id', $booking->schedule->id)
+                    ->where('status', 'available')
+                    ->whereRaw('DATE(date) >= ?', [$currentDate])
+                    ->orderBy('date')
+                    ->orderBy('start_time')
+                    ->first();
+
+                // Get this month's availability for display
+                $currentMonth = Carbon::now($siteTimezone)->format('Y-m');
+                $monthStart = Carbon::createFromFormat('Y-m', $currentMonth, $siteTimezone)->startOfMonth();
+                $monthEnd = Carbon::createFromFormat('Y-m', $currentMonth, $siteTimezone)->endOfMonth();
+                
+                $monthlyAvailability = \App\Models\TrainerAvailability::where('trainer_id', $booking->schedule->trainer->id)
+                    ->where('schedule_id', $booking->schedule->id)
+                    ->where('status', 'available')
+                    ->whereRaw('DATE(date) >= ?', [$monthStart->format('Y-m-d')])
+                    ->whereRaw('DATE(date) <= ?', [$monthEnd->format('Y-m-d')])
+                    ->orderBy('date')
+                    ->orderBy('start_time')
+                    ->get();
+
+                $booking->trainer_availability = [
+                    'today_available' => $todayAvailability,
+                    'next_available' => $nextAvailable,
+                    'monthly_availability' => $monthlyAvailability
+                ];
+            }
+        }
+
         // Get unpaid bookings count
         $unpaidBookings = Booking::where('user_id', $user->id)
             ->where('is_paid', false)
@@ -159,6 +206,23 @@ class CheckinController extends Controller
                 ->with('error', 'You have no sessions remaining for this booking.');
         }
 
+        // For unlimited classes, check trainer availability
+        if ($booking->schedule->allow_unlimited_bookings) {
+            $trainerAvailability = $this->checkTrainerAvailability($booking, $currentTime, $siteTimezone);
+            
+            if (!$trainerAvailability['available']) {
+                if ($trainerAvailability['next_available']) {
+                    $nextDate = Carbon::parse($trainerAvailability['next_available']->date)->format('l, F d, Y');
+                    $nextTime = Carbon::parse($trainerAvailability['next_available']->start_time)->format('g:i A');
+                    return redirect()->route('frontend.checkins.index')
+                        ->with('error', 'Trainer is not available at this time. Next available session: ' . $nextDate . ' at ' . $nextTime . '.');
+                } else {
+                    return redirect()->route('frontend.checkins.index')
+                        ->with('error', 'Trainer is not available at this time. No upcoming sessions found.');
+                }
+            }
+        }
+
         // Check if already checked in today (only for non-unlimited schedules)
         if (!$booking->schedule->allow_unlimited_bookings) {
             $existingCheckin = Checkin::where('booking_id', $request->booking_id)
@@ -203,7 +267,82 @@ class CheckinController extends Controller
             }
         }
 
-        return view('frontend.checkins.success', compact('booking', 'checkin', 'isLateCheckin', 'lateMinutes'));
+        return view('frontend.checkins.success', compact('booking', 'checkin'));
+    }
+
+    /**
+     * Check trainer availability for unlimited classes
+     */
+    private function checkTrainerAvailability($booking, $currentTime, $siteTimezone)
+    {
+        $schedule = $booking->schedule;
+        $trainer = $schedule->trainer;
+        
+        if (!$trainer) {
+            \Log::info('Trainer availability check failed: No trainer assigned', [
+                'schedule_id' => $schedule->id,
+                'schedule_title' => $schedule->title
+            ]);
+            return [
+                'available' => false,
+                'next_available' => null,
+                'message' => 'No trainer assigned to this class.'
+            ];
+        }
+
+        $currentDate = $currentTime->format('Y-m-d');
+        $currentTimeStr = $currentTime->format('H:i:s');
+
+        \Log::info('Checking trainer availability', [
+            'trainer_id' => $trainer->id,
+            'schedule_id' => $schedule->id,
+            'current_date' => $currentDate,
+            'current_time' => $currentTimeStr
+        ]);
+
+        // Check if trainer is available for today
+        $todayAvailability = \App\Models\TrainerAvailability::where('trainer_id', $trainer->id)
+            ->where('schedule_id', $schedule->id)
+            ->where('date', $currentDate)
+            ->where('status', 'available')
+            ->where('start_time', '<=', $currentTimeStr)
+            ->where('end_time', '>', $currentTimeStr)
+            ->first();
+
+        if ($todayAvailability) {
+            \Log::info('Trainer is available now', [
+                'trainer_id' => $trainer->id,
+                'schedule_id' => $schedule->id,
+                'availability_id' => $todayAvailability->id
+            ]);
+            return [
+                'available' => true,
+                'next_available' => null,
+                'message' => 'Trainer is available.'
+            ];
+        }
+
+        // If not available today, find the next available session
+        $nextAvailable = \App\Models\TrainerAvailability::where('trainer_id', $trainer->id)
+            ->where('schedule_id', $schedule->id)
+            ->where('status', 'available')
+            ->whereRaw('DATE(date) >= ?', [$currentDate])
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->first();
+
+        \Log::info('Trainer availability check result', [
+            'trainer_id' => $trainer->id,
+            'schedule_id' => $schedule->id,
+            'available_now' => false,
+            'next_available' => $nextAvailable ? $nextAvailable->date . ' ' . $nextAvailable->start_time->format('H:i') : null
+        ]);
+
+        return [
+            'available' => false,
+            'next_available' => $nextAvailable,
+            'message' => 'Trainer is not available at this time.'
+        ];
     }
 
     public function checkout(Request $request)
@@ -329,13 +468,8 @@ class CheckinController extends Controller
             'user_id' => 'required|exists:users,id'
         ]);
 
-        // Verify the member code from session
-        $memberId = session('verified_member_id');
-        if (!$memberId) {
-            return response()->json(['error' => 'Please verify your member ID first.'], 400);
-        }
-
-        $user = User::where('member_id', $memberId)->first();
+        // For logged-in users, use the authenticated user
+        $user = auth()->user();
         if (!$user || $user->id != $request->user_id) {
             return response()->json(['error' => 'Unauthorized access.'], 400);
         }

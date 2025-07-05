@@ -52,7 +52,8 @@
                             @endif
                             
                             <div class="timer-display mb-3">
-                                <div class="d-flex justify-content-center align-items-center">
+                                <h6 class="text-center mb-3">Session Timer</h6>
+                                <div class="d-flex justify-content-center align-items-center mb-3">
                                     <div class="timer-box">
                                         <span id="hours">00</span>
                                         <span class="timer-label">Hours</span>
@@ -67,6 +68,28 @@
                                         <span id="seconds">00</span>
                                         <span class="timer-label">Seconds</span>
                                     </div>
+                                </div>
+                                <div class="text-center">
+                                    <small class="text-muted">Elapsed Time</small>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center mt-3">
+                                    <div class="timer-box">
+                                        <span id="remaining-hours">00</span>
+                                        <span class="timer-label">Hours</span>
+                                    </div>
+                                    <span class="timer-separator">:</span>
+                                    <div class="timer-box">
+                                        <span id="remaining-minutes">00</span>
+                                        <span class="timer-label">Minutes</span>
+                                    </div>
+                                    <span class="timer-separator">:</span>
+                                    <div class="timer-box">
+                                        <span id="remaining-seconds">00</span>
+                                        <span class="timer-label">Seconds</span>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <small class="text-muted">Time Remaining</small>
                                 </div>
                             </div>
                             <form action="{{ route('frontend.checkins.checkout') }}" method="POST" class="d-inline">
@@ -201,12 +224,60 @@
                                                         <i class="fas fa-infinity text-success me-2 mr-2"></i>
                                                         <span class="text-success fw-bold">Unlimited Access</span>
                                                     </div>
-                                                @else
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fas fa-ticket-alt text-muted me-2 mr-2"></i>
-                                                        <span>{{ $booking->sessions_remaining }} {{ Str::plural('session', $booking->sessions_remaining) }} remaining</span>
+                                                    
+                                                    @if(isset($booking->trainer_availability))
+                                                        <div class="trainer-availability-info mt-3">
+                                                            <h6 class="text-primary mb-2">
+                                                <i class="fas fa-user-tie me-2"></i>Trainer Availability
+                                            </h6>
+                                            
+                                            @if($booking->trainer_availability['today_available'])
+                                                <div class="alert alert-success mb-2">
+                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    <strong>Available Now!</strong> Trainer is currently available for this class.
+                                                </div>
+                                            @else
+                                                <div class="alert alert-warning mb-2">
+                                                    <i class="fas fa-clock me-2"></i>
+                                                    <strong>Not Available Now</strong>
+                                                    @if($booking->trainer_availability['next_available'])
+                                                        <br>Next available: {{ \Carbon\Carbon::parse($booking->trainer_availability['next_available']->date)->format('l, M d') }} at {{ \Carbon\Carbon::parse($booking->trainer_availability['next_available']->start_time)->format('g:i A') }}
+                                                    @else
+                                                        <br>No upcoming sessions found this month.
+                                                    @endif
+                                                </div>
+                                            @endif
+                                            
+                                            @if($booking->trainer_availability['monthly_availability']->count() > 0)
+                                                <div class="monthly-availability">
+                                                    <small class="text-muted d-block mb-2">
+                                                        <i class="fas fa-calendar me-1"></i>Available this month:
+                                                    </small>
+                                                    <div class="availability-dates">
+                                                        @foreach($booking->trainer_availability['monthly_availability']->take(5) as $availability)
+                                                            <span class="badge bg-info me-1 mb-1">
+                                                                {{ \Carbon\Carbon::parse($availability->date)->format('M d') }} 
+                                                                {{ \Carbon\Carbon::parse($availability->start_time)->format('g:i A') }}
+                                                            </span>
+                                                        @endforeach
+                                                        @if($booking->trainer_availability['monthly_availability']->count() > 5)
+                                                            <span class="badge bg-secondary">+{{ $booking->trainer_availability['monthly_availability']->count() - 5 }} more</span>
+                                                        @endif
                                                     </div>
-                                                @endif
+                                                </div>
+                                            @else
+                                                <div class="text-muted small">
+                                                    <i class="fas fa-info-circle me-1"></i>No availability set for this month.
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-ticket-alt text-muted me-2 mr-2"></i>
+                                        <span>{{ $booking->sessions_remaining }} {{ Str::plural('session', $booking->sessions_remaining) }} remaining</span>
+                                    </div>
+                                @endif
                                             </div>
 
                                             <div class="d-grid">
@@ -231,15 +302,36 @@
                                                     <button class="btn btn-secondary w-100" disabled>
                                                         <i class="fas fa-clock me-2"></i> Class Has Ended
                                                     </button>
-                                                @elseif($classHasStarted && !$classHasEnded && ($booking->schedule->allow_unlimited_bookings || ($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining)))
-                                                    <form action="{{ route('frontend.checkins.checkin') }}" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" name="booking_id" value="{{ $booking->id }}">
-                                                        <input type="hidden" name="user_id" value="{{ $user->id }}">
-                                                        <button type="submit" class="btn btn-primary w-100">
-                                                            <i class="fas fa-sign-in-alt me-2"></i> Check In
+                                                @elseif($classHasStarted && !$classHasEnded)
+                                                    @if($booking->schedule->allow_unlimited_bookings)
+                                                        @if(isset($booking->trainer_availability) && $booking->trainer_availability['today_available'])
+                                                            <form action="{{ route('frontend.checkins.checkin') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                                                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                                                <button type="submit" class="btn btn-primary w-100">
+                                                                    <i class="fas fa-sign-in-alt me-2"></i> Check In
+                                                                </button>
+                                                            </form>
+                                                        @else
+                                                            <button class="btn btn-secondary w-100" disabled>
+                                                                <i class="fas fa-user-times me-2"></i> Trainer Not Available
+                                                            </button>
+                                                        @endif
+                                                    @elseif($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining)
+                                                        <form action="{{ route('frontend.checkins.checkin') }}" method="POST">
+                                                            @csrf
+                                                            <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                                                            <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                                            <button type="submit" class="btn btn-primary w-100">
+                                                                <i class="fas fa-sign-in-alt me-2"></i> Check In
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <button class="btn btn-secondary w-100" disabled>
+                                                            <i class="fas fa-check-circle me-2"></i> Sessions Completed
                                                         </button>
-                                                    </form>
+                                                    @endif
                                                 @elseif(!$classHasStarted)
                                                     <button class="btn btn-secondary w-100" disabled>
                                                         <i class="fas fa-clock me-2"></i> Class Not Started Yet
@@ -254,9 +346,21 @@
                                                         </button>
                                                     </form>
                                                 @else
-                                                    <button class="btn btn-secondary w-100" disabled>
-                                                        <i class="fas fa-check-circle me-2"></i> Sessions Completed
-                                                    </button>
+                                                    @if($booking->schedule->allow_unlimited_bookings)
+                                                        @if($booking->schedule->end_date->isPast())
+                                                            <button class="btn btn-secondary w-100" disabled>
+                                                                <i class="fas fa-check-circle me-2"></i> Sessions Completed
+                                                            </button>
+                                                        @else
+                                                            <button class="btn btn-secondary w-100" disabled>
+                                                                <i class="fas fa-infinity me-2"></i> Unlimited
+                                                            </button>
+                                                        @endif
+                                                    @else
+                                                        <button class="btn btn-secondary w-100" disabled>
+                                                            <i class="fas fa-check-circle me-2"></i> Sessions Completed
+                                                        </button>
+                                                    @endif
                                                 @endif
                                             </div>
                                         </div>
@@ -311,6 +415,24 @@
     margin: 0 0.5rem;
     color: #2c3e50;
 }
+.trainer-availability-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #007bff;
+}
+.availability-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+.availability-dates .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+.monthly-availability {
+    margin-top: 0.5rem;
+}
 </style>
 @endsection
 
@@ -357,29 +479,44 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTimer() {
         const now = new Date();
         
-        // Calculate the time difference in milliseconds
-        // Both times are in UTC, so the difference calculation is correct
-        const diff = now.getTime() - checkinTime.getTime();
+        // Calculate elapsed time since check-in
+        const elapsedDiff = now.getTime() - checkinTime.getTime();
+        const elapsedHours = Math.floor(elapsedDiff / (1000 * 60 * 60));
+        const elapsedMinutes = Math.floor((elapsedDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const elapsedSeconds = Math.floor((elapsedDiff % (1000 * 60)) / 1000);
         
-        console.log('Current time (UTC):', now.toISOString());
-        console.log('Check-in time (UTC):', checkinTime.toISOString());
-        console.log('Difference (ms):', diff);
+        // Calculate remaining time until auto-checkout
+        const remainingDiff = Math.max(0, autoCheckoutTime.getTime() - now.getTime());
+        const remainingHours = Math.floor(remainingDiff / (1000 * 60 * 60));
+        const remainingMinutes = Math.floor((remainingDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const remainingSeconds = Math.floor((remainingDiff % (1000 * 60)) / 1000);
         
-        // Convert to hours, minutes, seconds
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        // Update elapsed time display
+        document.getElementById('hours').textContent = Math.max(0, elapsedHours).toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = Math.max(0, elapsedMinutes).toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = Math.max(0, elapsedSeconds).toString().padStart(2, '0');
         
-        // Ensure we don't show negative values
-        const displayHours = Math.max(0, hours);
-        const displayMinutes = Math.max(0, minutes);
-        const displaySeconds = Math.max(0, seconds);
+        // Update remaining time display
+        document.getElementById('remaining-hours').textContent = remainingHours.toString().padStart(2, '0');
+        document.getElementById('remaining-minutes').textContent = remainingMinutes.toString().padStart(2, '0');
+        document.getElementById('remaining-seconds').textContent = remainingSeconds.toString().padStart(2, '0');
         
-        document.getElementById('hours').textContent = displayHours.toString().padStart(2, '0');
-        document.getElementById('minutes').textContent = displayMinutes.toString().padStart(2, '0');
-        document.getElementById('seconds').textContent = displaySeconds.toString().padStart(2, '0');
+        // Add visual warning when time is running low (less than 5 minutes)
+        const totalRemainingSeconds = remainingHours * 3600 + remainingMinutes * 60 + remainingSeconds;
+        const remainingTimeElement = document.querySelector('.timer-display');
+        
+        if (totalRemainingSeconds <= 300 && totalRemainingSeconds > 0) { // 5 minutes or less
+            remainingTimeElement.style.backgroundColor = '#fff3cd';
+            remainingTimeElement.style.border = '2px solid #ffc107';
+        } else if (totalRemainingSeconds <= 60 && totalRemainingSeconds > 0) { // 1 minute or less
+            remainingTimeElement.style.backgroundColor = '#f8d7da';
+            remainingTimeElement.style.border = '2px solid #dc3545';
+        } else {
+            remainingTimeElement.style.backgroundColor = '';
+            remainingTimeElement.style.border = '';
+        }
 
-        // Check if current time has passed the auto-checkout time (check-in + session duration)
+        // Check if current time has passed the auto-checkout time
         if (now >= autoCheckoutTime && !autoCheckoutTriggered) {
             autoCheckoutTriggered = true;
             triggerAutoCheckout();
@@ -393,16 +530,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Debug: Log timing info every 30 seconds
-        if (seconds % 30 === 0) {
-            const timeUntilAutoCheckout = Math.max(0, autoCheckoutTime.getTime() - now.getTime());
-            const remainingHours = Math.floor(timeUntilAutoCheckout / (1000 * 60 * 60));
-            const remainingMinutes = Math.floor((timeUntilAutoCheckout % (1000 * 60 * 60)) / (1000 * 60));
-            const remainingSeconds = Math.floor((timeUntilAutoCheckout % (1000 * 60)) / 1000);
-            
-            console.log('Auto checkout timing:', {
+        if (elapsedSeconds % 30 === 0) {
+            console.log('Timer Debug:', {
                 current: now.toISOString(),
+                checkinTime: checkinTime.toISOString(),
                 autoCheckoutTime: autoCheckoutTime.toISOString(),
-                timeUntilAutoCheckout: `${remainingHours}:${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`,
+                elapsed: `${elapsedHours}:${elapsedMinutes.toString().padStart(2, '0')}:${elapsedSeconds.toString().padStart(2, '0')}`,
+                remaining: `${remainingHours}:${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`,
                 sessionDuration: `${Math.floor(sessionDurationSeconds / 3600)}:${Math.floor((sessionDurationSeconds % 3600) / 60).toString().padStart(2, '0')}:${(sessionDurationSeconds % 60).toString().padStart(2, '0')}`,
                 autoCheckoutOver: now >= autoCheckoutTime
             });

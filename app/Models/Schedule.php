@@ -60,6 +60,11 @@ class Schedule extends Model
         return $this->belongsTo(Trainer::class);
     }
 
+    public function availabilities()
+    {
+        return $this->hasMany(TrainerAvailability::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class)
@@ -69,6 +74,14 @@ class Schedule extends Model
 
     public function getNextSessionDate()
     {
+        // First, try to get the next available session from the calendar
+        $nextAvailability = TrainerAvailability::getNextAvailableSession($this->id, $this->trainer_id);
+        
+        if ($nextAvailability) {
+            return $nextAvailability->date;
+        }
+
+        // Fallback to the old logic for backward compatibility
         $today = Carbon::today();
         $startDate = Carbon::parse($this->start_date);
         $endDate = Carbon::parse($this->end_date);
