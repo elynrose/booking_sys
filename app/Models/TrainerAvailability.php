@@ -25,6 +25,28 @@ class TrainerAvailability extends Model
         // 'start_time' and 'end_time' are stored as strings (H:i:s)
     ];
 
+    /**
+     * Get start_time as Carbon object
+     */
+    public function getStartTimeAttribute($value)
+    {
+        if (is_string($value)) {
+            return Carbon::createFromFormat('H:i:s', $value);
+        }
+        return $value;
+    }
+
+    /**
+     * Get end_time as Carbon object
+     */
+    public function getEndTimeAttribute($value)
+    {
+        if (is_string($value)) {
+            return Carbon::createFromFormat('H:i:s', $value);
+        }
+        return $value;
+    }
+
     public function trainer()
     {
         return $this->belongsTo(User::class, 'trainer_id');

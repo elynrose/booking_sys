@@ -294,8 +294,8 @@ class TrainerAvailabilityController extends Controller
             foreach ($availabilities as $availability) {
                 fputcsv($file, [
                     $availability->date->format('Y-m-d'),
-                    $availability->start_time->format('H:i'),
-                    $availability->end_time->format('H:i'),
+                    $availability->start_time ? $availability->start_time->format('H:i') : '',
+                    $availability->end_time ? $availability->end_time->format('H:i') : '',
                     $availability->status,
                     $availability->notes
                 ]);
@@ -323,9 +323,9 @@ class TrainerAvailabilityController extends Controller
             ->map(function($a) {
                 return [
                     'id' => $a->id,
-                    'date' => $a->date,
-                    'start_time' => $a->start_time,
-                    'end_time' => $a->end_time,
+                    'date' => $a->date ? $a->date->format('Y-m-d') : '',
+                    'start_time' => $a->start_time ? $a->start_time->format('H:i') : '',
+                    'end_time' => $a->end_time ? $a->end_time->format('H:i') : '',
                     'status' => $a->status,
                     'notes' => $a->notes
                 ];
