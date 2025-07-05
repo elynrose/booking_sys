@@ -90,9 +90,20 @@ class TrainerAvailability extends Model
      */
     public static function getNextAvailableSession($scheduleId, $trainerId = null)
     {
+        $currentDate = Carbon::today();
+        $currentTime = Carbon::now()->format('H:i:s');
+        
         $query = self::where('schedule_id', $scheduleId)
             ->where('status', 'available')
-            ->where('date', '>=', Carbon::today())
+            ->where(function($q) use ($currentDate, $currentTime) {
+                // Future dates
+                $q->where('date', '>', $currentDate)
+                  // Or today but future times
+                  ->orWhere(function($subQ) use ($currentDate, $currentTime) {
+                      $subQ->where('date', $currentDate)
+                           ->where('start_time', '>', $currentTime);
+                  });
+            })
             ->orderBy('date')
             ->orderBy('start_time');
 
