@@ -28,9 +28,11 @@ class VerifyUserNotification extends Notification
     {
         $mail = (new MailMessage)
             ->line(trans('global.verifyYourUser'));
-        if (Route::has('userVerification')) {
+        
+        if (Route::has('userVerification') && $this->user->verification_token) {
             $mail->action(trans('global.clickHereToVerify'), route('userVerification', $this->user->verification_token));
         }
+        
         $mail->line(trans('global.thankYouForUsingOurApplication'));
         return $mail;
     }

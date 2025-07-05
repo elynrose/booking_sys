@@ -26,7 +26,10 @@ class UserObserver
     {
         // Check if email was verified
         if ($user->wasChanged('email_verified_at') && $user->email_verified_at) {
-            event(new UserVerified($user));
+            // Only fire UserVerified event if user has a verification token and is not already verified
+            if ($user->verification_token && !$user->verified) {
+                event(new UserVerified($user));
+            }
         }
 
         // Check if user returned after being inactive (last_login_at changed)

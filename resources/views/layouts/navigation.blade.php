@@ -30,7 +30,7 @@
                     <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.index')">
                         {{ __('My Bookings') }}
                     </x-nav-link>
-                    @if(auth()->user()->hasRole('Trainer'))
+                    @if(auth()->user()->hasRole('Trainer') && !auth()->user()->hasRole('User'))
                         <x-nav-link :href="route('frontend.trainer.index')" :active="request()->routeIs('frontend.trainer.index')">
                             {{ __('Trainer Dashboard') }}
                         </x-nav-link>
@@ -106,7 +106,7 @@
             <x-responsive-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.index')">
                 {{ __('My Bookings') }}
             </x-responsive-nav-link>
-            @if(auth()->user()->hasRole('Trainer'))
+            @if(auth()->user()->hasRole('Trainer') && !auth()->user()->hasRole('User'))
                 <x-responsive-nav-link :href="route('frontend.trainer.index')" :active="request()->routeIs('frontend.trainer.index')">
                     {{ __('Trainer Dashboard') }}
                 </x-responsive-nav-link>

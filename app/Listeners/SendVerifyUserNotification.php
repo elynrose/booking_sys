@@ -24,7 +24,10 @@ class SendVerifyUserNotification
     {
         $user = $event->user;
 
-        // Send verification notification to user
-        $user->notify(new VerifyUserNotification($user));
+        // Only send verification notification if user has a verification token and is not already verified
+        if ($user->verification_token && !$user->verified) {
+            // Send verification notification to user
+            $user->notify(new VerifyUserNotification($user));
+        }
     }
 } 
