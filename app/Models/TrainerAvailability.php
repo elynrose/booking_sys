@@ -31,7 +31,16 @@ class TrainerAvailability extends Model
     public function getStartTimeAttribute($value)
     {
         if (is_string($value)) {
-            return Carbon::createFromFormat('H:i:s', $value);
+            // Try to parse as datetime first, then as time only
+            try {
+                return Carbon::parse($value);
+            } catch (\Exception $e) {
+                try {
+                    return Carbon::createFromFormat('H:i:s', $value);
+                } catch (\Exception $e2) {
+                    return null;
+                }
+            }
         }
         return $value;
     }
@@ -42,7 +51,16 @@ class TrainerAvailability extends Model
     public function getEndTimeAttribute($value)
     {
         if (is_string($value)) {
-            return Carbon::createFromFormat('H:i:s', $value);
+            // Try to parse as datetime first, then as time only
+            try {
+                return Carbon::parse($value);
+            } catch (\Exception $e) {
+                try {
+                    return Carbon::createFromFormat('H:i:s', $value);
+                } catch (\Exception $e2) {
+                    return null;
+                }
+            }
         }
         return $value;
     }

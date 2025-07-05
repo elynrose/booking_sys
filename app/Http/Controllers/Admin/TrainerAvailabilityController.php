@@ -38,13 +38,6 @@ class TrainerAvailabilityController extends Controller
      */
     public function store(Request $request, Schedule $schedule)
     {
-        // Debug: Log the incoming request
-        \Log::info('Store availability request', [
-            'request_data' => $request->all(),
-            'schedule_id' => $schedule->id,
-            'method' => $request->method()
-        ]);
-
         try {
             $request->validate([
                 'dates' => 'required|array',
@@ -55,31 +48,15 @@ class TrainerAvailabilityController extends Controller
                 'notes' => 'nullable|string'
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation failed', [
-                'errors' => $e->errors(),
-                'request_data' => $request->all()
-            ]);
             throw $e;
         }
 
         $trainer = $schedule->trainer;
         
-        \Log::info('Creating availabilities', [
-            'trainer_id' => $trainer->id,
-            'schedule_id' => $schedule->id,
-            'dates' => $request->dates
-        ]);
-        
         foreach ($request->dates as $date) {
             // Convert time values to proper datetime format
             $startTime = Carbon::parse($date . ' ' . $request->start_time)->format('Y-m-d H:i:s');
             $endTime = Carbon::parse($date . ' ' . $request->end_time)->format('Y-m-d H:i:s');
-            
-            \Log::info('Creating availability for date', [
-                'date' => $date,
-                'start_time' => $startTime,
-                'end_time' => $endTime
-            ]);
             
             TrainerAvailability::updateOrCreate(
                 [
@@ -95,8 +72,6 @@ class TrainerAvailabilityController extends Controller
                 ]
             );
         }
-
-        \Log::info('Availabilities created successfully');
 
         return response()->json(['success' => true]);
     }
@@ -128,13 +103,6 @@ class TrainerAvailabilityController extends Controller
      */
     public function update(Request $request, TrainerAvailability $availability)
     {
-        // Debug: Log the incoming request
-        \Log::info('Update availability request', [
-            'request_data' => $request->all(),
-            'availability_id' => $availability->id,
-            'method' => $request->method()
-        ]);
-
         $request->validate([
             'status' => 'required|in:available,unavailable,booked,cancelled',
             'start_time' => 'required',

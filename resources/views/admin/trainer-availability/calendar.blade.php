@@ -208,15 +208,21 @@
                                      data-date="{{ $currentDate->format('Y-m-d') }}"
                                      data-availability-id="{{ $availability ? $availability->id : '' }}"
                                      data-status="{{ $availability ? $availability->status : '' }}"
-                                     data-start-time="{{ $availability ? $availability->start_time->format('H:i') : '' }}"
-                                     data-end-time="{{ $availability ? $availability->end_time->format('H:i') : '' }}"
+                                     data-start-time="{{ $availability && $availability->start_time ? $availability->start_time->format('H:i') : '' }}"
+                                     data-end-time="{{ $availability && $availability->end_time ? $availability->end_time->format('H:i') : '' }}"
                                      data-notes="{{ $availability ? $availability->notes : '' }}">
                                     
                                     <div class="calendar-day-number">{{ $currentDate->day }}</div>
                                     
                                     @if($availability)
                                         <div class="availability-info">
-                                            <small class="d-block">{{ $availability->start_time->format('H:i') }} - {{ $availability->end_time->format('H:i') }}</small>
+                                            <small class="d-block">
+                                                @if($availability->start_time && $availability->end_time)
+                                                    {{ $availability->start_time->format('H:i') }} - {{ $availability->end_time->format('H:i') }}
+                                                @else
+                                                    Time not set
+                                                @endif
+                                            </small>
                                             <span class="badge bg-{{ $availability->status === 'available' ? 'success' : ($availability->status === 'unavailable' ? 'danger' : ($availability->status === 'booked' ? 'warning' : 'secondary')) }}">
                                                 {{ ucfirst($availability->status) }}
                                             </span>

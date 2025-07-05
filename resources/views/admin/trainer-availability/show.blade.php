@@ -87,8 +87,8 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex flex-column">
-                                                    <span class="font-weight-bold">{{ $availability->start_time->format('g:i A') }}</span>
-                                                    <span class="text-muted">to {{ $availability->end_time->format('g:i A') }}</span>
+                                                                                                    <span class="font-weight-bold">{{ $availability->start_time ? $availability->start_time->format('g:i A') : 'Time not set' }}</span>
+                                                <span class="text-muted">to {{ $availability->end_time ? $availability->end_time->format('g:i A') : 'Time not set' }}</span>
                                                 </div>
                                             </td>
                                             <td>
@@ -122,8 +122,8 @@
                                                     <button class="btn btn-outline-primary edit-availability" 
                                                             data-availability="{{ $availability->id }}"
                                                             data-date="{{ $availability->date->format('Y-m-d') }}"
-                                                            data-start-time="{{ $availability->start_time->format('H:i') }}"
-                                                            data-end-time="{{ $availability->end_time->format('H:i') }}"
+                                                            data-start-time="{{ $availability->start_time ? $availability->start_time->format('H:i') : '' }}"
+                                                            data-end-time="{{ $availability->end_time ? $availability->end_time->format('H:i') : '' }}"
                                                             data-status="{{ $availability->status }}"
                                                             data-notes="{{ $availability->notes }}"
                                                             title="Edit">

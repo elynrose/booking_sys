@@ -73,9 +73,13 @@
                                     @if($availability)
                                         <div class="availability-info">
                                             <small class="d-block">
-                                                {{ \Carbon\Carbon::createFromFormat('H:i:s', $availability->start_time)->format('g:i A') }}
-                                                -
-                                                {{ \Carbon\Carbon::createFromFormat('H:i:s', $availability->end_time)->format('g:i A') }}
+                                                @if($availability->start_time && $availability->end_time)
+                                                    {{ $availability->start_time->format('g:i A') }}
+                                                    -
+                                                    {{ $availability->end_time->format('g:i A') }}
+                                                @else
+                                                    Time not set
+                                                @endif
                                             </small>
                                             <span class="badge bg-{{ $availability->status === 'available' ? 'success' : ($availability->status === 'unavailable' ? 'danger' : 'warning') }}">
                                                 {{ ucfirst($availability->status) }}
