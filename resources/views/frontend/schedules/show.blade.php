@@ -117,12 +117,12 @@
                     <div class="border-top pt-4">
                         <h5 class="text-muted mb-3">Trainer</h5>
                         <div class="d-flex align-items-center">
-                            @if($schedule->trainer->user->photo)
-                                <img src="{{ Storage::url($schedule->trainer->user->photo) }}" 
-                                     alt="{{ $schedule->trainer->user->name }}" 
-                                     class="rounded-circle me-3"
-                                     style="width: 50px; height: 50px; object-fit: cover;">
-                            @else
+                                                    @if($schedule->trainer->user->photo_url)
+                            <img src="{{ $schedule->trainer->user->photo_url }}" 
+                                 alt="{{ $schedule->trainer->user->name }}" 
+                                 class="rounded-circle me-3"
+                                 style="width: 50px; height: 50px; object-fit: cover;">
+                        @else
                                 <div class="rounded-circle bg-secondary me-3 d-flex align-items-center justify-content-center"
                                      style="width: 50px; height: 50px;">
                                     <i class="fas fa-user text-white"></i>

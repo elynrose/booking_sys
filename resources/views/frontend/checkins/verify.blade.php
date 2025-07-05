@@ -128,8 +128,8 @@
                                         <div class="card-body">
                                             <div class="d-flex align-items-start mb-3">
                                                 @if($booking->schedule->trainer && $booking->schedule->trainer->user)
-                                                    @if($booking->schedule->trainer->user->photo)
-                                                        <img src="{{ config('filesystems.default') === 's3' ? Storage::disk('s3')->url($booking->schedule->trainer->user->photo) : Storage::url($booking->schedule->trainer->user->photo) }}" 
+                                                    @if($booking->schedule->trainer->user->photo_url)
+                                                        <img src="{{ $booking->schedule->trainer->user->photo_url }}" 
                                                              alt="{{ $booking->schedule->trainer->user->name }}" 
                                                              class="rounded-circle me-4"
                                                              style="width: 60px; height: 60px; object-fit: cover; flex-shrink: 0;">

@@ -200,7 +200,21 @@ class User extends Authenticatable implements HasMedia
      */
     public function getProfilePhotoUrlAttribute()
     {
-        return $this->photo ? Storage::url($this->photo) : null;
+        if (!$this->photo) {
+            return null;
+        }
+        
+        return config('filesystems.default') === 's3' 
+            ? Storage::disk('s3')->url($this->photo) 
+            : Storage::url($this->photo);
+    }
+
+    /**
+     * Get photo URL (alias for profile photo URL)
+     */
+    public function getPhotoUrlAttribute()
+    {
+        return $this->profile_photo_url;
     }
 
     /**
