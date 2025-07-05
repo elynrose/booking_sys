@@ -18,13 +18,7 @@ class ProfileController extends Controller
         return view('frontend.profile');
     }
 
-    public function show()
-    {
-        abort_if(Gate::denies('profile_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $user = auth()->user();
-        return view('frontend.profile.show', compact('user'));
-    }
 
     public function edit()
     {
@@ -81,7 +75,7 @@ class ProfileController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('frontend.profile.show')
+        return redirect()->back()
             ->with('success', 'Profile updated successfully.');
     }
 
@@ -135,7 +129,7 @@ class ProfileController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('frontend.profile.show')
+        return redirect()->back()
             ->with('success', 'Password updated successfully.');
     }
 }
