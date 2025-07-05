@@ -103,33 +103,33 @@
                                 <div class="col-md-12">
                                     <div class="card h-100 border-0 shadow-sm">
                                         <div class="card-body">
-                                            <div class="d-flex align-items-center mb-3">
+                                            <div class="d-flex align-items-start mb-3">
                                                 @if($booking->schedule->trainer && $booking->schedule->trainer->user)
                                                     @if($booking->schedule->trainer->user->photo)
-                                                        <img src="{{ Storage::url($booking->schedule->trainer->user->photo) }}" 
+                                                        <img src="{{ config('filesystems.default') === 's3' ? Storage::disk('s3')->url($booking->schedule->trainer->user->photo) : Storage::url($booking->schedule->trainer->user->photo) }}" 
                                                              alt="{{ $booking->schedule->trainer->user->name }}" 
-                                                             class="rounded-circle me-3"
-                                                             style="width: 50px; height: 50px; object-fit: cover;">
+                                                             class="rounded-circle me-4"
+                                                             style="width: 60px; height: 60px; object-fit: cover; flex-shrink: 0;">
                                                     @else
-                                                        <div class="rounded-circle bg-secondary me-3 d-flex align-items-center justify-content-center"
-                                                             style="width: 50px; height: 50px;">
+                                                        <div class="rounded-circle bg-secondary me-4 d-flex align-items-center justify-content-center"
+                                                             style="width: 60px; height: 60px; flex-shrink: 0;">
                                                             <i class="fas fa-user text-white"></i>
                                                         </div>
                                                     @endif
-                                                    <div class="flex-grow-1">
-                                                        <h5 class="card-title mb-1">{{ $booking->schedule->title }}</h5>
-                                                        <p class="text-muted small mb-0">{{ $booking->schedule->description }}</p>
-                                                        <div class="d-flex align-items-center mt-1">
-                                                            <i class="fas fa-user-tie text-primary me-2" style="font-size: 0.8rem;"></i>
+                                                    <div class="flex-grow-1 ms-2">
+                                                        <h5 class="card-title mb-2">{{ $booking->schedule->title }}</h5>
+                                                        <p class="text-muted small mb-2">{{ $booking->schedule->description }}</p>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-user-tie text-primary me-2" style="font-size: 0.9rem;"></i>
                                                             <span class="text-primary fw-bold">{{ $booking->schedule->trainer->user->name }}</span>
                                                         </div>
                                                     </div>
                                                 @else
                                                     <div class="flex-grow-1">
-                                                        <h5 class="card-title mb-1">{{ $booking->schedule->title }}</h5>
-                                                        <p class="text-muted small mb-0">{{ $booking->schedule->description }}</p>
-                                                        <div class="d-flex align-items-center mt-1">
-                                                            <i class="fas fa-user-tie text-muted me-2" style="font-size: 0.8rem;"></i>
+                                                        <h5 class="card-title mb-2">{{ $booking->schedule->title }}</h5>
+                                                        <p class="text-muted small mb-2">{{ $booking->schedule->description }}</p>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-user-tie text-muted me-2" style="font-size: 0.9rem;"></i>
                                                             <span class="text-muted">Trainer not assigned</span>
                                                         </div>
                                                     </div>
