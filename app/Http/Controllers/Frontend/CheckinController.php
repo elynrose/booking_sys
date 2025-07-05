@@ -92,8 +92,8 @@ class CheckinController extends Controller
                       });
             })
             ->whereHas('schedule', function($scheduleQuery) use ($siteTimezone) {
-                // Only show classes that have started (current time >= start time)
-                $scheduleQuery->where('start_time', '<=', Carbon::now($siteTimezone));
+                // Show classes that haven't ended yet (current time <= end date)
+                $scheduleQuery->where('end_date', '>=', Carbon::now($siteTimezone)->toDateString());
             })
             ->orderBy('created_at', 'desc')
             ->get();

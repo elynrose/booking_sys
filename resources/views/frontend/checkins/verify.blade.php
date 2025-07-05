@@ -138,10 +138,15 @@
                                                 </div>
                                                 @php
                                                     $currentTime = \Carbon\Carbon::now(\App\Models\SiteSettings::getTimezone());
+                                                    $scheduleStartDate = \Carbon\Carbon::parse($booking->schedule->start_date, \App\Models\SiteSettings::getTimezone());
+                                                    $scheduleEndDate = \Carbon\Carbon::parse($booking->schedule->end_date, \App\Models\SiteSettings::getTimezone());
                                                     $scheduleStartTime = \Carbon\Carbon::parse($booking->schedule->start_time, \App\Models\SiteSettings::getTimezone());
                                                     $scheduleEndTime = \Carbon\Carbon::parse($booking->schedule->end_time, \App\Models\SiteSettings::getTimezone());
-                                                    $classHasStarted = $currentTime->gte($scheduleStartTime);
-                                                    $classHasEnded = $currentTime->gt($scheduleEndTime);
+                                                    // Combine date and time for proper comparison
+                                                    $classStartDateTime = $scheduleStartDate->copy()->setTime($scheduleStartTime->hour, $scheduleStartTime->minute, $scheduleStartTime->second);
+                                                    $classEndDateTime = $scheduleEndDate->copy()->setTime($scheduleEndTime->hour, $scheduleEndTime->minute, $scheduleEndTime->second);
+                                                    $classHasStarted = $currentTime->gte($classStartDateTime);
+                                                    $classHasEnded = $currentTime->gt($classEndDateTime);
                                                 @endphp
                                                 <div class="d-flex align-items-center mb-2">
                                                     <i class="fas fa-info-circle text-muted me-2 mr-2"></i>
@@ -171,10 +176,15 @@
                                             <div class="d-grid">
                                                 @php
                                                     $currentTime = \Carbon\Carbon::now(\App\Models\SiteSettings::getTimezone());
+                                                    $scheduleStartDate = \Carbon\Carbon::parse($booking->schedule->start_date, \App\Models\SiteSettings::getTimezone());
+                                                    $scheduleEndDate = \Carbon\Carbon::parse($booking->schedule->end_date, \App\Models\SiteSettings::getTimezone());
                                                     $scheduleStartTime = \Carbon\Carbon::parse($booking->schedule->start_time, \App\Models\SiteSettings::getTimezone());
                                                     $scheduleEndTime = \Carbon\Carbon::parse($booking->schedule->end_time, \App\Models\SiteSettings::getTimezone());
-                                                    $classHasStarted = $currentTime->gte($scheduleStartTime);
-                                                    $classHasEnded = $currentTime->gt($scheduleEndTime);
+                                                    // Combine date and time for proper comparison
+                                                    $classStartDateTime = $scheduleStartDate->copy()->setTime($scheduleStartTime->hour, $scheduleStartTime->minute, $scheduleStartTime->second);
+                                                    $classEndDateTime = $scheduleEndDate->copy()->setTime($scheduleEndTime->hour, $scheduleEndTime->minute, $scheduleEndTime->second);
+                                                    $classHasStarted = $currentTime->gte($classStartDateTime);
+                                                    $classHasEnded = $currentTime->gt($classEndDateTime);
                                                 @endphp
                                                 
                                                 @if(isset($activeCheckin))
