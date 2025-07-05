@@ -154,8 +154,17 @@
                                 </div>
                             </div>
                             <div class="col-md-2 text-end">
-                                @if($booking->checkins->where('checkout_time', null)->isNotEmpty())
-                                    <span class="badge bg-success">Checked In</span>
+                                @php
+                                    $isCurrentlyCheckedIn = $booking->checkins->where('checkout_time', null)->where('created_at', '>=', \Carbon\Carbon::today())->count() > 0;
+                                @endphp
+                                @if($isCurrentlyCheckedIn)
+                                    <form action="{{ route('frontend.checkins.quick-checkout') }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-sign-out-alt me-1"></i> Check Out
+                                        </button>
+                                    </form>
                                 @else
                                     <a href="{{ route('frontend.checkins.index') }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-qrcode me-1"></i> Check In

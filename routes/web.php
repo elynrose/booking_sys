@@ -23,6 +23,7 @@ Route::middleware(['auth', '2fa'])->group(function () {
     })->name('frontend.checkins.show');
     Route::post('/checkin/checkin', [App\Http\Controllers\Frontend\CheckinController::class, 'checkin'])->name('frontend.checkins.checkin');
     Route::post('/checkin/checkout', [App\Http\Controllers\Frontend\CheckinController::class, 'checkout'])->name('frontend.checkins.checkout');
+    Route::post('/checkin/quick-checkout', [App\Http\Controllers\Frontend\CheckinController::class, 'quickCheckout'])->name('frontend.checkins.quick-checkout');
     Route::post('/checkin/auto-checkout', [App\Http\Controllers\Frontend\CheckinController::class, 'autoCheckout'])->name('frontend.checkins.auto-checkout');
     Route::get('/checkin/auto-checkout-success', [App\Http\Controllers\Frontend\CheckinController::class, 'autoCheckoutSuccess'])->name('frontend.checkins.auto-checkout-success');
 });

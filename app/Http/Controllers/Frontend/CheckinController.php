@@ -267,6 +267,57 @@ class CheckinController extends Controller
         return view('frontend.checkins.checkout-success', compact('booking', 'checkin', 'hours', 'minutes', 'seconds'));
     }
 
+    public function quickCheckout(Request $request)
+    {
+        $siteTimezone = \App\Models\SiteSettings::getTimezone();
+
+        $request->validate([
+            'booking_id' => 'required|exists:bookings,id',
+        ]);
+
+        // For logged-in users, use the authenticated user
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('login')
+                ->with('error', 'Please log in to checkout.');
+        }
+
+        $booking = Booking::with(['schedule', 'child'])
+            ->where('id', $request->booking_id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        // Find today's check-in
+        $checkin = Checkin::where('booking_id', $booking->id)
+            ->whereDate('created_at', Carbon::today())
+            ->whereNull('checkout_time')
+            ->first();
+
+        if (!$checkin) {
+            return redirect()->route('frontend.home')
+                ->with('error', 'No active check-in found for today.');
+        }
+
+        // Update check-out time
+        $checkin->update([
+            'checkout_time' => Carbon::now($siteTimezone)->utc()
+        ]);
+
+        // Decrement sessions_remaining by 1 (only for non-unlimited schedules)
+        if (!$booking->schedule->allow_unlimited_bookings) {
+            $booking->decrement('sessions_remaining');
+        }
+
+        // Calculate duration
+        $duration = Carbon::parse($checkin->checkout_time)->diffInSeconds($checkin->checkin_time);
+        $hours = floor($duration / 3600);
+        $minutes = floor(($duration % 3600) / 60);
+        $seconds = $duration % 60;
+
+        return redirect()->route('frontend.home')
+            ->with('success', "Successfully checked out! Duration: {$hours}h {$minutes}m {$seconds}s");
+    }
+
     public function autoCheckout(Request $request)
     {
         abort_if(Gate::denies('checkin_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
