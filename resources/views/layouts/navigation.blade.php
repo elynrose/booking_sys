@@ -31,7 +31,7 @@
                         {{ __('My Bookings') }}
                     </x-nav-link>
                     @if(auth()->user()->hasRole('Trainer'))
-                        <x-nav-link :href="route('frontend.trainers.index')" :active="request()->routeIs('frontend.trainers.index')">
+                        <x-nav-link :href="route('frontend.trainer.index')" :active="request()->routeIs('frontend.trainer.index')">
                             {{ __('Trainer Dashboard') }}
                         </x-nav-link>
                     @endif
@@ -107,7 +107,7 @@
                 {{ __('My Bookings') }}
             </x-responsive-nav-link>
             @if(auth()->user()->hasRole('Trainer'))
-                <x-responsive-nav-link :href="route('frontend.trainers.index')" :active="request()->routeIs('frontend.trainers.index')">
+                <x-responsive-nav-link :href="route('frontend.trainer.index')" :active="request()->routeIs('frontend.trainer.index')">
                     {{ __('Trainer Dashboard') }}
                 </x-responsive-nav-link>
             @endif
