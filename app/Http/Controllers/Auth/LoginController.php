@@ -51,6 +51,12 @@ class LoginController extends Controller
 
 protected function authenticated(Request $request, $user)
 {
+    // Auto-generate member ID if user doesn't have one
+    if (!$user->member_id) {
+        $memberId = $user->generateMemberId();
+        \Log::info("Auto-generated member ID for user {$user->name}: {$memberId}");
+    }
+
     if ($user->two_factor) {
         $user->generateTwoFactorCode();
         $user->notify(new TwoFactorCodeNotification());
