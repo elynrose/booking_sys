@@ -9,7 +9,7 @@
                     {{ trans('global.my_profile') }}
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('frontend.profile.index') }}">
+                    <form method="POST" action="{{ route('frontend.profile.update') }}">
                         @csrf
                         <div class="form-group">
                             <label class="required" for="name">{{ trans('cruds.user.fields.name') }}</label>

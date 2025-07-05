@@ -46,10 +46,13 @@ class ProfileController extends Controller
             'phone' => 'nullable|string|max:20',
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
+            'timezone' => 'nullable|string|max:100',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'sms_notifications_enabled' => 'boolean',
             'sms_notification_preferences' => 'array',
             'sms_notification_preferences.*' => 'boolean',
+            'current_password' => 'nullable|string',
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -63,6 +66,18 @@ class ProfileController extends Controller
         // Handle SMS notification preferences
         $validated['sms_notifications_enabled'] = $request->boolean('sms_notifications_enabled');
         $validated['sms_notification_preferences'] = $request->sms_notification_preferences ?? [];
+
+        // Handle password update if provided
+        if ($request->filled('password')) {
+            if (!Hash::check($request->current_password, $user->password)) {
+                return redirect()->back()->withErrors(['current_password' => 'The current password is incorrect.']);
+            }
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        // Remove password fields from validated data before updating
+        unset($validated['current_password']);
+        unset($validated['password']);
 
         $user->update($validated);
 
