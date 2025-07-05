@@ -25,7 +25,7 @@ class HomeController extends Controller
         $today = Carbon::today();
         $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
-        // Get active schedules (schedules that haven't ended yet and have remaining sessions)
+        // Get active schedules (schedules that haven't ended yet and have remaining sessions or are currently checked in)
         $activeSchedules = Booking::where('user_id', $user->id)
             ->where('is_paid', true)
             ->where('status', 'confirmed')
@@ -39,7 +39,12 @@ class HomeController extends Controller
             }, 'child', 'checkins'])
             ->get()
             ->filter(function($booking) {
-                return $booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining;
+                // Show if user has sessions remaining OR is currently checked in
+                $hasSessionsRemaining = $booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining;
+                $isCurrentlyCheckedIn = $booking->checkins->where('checkout_time', null)->where('created_at', '>=', Carbon::today())->count() > 0;
+                $isUnlimitedSchedule = $booking->schedule->allow_unlimited_bookings;
+                
+                return $hasSessionsRemaining || $isCurrentlyCheckedIn || $isUnlimitedSchedule;
             });
 
         // Get pending check-ins (bookings that need to be checked in today)
@@ -54,7 +59,11 @@ class HomeController extends Controller
             })
             ->get()
             ->filter(function($booking) {
-                return $booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining;
+                // Show if user has sessions remaining or it's an unlimited schedule
+                $hasSessionsRemaining = $booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining;
+                $isUnlimitedSchedule = $booking->schedule->allow_unlimited_bookings;
+                
+                return $hasSessionsRemaining || $isUnlimitedSchedule;
             });
 
         // Calculate pending payments
