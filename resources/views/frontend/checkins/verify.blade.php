@@ -104,11 +104,36 @@
                                     <div class="card h-100 border-0 shadow-sm">
                                         <div class="card-body">
                                             <div class="d-flex align-items-center mb-3">
-                                               
-                                                <div>
-                                                    <h5 class="card-title mb-1">{{ $booking->schedule->title }}</h5>
-                                                    <p class="text-muted small mb-0">{{ $booking->schedule->description }}</p>
-                                                </div>
+                                                @if($booking->schedule->trainer && $booking->schedule->trainer->user)
+                                                    @if($booking->schedule->trainer->user->photo)
+                                                        <img src="{{ Storage::url($booking->schedule->trainer->user->photo) }}" 
+                                                             alt="{{ $booking->schedule->trainer->user->name }}" 
+                                                             class="rounded-circle me-3"
+                                                             style="width: 50px; height: 50px; object-fit: cover;">
+                                                    @else
+                                                        <div class="rounded-circle bg-secondary me-3 d-flex align-items-center justify-content-center"
+                                                             style="width: 50px; height: 50px;">
+                                                            <i class="fas fa-user text-white"></i>
+                                                        </div>
+                                                    @endif
+                                                    <div class="flex-grow-1">
+                                                        <h5 class="card-title mb-1">{{ $booking->schedule->title }}</h5>
+                                                        <p class="text-muted small mb-0">{{ $booking->schedule->description }}</p>
+                                                        <div class="d-flex align-items-center mt-1">
+                                                            <i class="fas fa-user-tie text-primary me-2" style="font-size: 0.8rem;"></i>
+                                                            <span class="text-primary fw-bold">{{ $booking->schedule->trainer->user->name }}</span>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="flex-grow-1">
+                                                        <h5 class="card-title mb-1">{{ $booking->schedule->title }}</h5>
+                                                        <p class="text-muted small mb-0">{{ $booking->schedule->description }}</p>
+                                                        <div class="d-flex align-items-center mt-1">
+                                                            <i class="fas fa-user-tie text-muted me-2" style="font-size: 0.8rem;"></i>
+                                                            <span class="text-muted">Trainer not assigned</span>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             </div>
 
                                             <div class="class-details mb-3">
@@ -132,6 +157,12 @@
                                                         @endif
                                                     </span>
                                                 </div>
+                                                @if($booking->schedule->location)
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-map-marker-alt text-muted me-2 mr-2"></i>
+                                                    <span>{{ $booking->schedule->location }}</span>
+                                                </div>
+                                                @endif
                                                 <div class="d-flex align-items-center mb-2">
                                                     <i class="fas fa-child text-muted me-2 mr-2"></i>
                                                     <span>{{ $booking->child->name }} ({{ $booking->child->age }} years old)</span>
@@ -195,7 +226,7 @@
                                                     <button class="btn btn-secondary w-100" disabled>
                                                         <i class="fas fa-clock me-2"></i> Class Has Ended
                                                     </button>
-                                                @elseif($booking->schedule->allow_unlimited_bookings || ($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining))
+                                                @elseif($classHasStarted && !$classHasEnded && ($booking->schedule->allow_unlimited_bookings || ($booking->sessions_remaining > 0 && $booking->checkins->count() < $booking->sessions_remaining)))
                                                     <form action="{{ route('frontend.checkins.checkin') }}" method="POST">
                                                         @csrf
                                                         <input type="hidden" name="booking_id" value="{{ $booking->id }}">
@@ -204,6 +235,10 @@
                                                             <i class="fas fa-sign-in-alt me-2"></i> Check In
                                                         </button>
                                                     </form>
+                                                @elseif(!$classHasStarted)
+                                                    <button class="btn btn-secondary w-100" disabled>
+                                                        <i class="fas fa-clock me-2"></i> Class Not Started Yet
+                                                    </button>
                                                 @elseif($booking->checkins->isNotEmpty() && !$booking->checkins->first()->checkout_time)
                                                     <form action="{{ route('frontend.checkins.checkout') }}" method="POST">
                                                         @csrf

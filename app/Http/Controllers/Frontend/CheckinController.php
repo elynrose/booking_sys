@@ -81,7 +81,7 @@ class CheckinController extends Controller
         }
 
         // Get all paid and confirmed bookings for this user
-        $bookings = Booking::with(['schedule', 'child'])
+        $bookings = Booking::with(['schedule.trainer.user', 'child'])
             ->where('user_id', $user->id)
             ->where('is_paid', true)
             ->where('status', 'confirmed')
@@ -92,8 +92,11 @@ class CheckinController extends Controller
                       });
             })
             ->whereHas('schedule', function($scheduleQuery) use ($siteTimezone) {
-                // Show classes that haven't ended yet (current time <= end date)
-                $scheduleQuery->where('end_date', '>=', Carbon::now($siteTimezone)->toDateString());
+                // Only show classes that haven't ended yet (combine date and time)
+                $currentDateTime = Carbon::now($siteTimezone);
+                $scheduleQuery->where(function($q) use ($currentDateTime) {
+                    $q->whereRaw('CONCAT(DATE(end_date), " ", TIME(end_time)) > ?', [$currentDateTime->format('Y-m-d H:i:s')]);
+                });
             })
             ->orderBy('created_at', 'desc')
             ->get();
