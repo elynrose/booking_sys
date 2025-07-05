@@ -141,7 +141,12 @@
                                                     <i class="fas fa-clock text-muted me-2 mr-2"></i>
                                                     <span>
                                                         @if($booking->schedule->start_time && $booking->schedule->end_time)
-                                                            {{ $booking->schedule->start_time->format('h:i A') }} - {{ $booking->schedule->end_time->format('h:i A') }}
+                                                            @php
+                                                                $siteTimezone = \App\Models\SiteSettings::getTimezone();
+                                                                $startTime = $booking->schedule->start_time->setTimezone($siteTimezone);
+                                                                $endTime = $booking->schedule->end_time->setTimezone($siteTimezone);
+                                                            @endphp
+                                                            {{ $startTime->format('h:i A') }} - {{ $endTime->format('h:i A') }}
                                                         @else
                                                             Times not set
                                                         @endif

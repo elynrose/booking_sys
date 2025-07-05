@@ -28,7 +28,12 @@
                         @endif
                         <p>Check-in Time: {{ ($checkin ?? $existingCheckin)->checkin_time->format('h:i A') }}</p>
                         @if($booking && $booking->schedule)
-                            <p>Class Time: {{ $booking->schedule->start_time }} - {{ $booking->schedule->end_time }}</p>
+                            @php
+                                $siteTimezone = \App\Models\SiteSettings::getTimezone();
+                                $startTime = $booking->schedule->start_time->setTimezone($siteTimezone);
+                                $endTime = $booking->schedule->end_time->setTimezone($siteTimezone);
+                            @endphp
+                            <p>Class Time: {{ $startTime->format('h:i A') }} - {{ $endTime->format('h:i A') }}</p>
                         @endif
                     </div>
 
