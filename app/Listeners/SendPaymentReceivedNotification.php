@@ -28,12 +28,35 @@ class SendPaymentReceivedNotification
         $user = $payment->user;
 
         // Send payment confirmation to user
-        $user->notify(new PaymentConfirmedNotification($payment));
+        try {
+            $user->notify(new PaymentConfirmedNotification($payment));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send payment confirmation email to user', [
+                'payment_id' => $payment->id,
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         // Send notification to all admins
-        $admins = User::role('Admin')->get();
-        foreach ($admins as $admin) {
-            $admin->notify(new AdminPaymentReceivedNotification($payment));
+        try {
+            $admins = User::role('Admin')->get();
+            foreach ($admins as $admin) {
+                try {
+                    $admin->notify(new AdminPaymentReceivedNotification($payment));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send admin payment notification', [
+                        'payment_id' => $payment->id,
+                        'admin_id' => $admin->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send admin notifications', [
+                'payment_id' => $payment->id,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 } 
