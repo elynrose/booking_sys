@@ -121,7 +121,15 @@ class CheckinController extends Controller
                 $nextAvailable = \App\Models\TrainerAvailability::where('trainer_id', $booking->schedule->trainer->id)
                     ->where('schedule_id', $booking->schedule->id)
                     ->where('status', 'available')
-                    ->whereRaw('DATE(date) >= ?', [$currentDate])
+                    ->where(function($query) use ($currentDate, $currentTimeStr) {
+                        // Future dates
+                        $query->where('date', '>', $currentDate)
+                              // Or today but future times
+                              ->orWhere(function($q) use ($currentDate, $currentTimeStr) {
+                                  $q->where('date', $currentDate)
+                                    ->where('start_time', '>', $currentTimeStr);
+                              });
+                    })
                     ->orderBy('date')
                     ->orderBy('start_time')
                     ->first();
@@ -134,6 +142,15 @@ class CheckinController extends Controller
                 $monthlyAvailability = \App\Models\TrainerAvailability::where('trainer_id', $booking->schedule->trainer->id)
                     ->where('schedule_id', $booking->schedule->id)
                     ->where('status', 'available')
+                    ->where(function($query) use ($currentDate, $currentTimeStr, $monthStart, $monthEnd) {
+                        // Future dates in this month
+                        $query->where('date', '>', $currentDate)
+                              // Or today but future times
+                              ->orWhere(function($q) use ($currentDate, $currentTimeStr) {
+                                  $q->where('date', $currentDate)
+                                    ->where('start_time', '>', $currentTimeStr);
+                              });
+                    })
                     ->whereRaw('DATE(date) >= ?', [$monthStart->format('Y-m-d')])
                     ->whereRaw('DATE(date) <= ?', [$monthEnd->format('Y-m-d')])
                     ->orderBy('date')
