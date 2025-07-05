@@ -28,6 +28,7 @@ class SiteSettingsController extends Controller
         
         // Handle checkbox fields that might not be present in the request
         $data['stripe_enabled'] = $request->has('stripe_enabled');
+        $data['zelle_enabled'] = $request->has('zelle_enabled');
         
         // Debug logging
         \Log::info('Site Settings Update Request', [

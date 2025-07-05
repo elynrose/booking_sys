@@ -665,6 +665,55 @@
                             </div>
                         </div>
 
+                        <!-- Zelle Configuration -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h4 class="mb-3">
+                                    <i class="fas fa-money-bill-wave me-2"></i>
+                                    Zelle Payment Configuration
+                                </h4>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Configure your Zelle payment settings here. Zelle allows users to send money directly to your email address.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="zelle_enabled">Enable Zelle Payments</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="zelle_enabled" name="zelle_enabled" value="1" {{ $settings->zelle_enabled ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="zelle_enabled">
+                                            Enable Zelle payment processing
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="zelle_email">Zelle Email Address</label>
+                                    <input type="email" class="form-control" id="zelle_email" name="zelle_email" value="{{ $settings->zelle_email }}" placeholder="your-zelle-email@example.com">
+                                    <small class="form-text text-muted">The email address associated with your Zelle account</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="zelle_name">Zelle Name</label>
+                                    <input type="text" class="form-control" id="zelle_name" name="zelle_name" value="{{ $settings->zelle_name }}" placeholder="Your Name">
+                                    <small class="form-text text-muted">The name that appears when users send money via Zelle</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="zelle_instructions">Zelle Instructions</label>
+                                    <textarea class="form-control" id="zelle_instructions" name="zelle_instructions" rows="3" placeholder="Please include your name and booking ID in the memo field for faster processing.">{{ $settings->zelle_instructions }}</textarea>
+                                    <small class="form-text text-muted">Instructions for users when making Zelle payments</small>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary">

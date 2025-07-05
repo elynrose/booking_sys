@@ -24,7 +24,8 @@ class SiteSettings extends Model
         'contact_email', 'contact_phone', 'contact_address',
         'facebook_url', 'twitter_url', 'instagram_url', 'linkedin_url',
         'footer_text', 'footer_links', 'welcome_cover_image', 'welcome_hero_title', 'welcome_hero_description',
-        'stripe_publishable_key', 'stripe_secret_key', 'stripe_webhook_secret', 'stripe_enabled', 'stripe_currency', 'timezone'
+        'stripe_publishable_key', 'stripe_secret_key', 'stripe_webhook_secret', 'stripe_enabled', 'stripe_currency', 'timezone',
+        'zelle_email', 'zelle_name', 'zelle_instructions', 'zelle_enabled'
     ];
 
     /**
@@ -160,6 +161,29 @@ class SiteSettings extends Model
         return $settings->stripe_enabled && 
                !empty($settings->stripe_publishable_key) && 
                !empty($settings->stripe_secret_key);
+    }
+
+    /**
+     * Get Zelle configuration
+     */
+    public static function getZelleConfig()
+    {
+        $settings = self::getSettings();
+        return [
+            'enabled' => $settings->zelle_enabled,
+            'email' => $settings->zelle_email,
+            'name' => $settings->zelle_name,
+            'instructions' => $settings->zelle_instructions
+        ];
+    }
+
+    /**
+     * Check if Zelle is enabled and configured
+     */
+    public static function isZelleEnabled()
+    {
+        $settings = self::getSettings();
+        return $settings->zelle_enabled && !empty($settings->zelle_email);
     }
 
     /**

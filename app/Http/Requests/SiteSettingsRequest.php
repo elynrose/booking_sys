@@ -85,6 +85,10 @@ class SiteSettingsRequest extends FormRequest
             'stripe_webhook_secret' => 'nullable|string|max:255',
             'stripe_enabled' => 'nullable|boolean',
             'stripe_currency' => 'nullable|string|max:3',
+            'zelle_email' => 'nullable|email|max:255',
+            'zelle_name' => 'nullable|string|max:255',
+            'zelle_instructions' => 'nullable|string|max:1000',
+            'zelle_enabled' => 'nullable|boolean',
         ];
     }
 
