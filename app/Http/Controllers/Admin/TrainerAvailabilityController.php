@@ -146,22 +146,11 @@ class TrainerAvailabilityController extends Controller
         $startTime = Carbon::parse($request->start_time)->format('Y-m-d H:i:s');
         $endTime = Carbon::parse($request->end_time)->format('Y-m-d H:i:s');
 
-        \Log::info('Updating availability', [
-            'availability_id' => $availability->id,
-            'start_time' => $startTime,
-            'end_time' => $endTime,
-            'status' => $request->status
-        ]);
-
         $availability->update([
             'status' => $request->status,
             'start_time' => $startTime,
             'end_time' => $endTime,
             'notes' => $request->notes
-        ]);
-
-        \Log::info('Availability updated successfully', [
-            'availability_id' => $availability->id
         ]);
 
         return response()->json(['success' => true]);
@@ -172,18 +161,7 @@ class TrainerAvailabilityController extends Controller
      */
     public function destroy(TrainerAvailability $availability)
     {
-        // Debug: Log the destroy request
-        \Log::info('Destroy availability request', [
-            'availability_id' => $availability->id,
-            'availability_date' => $availability->date,
-            'method' => request()->method()
-        ]);
-        
         $availability->delete();
-        
-        \Log::info('Availability destroyed successfully', [
-            'availability_id' => $availability->id
-        ]);
         
         return response()->json(['success' => true]);
     }
@@ -203,25 +181,6 @@ class TrainerAvailabilityController extends Controller
             ->keyBy(function($availability) {
                 return $availability->date->format('Y-m-d');
             });
-            
-        // Debug: Log the availabilities being loaded
-        \Log::info('Calendar availabilities loaded', [
-            'schedule_id' => $schedule->id,
-            'trainer_id' => $trainer->id,
-            'month' => $month,
-            'start_of_month' => $startOfMonth->format('Y-m-d'),
-            'end_of_month' => $endOfMonth->format('Y-m-d'),
-            'total_availabilities' => $availabilities->count(),
-            'availability_keys' => $availabilities->keys()->toArray(),
-            'availability_details' => $availabilities->map(function($a) {
-                return [
-                    'id' => $a->id,
-                    'date' => $a->date->format('Y-m-d'),
-                    'status' => $a->status,
-                    'notes' => $a->notes
-                ];
-            })->toArray()
-        ]);
 
         return view('admin.trainer-availability.calendar', compact('schedule', 'trainer', 'availabilities', 'month', 'startOfMonth'));
     }

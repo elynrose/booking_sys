@@ -211,10 +211,6 @@
                                      data-start-time="{{ $availability ? $availability->start_time->format('H:i') : '' }}"
                                      data-end-time="{{ $availability ? $availability->end_time->format('H:i') : '' }}"
                                      data-notes="{{ $availability ? $availability->notes : '' }}">
-                                    <!-- Debug: Show notes for this day -->
-                                    @if($availability && $availability->notes)
-                                        <!-- Notes: {{ $availability->notes }} -->
-                                    @endif
                                     
                                     <div class="calendar-day-number">{{ $currentDate->day }}</div>
                                     
@@ -226,7 +222,6 @@
                                             </span>
                                         </div>
                                     @else
-                                        <!-- Debug: Show if no availability for this date -->
                                         @if($isCurrentMonth && !$isPast)
                                             <div class="availability-info">
                                                 <small class="text-muted">No availability</small>
@@ -465,26 +460,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const startTime = this.dataset.startTime;
             const endTime = this.dataset.endTime;
             const notes = this.dataset.notes;
-            console.log('Raw data attributes:', {
-                dataNotes: this.getAttribute('data-notes'),
-                datasetNotes: this.dataset.notes,
-                allDataset: this.dataset
-            });
-            
-            // Debug: Show the actual HTML of the clicked element
-            console.log('Clicked element HTML:', this.outerHTML);
-            
-            console.log('Calendar day clicked:', {
-                date: date,
-                availabilityId: availabilityId,
-                status: status,
-                startTime: startTime,
-                endTime: endTime,
-                notes: notes,
-                hasAvailability: !!availabilityId,
-                notesLength: notes ? notes.length : 0,
-                notesType: typeof notes
-            });
             
             // Populate modal
             document.getElementById('editDate').value = date;
@@ -498,28 +473,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('editStartTime').value = startTime || '09:00';
             document.getElementById('editEndTime').value = endTime || '10:00';
             
-            // Debug status field
-            console.log('Setting status field:', {
-                originalStatus: status,
-                fallbackStatus: status || 'available',
-                statusField: document.getElementById('editStatus')
-            });
-            
             // Set status - if empty or 'none', default to 'available'
             const statusValue = (status && status !== 'none') ? status : 'available';
             document.getElementById('editStatus').value = statusValue;
             document.getElementById('editNotes').value = notes || '';
-            
-            console.log('Status field set to:', statusValue);
-            console.log('Notes field set to:', notes || '');
-            console.log('Notes field element:', document.getElementById('editNotes'));
-            
-            console.log('Modal populated with:', {
-                date: date,
-                startTime: document.getElementById('editStartTime').value,
-                endTime: document.getElementById('editEndTime').value,
-                status: document.getElementById('editStatus').value
-            });
             
             // Show modal
             new bootstrap.Modal(document.getElementById('dayEditModal')).show();
@@ -528,7 +485,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle save availability
     document.getElementById('saveAvailability').addEventListener('click', function() {
-        console.log('Save button clicked');
         const availabilityId = document.getElementById('editAvailabilityId').value;
         const date = document.getElementById('editDate').value;
         const status = document.getElementById('editStatus').value;
@@ -536,42 +492,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const endTime = document.getElementById('editEndTime').value;
         const notes = document.getElementById('editNotes').value;
         
-        console.log('Save button clicked - form values:', {
-            availabilityId: availabilityId,
-            date: date,
-            status: status,
-            startTime: startTime,
-            endTime: endTime,
-            notes: notes
-        });
-        
-        console.log('Notes field details:', {
-            notesValue: notes,
-            notesFieldElement: document.getElementById('editNotes'),
-            notesFieldValue: document.getElementById('editNotes').value
-        });
-        
-        console.log('Status field details:', {
-            statusValue: status,
-            statusFieldElement: document.getElementById('editStatus'),
-            statusFieldValue: document.getElementById('editStatus').value,
-            statusFieldOptions: Array.from(document.getElementById('editStatus').options).map(opt => opt.value)
-        });
-        
         // Validate time fields
         if (!startTime || !endTime) {
             alert('Please enter both start and end times');
             return;
         }
-        
-        console.log('Saving availability:', {
-            availabilityId: availabilityId,
-            date: date,
-            status: status,
-            startTime: startTime,
-            endTime: endTime,
-            notes: notes
-        });
         
         let url, method, data;
         
@@ -598,12 +523,6 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         }
         
-        console.log('Making request:', {
-            url: url,
-            method: method,
-            data: data
-        });
-        
         fetch(url, {
             method: method,
             headers: {
@@ -613,16 +532,13 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify(data)
         })
         .then(response => {
-            console.log('Response status:', response.status);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
             if (data.success) {
-                console.log('Success! Reloading page in 5 seconds...');
                 setTimeout(() => {
                     location.reload();
                 }, 5000);
@@ -683,9 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle delete availability
     document.getElementById('deleteAvailability').addEventListener('click', function() {
-        console.log('Delete button clicked');
         const availabilityId = document.getElementById('editAvailabilityId').value;
-        console.log('Deleting availability ID:', availabilityId);
         
         if (!availabilityId) {
             alert('No availability to delete. This day has no existing availability.');
@@ -717,7 +631,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle modal close buttons
     document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(function(button) {
         button.addEventListener('click', function() {
-            console.log('Modal close button clicked');
             const modal = this.closest('.modal');
             if (modal) {
                 // Simple approach - just hide the modal
