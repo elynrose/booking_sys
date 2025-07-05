@@ -190,6 +190,11 @@ class User extends Authenticatable implements HasMedia
         return $this->hasOne(Trainer::class);
     }
 
+    public function trainerAvailabilities()
+    {
+        return $this->hasMany(TrainerAvailability::class, 'trainer_id');
+    }
+
     /**
      * Get profile photo URL
      */
