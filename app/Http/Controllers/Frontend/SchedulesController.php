@@ -60,7 +60,10 @@ class SchedulesController extends Controller
             $query->whereRaw('LOWER(DAYNAME(start_date)) = ?', [strtolower($request->day)]);
         }
 
-        $schedules = $query->latest()->paginate(9)->withQueryString();
+        $schedules = $query->orderBy('start_date', 'asc')
+                          ->orderBy('start_time', 'asc')
+                          ->paginate(9)
+                          ->withQueryString();
 
         // Get trainers for filter
         $trainers = Trainer::with('user')
@@ -141,7 +144,8 @@ class SchedulesController extends Controller
             ->where('status', '=', 'active')
             ->where('is_featured', true)
             ->where('start_date', '>=', Carbon::now($siteTimezone)->toDateTimeString())
-            ->latest()
+            ->orderBy('start_date', 'asc')
+            ->orderBy('start_time', 'asc')
             ->take(6)
             ->get();
 
@@ -158,7 +162,8 @@ class SchedulesController extends Controller
             ->where('trainer_id', $trainer->id)
             ->where('status', '=', 'active')
             ->where('start_date', '>=', Carbon::now($siteTimezone)->toDateTimeString())
-            ->latest()
+            ->orderBy('start_date', 'asc')
+            ->orderBy('start_time', 'asc')
             ->paginate(10);
 
         return view('frontend.schedules.trainer', compact('schedules', 'trainer'));
