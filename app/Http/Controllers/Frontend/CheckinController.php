@@ -95,7 +95,7 @@ class CheckinController extends Controller
                 // Only show classes that haven't ended yet (combine date and time)
                 $currentDateTime = Carbon::now($siteTimezone);
                 $scheduleQuery->where(function($q) use ($currentDateTime) {
-                    $q->whereRaw('CONCAT(DATE(end_date), " ", TIME(end_time)) > ?', [$currentDateTime->format('Y-m-d H:i:s')]);
+                    $q->whereRaw("(end_date::date || ' ' || end_time::time)::timestamp > ?", [$currentDateTime->format('Y-m-d H:i:s')]);
                 });
             })
             ->orderBy('created_at', 'desc')
