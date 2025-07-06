@@ -33,9 +33,21 @@ class DashboardController extends Controller
 
         // Get total statistics
         $totalBookings = Booking::count();
+        
+        // Calculate revenue with discounts - use the actual paid amount from payments
         $totalRevenue = Payment::where('payments.status', 'paid')->sum('amount');
         $realizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '<=', now($siteTimezone))->sum('amount');
         $unrealizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '>', now($siteTimezone))->sum('amount');
+        
+        // Calculate potential revenue (what would have been earned without discounts)
+        $potentialRevenue = Payment::where('payments.status', 'paid')
+            ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
+            ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
+            ->sum(DB::raw('schedules.price'));
+            
+        // Calculate total discounts given
+        $totalDiscounts = $potentialRevenue - $totalRevenue;
+        
         $totalUsers = User::count();
         $totalTrainers = Trainer::count();
         $totalSchedules = Schedule::count();
@@ -46,6 +58,16 @@ class DashboardController extends Controller
         $dateRangeRevenue = Payment::where('payments.status', 'paid')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('amount');
+            
+        // Calculate date range potential revenue and discounts
+        $dateRangePotentialRevenue = Payment::where('payments.status', 'paid')
+            ->whereBetween('payments.created_at', [$startDate, $endDate])
+            ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
+            ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
+            ->sum(DB::raw('schedules.price'));
+            
+        $dateRangeDiscounts = $dateRangePotentialRevenue - $dateRangeRevenue;
+        
         $dateRangeUsers = User::whereBetween('created_at', [$startDate, $endDate])->count();
 
         // Get booking statistics
@@ -64,13 +86,19 @@ class DashboardController extends Controller
             'refunded' => Payment::where('payments.status', 'refunded')->count(),
         ];
 
-        // Get revenue by category
+        // Get revenue by category with discount information
         $revenueByCategory = Payment::where('payments.status', 'paid')
             ->whereBetween('payments.created_at', [$startDate, $endDate])
             ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
             ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
             ->join('categories', 'schedules.category_id', '=', 'categories.id')
-            ->select('categories.name', DB::raw('SUM(payments.amount) as total'))
+            ->select(
+                'categories.name',
+                DB::raw('SUM(payments.amount) as actual_revenue'),
+                DB::raw('SUM(schedules.price) as potential_revenue'),
+                DB::raw('SUM(schedules.price - payments.amount) as total_discounts'),
+                DB::raw('COUNT(DISTINCT payments.id) as payment_count')
+            )
             ->groupBy('categories.id', 'categories.name')
             ->get();
 
@@ -82,14 +110,20 @@ class DashboardController extends Controller
             'endDate' => $endDate->format('Y-m-d H:i:s')
         ]);
 
-        // Get revenue by trainer
+        // Get revenue by trainer with discount information
         $revenueByTrainer = Payment::where('payments.status', 'paid')
             ->whereBetween('payments.created_at', [$startDate, $endDate])
             ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
             ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
             ->join('trainers', 'schedules.trainer_id', '=', 'trainers.id')
             ->join('users', 'trainers.user_id', '=', 'users.id')
-            ->select('users.name', DB::raw('SUM(payments.amount) as total'))
+            ->select(
+                'users.name',
+                DB::raw('SUM(payments.amount) as actual_revenue'),
+                DB::raw('SUM(schedules.price) as potential_revenue'),
+                DB::raw('SUM(schedules.price - payments.amount) as total_discounts'),
+                DB::raw('COUNT(DISTINCT payments.id) as payment_count')
+            )
             ->groupBy('trainers.id', 'users.name')
             ->get();
 
@@ -101,12 +135,17 @@ class DashboardController extends Controller
             'endDate' => $endDate->format('Y-m-d H:i:s')
         ]);
 
-        // Get daily revenue for chart
+        // Get daily revenue for chart with discount information
         $dailyRevenue = Payment::where('payments.status', 'paid')
             ->whereBetween('payments.created_at', [$startDate, $endDate])
+            ->join('bookings', 'payments.booking_id', '=', 'bookings.id')
+            ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
             ->select(
                 DB::raw('DATE(payments.created_at) as date'),
-                DB::raw('SUM(payments.amount) as total')
+                DB::raw('SUM(payments.amount) as actual_revenue'),
+                DB::raw('SUM(schedules.price) as potential_revenue'),
+                DB::raw('SUM(schedules.price - payments.amount) as total_discounts'),
+                DB::raw('COUNT(DISTINCT payments.id) as payment_count')
             )
             ->groupBy('date')
             ->orderBy('date')
@@ -149,6 +188,8 @@ class DashboardController extends Controller
             'endDate',
             'totalBookings',
             'totalRevenue',
+            'potentialRevenue',
+            'totalDiscounts',
             'realizedRevenue',
             'unrealizedRevenue',
             'totalUsers',
@@ -157,6 +198,8 @@ class DashboardController extends Controller
             'totalCategories',
             'dateRangeBookings',
             'dateRangeRevenue',
+            'dateRangePotentialRevenue',
+            'dateRangeDiscounts',
             'dateRangeUsers',
             'bookingStats',
             'paymentStats',

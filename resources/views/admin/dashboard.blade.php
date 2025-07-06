@@ -36,7 +36,12 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Revenue</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($totalRevenue, 2) }}</div>
-                            <div class="text-xs text-muted mt-1">Last 30 days: ${{ number_format($dateRangeRevenue, 2) }}</div>
+                            <div class="text-xs text-muted mt-1">
+                                Last 30 days: ${{ number_format($dateRangeRevenue, 2) }}
+                                @if($totalDiscounts > 0)
+                                    <br><span class="text-danger">Discounts: -${{ number_format($totalDiscounts, 2) }}</span>
+                                @endif
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -97,6 +102,77 @@
         </div>
     </div>
 
+    <!-- Additional Revenue Statistics Row -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Potential Revenue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($potentialRevenue, 2) }}</div>
+                            <div class="text-xs text-muted mt-1">Without discounts</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Total Discounts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($totalDiscounts, 2) }}</div>
+                            <div class="text-xs text-muted mt-1">Last 30 days: ${{ number_format($dateRangeDiscounts, 2) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tags fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Realized Revenue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($realizedRevenue, 2) }}</div>
+                            <div class="text-xs text-muted mt-1">Already received</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Unrealized Revenue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ number_format($unrealizedRevenue, 2) }}</div>
+                            <div class="text-xs text-muted mt-1">Future payments</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Charts Row -->
     <div class="row">
         <!-- Revenue Chart -->
@@ -142,14 +218,26 @@
                             <thead>
                                 <tr>
                                     <th>Category</th>
-                                    <th>Revenue</th>
+                                    <th>Actual Revenue</th>
+                                    <th>Potential Revenue</th>
+                                    <th>Discounts</th>
+                                    <th>Payments</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($revenueByCategory as $category)
                                 <tr>
                                     <td>{{ $category->name ?? 'Uncategorized' }}</td>
-                                    <td>${{ number_format($category->total, 2) }}</td>
+                                    <td>${{ number_format($category->actual_revenue, 2) }}</td>
+                                    <td>${{ number_format($category->potential_revenue, 2) }}</td>
+                                    <td>
+                                        @if($category->total_discounts > 0)
+                                            <span class="text-danger">-${{ number_format($category->total_discounts, 2) }}</span>
+                                        @else
+                                            <span class="text-muted">$0.00</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $category->payment_count }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -171,14 +259,26 @@
                             <thead>
                                 <tr>
                                     <th>Trainer</th>
-                                    <th>Revenue</th>
+                                    <th>Actual Revenue</th>
+                                    <th>Potential Revenue</th>
+                                    <th>Discounts</th>
+                                    <th>Payments</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($revenueByTrainer as $trainer)
                                 <tr>
                                     <td>{{ $trainer->name ?? 'Unnamed Trainer' }}</td>
-                                    <td>${{ number_format($trainer->total, 2) }}</td>
+                                    <td>${{ number_format($trainer->actual_revenue, 2) }}</td>
+                                    <td>${{ number_format($trainer->potential_revenue, 2) }}</td>
+                                    <td>
+                                        @if($trainer->total_discounts > 0)
+                                            <span class="text-danger">-${{ number_format($trainer->total_discounts, 2) }}</span>
+                                        @else
+                                            <span class="text-muted">$0.00</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $trainer->payment_count }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -295,14 +395,25 @@ if (!revenueCtx) {
         type: 'line',
         data: {
             labels: revenueData.map(item => item.date),
-            datasets: [{
-                label: 'Daily Revenue',
-                data: revenueData.map(item => item.total),
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                tension: 0.1,
-                fill: true
-            }]
+            datasets: [
+                {
+                    label: 'Actual Revenue',
+                    data: revenueData.map(item => item.actual_revenue),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    tension: 0.1,
+                    fill: false
+                },
+                {
+                    label: 'Potential Revenue',
+                    data: revenueData.map(item => item.potential_revenue),
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    tension: 0.1,
+                    fill: false,
+                    borderDash: [5, 5]
+                }
+            ]
         },
         options: {
             responsive: true,
@@ -312,7 +423,19 @@ if (!revenueCtx) {
                 },
                 title: {
                     display: true,
-                    text: 'Daily Revenue'
+                    text: 'Daily Revenue (with Discounts)'
+                },
+                tooltip: {
+                    callbacks: {
+                        afterBody: function(context) {
+                            const dataIndex = context[0].dataIndex;
+                            const item = revenueData[dataIndex];
+                            if (item.total_discounts > 0) {
+                                return `Discounts: -$${item.total_discounts.toLocaleString()}`;
+                            }
+                            return '';
+                        }
+                    }
                 }
             },
             scales: {
