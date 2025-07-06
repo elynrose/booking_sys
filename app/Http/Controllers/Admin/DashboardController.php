@@ -35,9 +35,9 @@ class DashboardController extends Controller
         $totalBookings = Booking::count();
         
         // Calculate revenue with discounts - use the actual paid amount from payments
-        $totalRevenue = Payment::where('payments.status', 'paid')->sum('amount');
-        $realizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '<=', now($siteTimezone))->sum('amount');
-        $unrealizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '>', now($siteTimezone))->sum('amount');
+        $totalRevenue = Payment::where('payments.status', 'paid')->sum('amount') ?: 0;
+        $realizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '<=', now($siteTimezone))->sum('amount') ?: 0;
+        $unrealizedRevenue = Payment::where('payments.status', 'paid')->whereDate('created_at', '>', now($siteTimezone))->sum('amount') ?: 0;
         
         // Calculate potential revenue (what would have been earned without discounts)
         $potentialRevenue = Payment::where('payments.status', 'paid')
@@ -45,7 +45,9 @@ class DashboardController extends Controller
             ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
             ->sum(DB::raw('schedules.price'));
             
-        // Calculate total discounts given
+        // Calculate total discounts given (ensure we have valid numbers)
+        $potentialRevenue = $potentialRevenue ?: 0;
+        $totalRevenue = $totalRevenue ?: 0;
         $totalDiscounts = $potentialRevenue - $totalRevenue;
         
         $totalUsers = User::count();
@@ -66,6 +68,9 @@ class DashboardController extends Controller
             ->join('schedules', 'bookings.schedule_id', '=', 'schedules.id')
             ->sum(DB::raw('schedules.price'));
             
+        // Ensure we have valid numbers for calculations
+        $dateRangePotentialRevenue = $dateRangePotentialRevenue ?: 0;
+        $dateRangeRevenue = $dateRangeRevenue ?: 0;
         $dateRangeDiscounts = $dateRangePotentialRevenue - $dateRangeRevenue;
         
         $dateRangeUsers = User::whereBetween('created_at', [$startDate, $endDate])->count();
