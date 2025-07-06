@@ -77,16 +77,19 @@
                                 @endif
                             </div>
                             
-                            @if($day['trainers']->count() > 0)
+                            @if(count($day['trainers']) > 0)
                                 <div class="trainer-availability">
                                     @foreach($day['trainers'] as $trainerData)
+                                        @php
+                                            $availabilityCount = $trainerData['availabilities'] ? $trainerData['availabilities']->count() : 0;
+                                        @endphp
                                         <div class="trainer-slot" 
                                              data-trainer-id="{{ $trainerData['trainer']->id }}"
                                              data-date="{{ $day['date']->format('Y-m-d') }}"
                                              data-toggle="tooltip" 
-                                             title="{{ $trainerData['trainer']->user->name }} - {{ $trainerData['availabilities']->count() }} slot(s)">
+                                             title="{{ $trainerData['trainer']->user->name }} - {{ $availabilityCount }} slot(s)">
                                             <small class="trainer-name">{{ $trainerData['trainer']->user->name }}</small>
-                                            <small class="slot-count">({{ $trainerData['availabilities']->count() }})</small>
+                                            <small class="slot-count">({{ $availabilityCount }})</small>
                                         </div>
                                     @endforeach
                                 </div>
