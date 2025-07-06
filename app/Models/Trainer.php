@@ -33,9 +33,8 @@ class Trainer extends Model
         return $this->hasMany(Schedule::class);
     }
 
-    // Note: TrainerAvailability now references users table, not trainers table
-    // public function availabilities()
-    // {
-    //     return $this->hasMany(TrainerAvailability::class);
-    // }
+    public function availabilities()
+    {
+        return $this->hasMany(TrainerAvailability::class, 'trainer_id', 'user_id');
+    }
 }

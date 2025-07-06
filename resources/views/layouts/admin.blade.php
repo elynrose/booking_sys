@@ -189,6 +189,11 @@
                                         <i class="fas fa-calendar-check"></i> Availability
                                     </a>
                                     @endcan
+                                    @can('trainer_access')
+                                    <a class="dropdown-item" href="{{ route('admin.trainer-calendar.index') }}">
+                                        <i class="fas fa-calendar-week"></i> Trainer Calendar
+                                    </a>
+                                    @endcan
                                 </div>
                             </li>
                             @endcan

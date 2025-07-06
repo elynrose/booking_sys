@@ -83,6 +83,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // AJAX: Get all availabilities for a trainer
     Route::get('trainer-availability/ajax/trainer-availabilities', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'getTrainerAvailabilities'])->name('trainer-availability.ajax.trainer-availabilities');
 
+    // Trainer Calendar routes
+    Route::get('trainer-calendar', [App\Http\Controllers\Admin\TrainerCalendarController::class, 'index'])->name('trainer-calendar.index');
+    Route::get('trainer-calendar/get-availability', [App\Http\Controllers\Admin\TrainerCalendarController::class, 'getAvailabilityData'])->name('trainer-calendar.get-availability');
+
     // Site Settings
     Route::get('site-settings', [App\Http\Controllers\Admin\SiteSettingsController::class, 'index'])->name('site-settings.index');
     Route::put('site-settings', [App\Http\Controllers\Admin\SiteSettingsController::class, 'update'])->name('site-settings.update');
