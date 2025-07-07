@@ -330,10 +330,10 @@
                             <tbody>
                                 @foreach($recentBookings->take(5) as $booking)
                                 <tr>
-                                    <td>{{ $booking->user->name ?? 'Unknown User' }}</td>
+                                    <td>{{ optional(optional($booking->user))->name ?? 'Unknown User' }}</td>
                                     <td>
                                         @if($booking->schedule)
-                                            {{ $booking->schedule->category->name ?? 'Uncategorized' }} 
+                                            {{ optional($booking->schedule->category)->name ?? 'Uncategorized' }} 
                                             with {{ optional($booking->schedule->trainer)->name ?? 'Unnamed Trainer' }}
                                         @else
                                             Deleted Schedule
@@ -382,7 +382,7 @@
                             <tbody>
                                 @foreach($recentPayments->take(5) as $payment)
                                 <tr>
-                                    <td>{{ optional($payment->booking->user)->name ?? 'Unknown User' }}</td>
+                                    <td>{{ optional(optional($payment->booking)->user)->name ?? 'Unknown User' }}</td>
                                     <td>${{ number_format($payment->amount, 2) }}</td>
                                     <td>
                                         <span class="badge badge-{{ $payment->status === 'completed' ? 'success' : ($payment->status === 'pending' ? 'warning' : 'danger') }}">
@@ -431,8 +431,8 @@
                                 @if(isset($recentRecommendations) && $recentRecommendations->count() > 0)
                                     @foreach($recentRecommendations->take(5) as $recommendation)
                                     <tr>
-                                        <td>{{ $recommendation->child->name ?? 'Unknown Child' }}</td>
-                                        <td>{{ optional($recommendation->trainer)->name ?? 'Unknown Trainer' }}</td>
+                                        <td>{{ optional(optional($recommendation->child))->name ?? 'Unknown Child' }}</td>
+                                        <td>{{ optional(optional($recommendation->trainer))->name ?? 'Unknown Trainer' }}</td>
                                         <td>
                                             <div class="text-truncate" style="max-width: 200px;" title="{{ $recommendation->content }}">
                                                 {{ Str::limit($recommendation->content, 50) }}

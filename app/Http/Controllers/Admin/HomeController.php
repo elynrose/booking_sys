@@ -15,7 +15,7 @@ use Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class HomeController
+class HomeController extends Controller
 {
     public function index(Request $request)
     {
