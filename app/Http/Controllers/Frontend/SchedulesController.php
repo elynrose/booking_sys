@@ -22,7 +22,7 @@ class SchedulesController extends Controller
 
         $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
-        $query = Schedule::with(['trainer.user', 'bookings', 'category'])
+        $query = Schedule::with(['trainer.user', 'trainer.reviews', 'bookings', 'category'])
             ->where('status', '=', 'active');
 
         // Apply date filters if provided
@@ -64,6 +64,18 @@ class SchedulesController extends Controller
                           ->orderBy('start_time', 'asc')
                           ->paginate(9)
                           ->withQueryString();
+
+        // Calculate trainer ratings for each schedule
+        foreach ($schedules as $schedule) {
+            // Calculate trainer rating if trainer exists
+            if ($schedule->trainer && $schedule->trainer->reviews->count() > 0) {
+                $schedule->trainer->average_rating = round($schedule->trainer->reviews->avg('rating'), 1);
+                $schedule->trainer->reviews_count = $schedule->trainer->reviews->count();
+            } else {
+                $schedule->trainer->average_rating = 0;
+                $schedule->trainer->reviews_count = 0;
+            }
+        }
 
         // Get trainers for filter
         $trainers = Trainer::with('user')

@@ -156,7 +156,7 @@
                                     <p class="mb-2">Please complete your payment to confirm your booking:</p>
                                     <ul class="mb-0">
                                         <li><strong>Amount Due:</strong> 
-                                            @if($booking->schedule->hasDiscount())
+                                            @if($booking->schedule->hasValidDiscount())
                                                 <span class="text-decoration-line-through text-muted">${{ number_format($booking->schedule->price, 2) }}</span>
                                                 <span class="text-danger font-weight-bold">${{ number_format($booking->schedule->discounted_price, 2) }}</span>
                                                 <span class="badge badge-danger ml-1">{{ $booking->schedule->discount_percentage }}% OFF</span>

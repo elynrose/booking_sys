@@ -41,6 +41,11 @@ class Recommendation extends Model
         return $this->hasMany(RecommendationAttachment::class);
     }
 
+    public function responses()
+    {
+        return $this->hasMany(RecommendationResponse::class)->orderBy('created_at', 'asc');
+    }
+
     public function markAsRead()
     {
         $this->update(['read_at' => now()]);

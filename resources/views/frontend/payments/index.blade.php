@@ -18,7 +18,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="mb-0">Amount Due</h6>
-                                        @if($booking->schedule->hasDiscount())
+                                        @if($booking->schedule->hasValidDiscount())
                                             <h4 class="mb-0">
                                                 <span class="text-decoration-line-through text-muted">${{ number_format($booking->schedule->price, 2) }}</span>
                                                 <span class="text-danger font-weight-bold">${{ number_format($booking->schedule->discounted_price, 2) }}</span>

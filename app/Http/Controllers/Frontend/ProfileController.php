@@ -41,7 +41,7 @@ class ProfileController extends Controller
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'timezone' => 'nullable|string|max:100',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'sms_notifications_enabled' => 'boolean',
             'sms_notification_preferences' => 'array',
             'sms_notification_preferences.*' => 'boolean',

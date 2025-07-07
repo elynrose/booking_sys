@@ -158,6 +158,18 @@ class HomeController
             ->take(5)
             ->get();
 
+        // Get recent recommendations with responses
+        try {
+            $recentRecommendations = \App\Models\Recommendation::with(['child', 'trainer', 'responses'])
+                ->latest()
+                ->take(5)
+                ->get();
+            \Log::info('Recent recommendations loaded successfully', ['count' => $recentRecommendations->count()]);
+        } catch (\Exception $e) {
+            \Log::error('Error loading recent recommendations: ' . $e->getMessage());
+            $recentRecommendations = collect(); // Fallback to empty collection
+        }
+
         return view('admin.dashboard', compact(
             'startDate',
             'endDate',
@@ -183,7 +195,8 @@ class HomeController
             'dailyRevenue',
             'dailyBookings',
             'recentBookings',
-            'recentPayments'
+            'recentPayments',
+            'recentRecommendations'
         ));
     }
 }

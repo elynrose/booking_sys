@@ -15,11 +15,15 @@ class Child extends Model
         'name',
         'date_of_birth',
         'gender',
-        'notes'
+        'notes',
+        'photo',
+        'address',
+        'parent_consent'
     ];
 
     protected $casts = [
-        'date_of_birth' => 'date'
+        'date_of_birth' => 'date',
+        'parent_consent' => 'boolean'
     ];
 
     protected $appends = ['age'];
@@ -32,5 +36,23 @@ class Child extends Model
     public function getAgeAttribute()
     {
         return $this->date_of_birth ? Carbon::parse($this->date_of_birth)->age : null;
+    }
+
+    public function recommendations()
+    {
+        return $this->hasMany(Recommendation::class);
+    }
+
+    public function recommendationResponses()
+    {
+        return $this->hasManyThrough(RecommendationResponse::class, Recommendation::class);
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            return \Storage::disk('s3')->url($this->photo);
+        }
+        return null;
     }
 } 

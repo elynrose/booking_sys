@@ -199,6 +199,56 @@
         </div>
     </div>
 
+    <!-- Trainer Reviews Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star text-warning me-2"></i>
+                        Trainer Reviews
+                    </h5>
+                    <div>
+                        <a href="{{ route('frontend.trainer-reviews.create-with-selection') }}" class="btn btn-primary btn-sm me-2">
+                            <i class="fas fa-plus me-1"></i>
+                            Submit Review
+                        </a>
+                        <a href="{{ route('frontend.trainer-reviews.my-reviews') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-list me-1"></i>
+                            My Reviews
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="text-center p-4">
+                                <i class="fas fa-star text-warning" style="font-size: 3rem;"></i>
+                                <h6 class="mt-3">Share Your Experience</h6>
+                                <p class="text-muted">Help other parents by reviewing trainers you've worked with.</p>
+                                <a href="{{ route('frontend.trainer-reviews.create-with-selection') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Submit a Review
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center p-4">
+                                <i class="fas fa-list text-info" style="font-size: 3rem;"></i>
+                                <h6 class="mt-3">View Your Reviews</h6>
+                                <p class="text-muted">See all the reviews you've submitted for trainers.</p>
+                                <a href="{{ route('frontend.trainer-reviews.my-reviews') }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i>
+                                    View My Reviews
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Payment History -->
     <div class="row">
         <div class="col-12">

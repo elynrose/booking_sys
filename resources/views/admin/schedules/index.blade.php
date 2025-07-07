@@ -8,6 +8,9 @@
                 <div class="card-header">
                     <h3 class="card-title">Schedules</h3>
                     <div class="card-tools">
+                        <a href="{{ route('admin.schedules.import') }}" class="btn btn-success btn-sm mr-2">
+                            <i class="fas fa-upload"></i> Import CSV
+                        </a>
                         <a href="{{ route('admin.schedules.create') }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus"></i> Add New Schedule
                         </a>
@@ -181,7 +184,7 @@
                                                 <p class="mb-1">
                                                     <i class="fas fa-dollar-sign mr-2"></i>
                                                     <strong>Price:</strong> 
-                                                    @if($schedule->hasDiscount())
+                                                    @if($schedule->hasValidDiscount())
                                                         <span class="text-decoration-line-through text-muted">${{ number_format($schedule->price, 2) }}</span>
                                                         <span class="text-danger font-weight-bold">${{ number_format($schedule->discounted_price, 2) }}</span>
                                                         <span class="badge badge-danger ml-1">{{ $schedule->discount_percentage }}% OFF</span>

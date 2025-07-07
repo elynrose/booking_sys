@@ -62,7 +62,7 @@
                                 </p>
                                 <p class="mb-1">
                                     <i class="fas fa-dollar-sign text-primary me-2"></i>
-                                    @if($schedule->hasDiscount())
+                                    @if($schedule->hasValidDiscount())
                                         <span class="text-decoration-line-through text-muted">${{ number_format($schedule->price, 2) }}</span>
                                         <span class="text-danger font-weight-bold">${{ number_format($schedule->discounted_price, 2) }}</span>
                                         <span class="badge badge-danger ml-1">{{ $schedule->discount_percentage }}% OFF</span>
@@ -83,7 +83,7 @@
                 <div class="card-body">
                     <div class="text-center mb-4">
                         <h4 class="card-title">Book This Class</h4>
-                        @if($schedule->hasDiscount())
+                        @if($schedule->hasValidDiscount())
                             <div class="h2 text-decoration-line-through text-muted mb-1">${{ number_format($schedule->price, 2) }}</div>
                             <div class="h2 text-danger font-weight-bold mb-2">${{ number_format($schedule->discounted_price, 2) }}</div>
                             <div class="text-danger mb-2">{{ $schedule->discount_percentage }}% OFF</div>
@@ -117,12 +117,12 @@
                     <div class="border-top pt-4">
                         <h5 class="text-muted mb-3">Trainer</h5>
                         <div class="d-flex align-items-center">
-                                                    @if($schedule->trainer->user->photo_url)
-                            <img src="{{ $schedule->trainer->user->photo_url }}" 
-                                 alt="{{ $schedule->trainer->user->name }}" 
-                                 class="rounded-circle me-3"
-                                 style="width: 50px; height: 50px; object-fit: cover;">
-                        @else
+                            @if($schedule->trainer->user->photo_url)
+                                <img src="{{ $schedule->trainer->user->photo_url }}" 
+                                     alt="{{ $schedule->trainer->user->name }}" 
+                                     class="rounded-circle me-3"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                            @else
                                 <div class="rounded-circle bg-secondary me-3 d-flex align-items-center justify-content-center"
                                      style="width: 50px; height: 50px;">
                                     <i class="fas fa-user text-white"></i>
@@ -131,6 +131,36 @@
                             <div>
                                 <h6 class="mb-1">{{ $schedule->trainer->user->name }}</h6>
                                 <small class="text-muted">Professional Trainer</small>
+                                @if($schedule->trainer->reviews_count > 0)
+                                    <div class="mt-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    @if($i <= $schedule->trainer->average_rating)
+                                                        <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
+                                                    @else
+                                                        <i class="far fa-star text-muted" style="font-size: 12px;"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <span class="text-muted small">
+                                                {{ number_format($schedule->trainer->average_rating, 1) }} 
+                                                ({{ $schedule->trainer->reviews_count }} {{ Str::plural('review', $schedule->trainer->reviews_count) }})
+                                            </span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="mt-2">
+                                        <span class="text-muted small">
+                                            <i class="far fa-star text-muted" style="font-size: 12px;"></i>
+                                            <i class="far fa-star text-muted" style="font-size: 12px;"></i>
+                                            <i class="far fa-star text-muted" style="font-size: 12px;"></i>
+                                            <i class="far fa-star text-muted" style="font-size: 12px;"></i>
+                                            <i class="far fa-star text-muted" style="font-size: 12px;"></i>
+                                            <span class="ms-1">No reviews yet</span>
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

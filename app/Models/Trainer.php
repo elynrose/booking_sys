@@ -37,4 +37,9 @@ class Trainer extends Model
     {
         return $this->hasMany(TrainerAvailability::class, 'trainer_id', 'user_id');
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(TrainerReview::class);
+    }
 }

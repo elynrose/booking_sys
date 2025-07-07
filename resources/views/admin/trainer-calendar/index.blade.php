@@ -26,6 +26,27 @@
     </div>
     
     <div class="card-body">
+        <!-- Debug Information -->
+        <div class="alert alert-info mb-3">
+            <strong>Debug Info:</strong><br>
+            Current Month: {{ $currentDate->format('F Y') }}<br>
+            Available Dates: 
+            @php
+                $allDates = [];
+                foreach($trainers as $trainer) {
+                    if ($trainer->availabilities) {
+                        foreach($trainer->availabilities as $availability) {
+                            $allDates[] = $availability->date->format('Y-m-d');
+                        }
+                    }
+                }
+                $uniqueDates = array_unique($allDates);
+                sort($uniqueDates);
+                echo implode(', ', array_map(function($date) { return $date . ' (available)'; }, $uniqueDates));
+            @endphp<br>
+            Total Availabilities: {{ $trainers->sum(function($trainer) { return $trainer->availabilities ? $trainer->availabilities->count() : 0; }) }}
+        </div>
+        
         <!-- Calendar Legend -->
         <div class="mb-3">
             <div class="row">
@@ -38,6 +59,18 @@
                         <span class="badge badge-secondary mr-2 mb-1">
                             <i class="fas fa-calendar-times"></i> No Availability
                         </span>
+                    </div>
+                    <!-- Trainer Color Legend -->
+                    <div class="mt-2">
+                        <h6 class="text-muted mb-2">Trainers:</h6>
+                        <div class="d-flex flex-wrap">
+                            @foreach($trainers as $trainer)
+                                <div class="trainer-legend-item mr-3 mb-1">
+                                    <span class="trainer-color-dot" style="background-color: {{ $trainerColors[$trainer->id] ?? '#d4edda' }}"></span>
+                                    <small>{{ $trainer->user->name }}</small>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6 text-right">
@@ -81,16 +114,22 @@
                                 <div class="trainer-availability">
                                     @foreach($day['trainers'] as $trainerData)
                                         @php
-                                            $availabilityCount = $trainerData['availabilities'] ? $trainerData['availabilities']->count() : 0;
+                                            $availabilityCount = isset($trainerData['availabilities']) && $trainerData['availabilities'] ? $trainerData['availabilities']->count() : 0;
+                                            $firstAvailability = isset($trainerData['availabilities']) && $trainerData['availabilities']->count() > 0 ? $trainerData['availabilities']->first() : null;
+                                            $scheduleId = $firstAvailability ? $firstAvailability->schedule_id : null;
+                                            $scheduleUrl = $scheduleId ? route('frontend.schedules.show', $scheduleId) : '#';
                                         @endphp
-                                        <div class="trainer-slot" 
-                                             data-trainer-id="{{ $trainerData['trainer']->id }}"
-                                             data-date="{{ $day['date']->format('Y-m-d') }}"
-                                             data-toggle="tooltip" 
-                                             title="{{ $trainerData['trainer']->user->name }} - {{ $availabilityCount }} slot(s)">
+                                        <a class="trainer-slot" 
+                                           href="{{ $scheduleUrl }}" 
+                                           target="_blank"
+                                           data-trainer-id="{{ $trainerData['trainer']->id }}"
+                                           data-date="{{ $day['date']->format('Y-m-d') }}"
+                                           data-toggle="tooltip" 
+                                           title="{{ $trainerData['trainer']->user->name }} - {{ $availabilityCount }} slot(s)"
+                                           style="background-color: {{ $trainerColors[$trainerData['trainer']->id] ?? '#d4edda' }}; border-color: {{ $trainerColors[$trainerData['trainer']->id] ?? '#d4edda' }};">
                                             <small class="trainer-name">{{ $trainerData['trainer']->user->name }}</small>
                                             <small class="slot-count">({{ $availabilityCount }})</small>
-                                        </div>
+                                        </a>
                                     @endforeach
                                 </div>
                             @else
@@ -211,6 +250,9 @@
 }
 
 .trainer-slot {
+    display: block;
+    text-decoration: none !important;
+    color: inherit !important;
     background-color: #d4edda;
     border: 1px solid #c3e6cb;
     border-radius: 0.25rem;
@@ -220,10 +262,26 @@
     transition: all 0.2s ease;
 }
 
-.trainer-slot:hover {
-    background-color: #c3e6cb;
+.trainer-slot:hover, .trainer-slot:focus {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-decoration: none !important;
+    color: inherit !important;
+    opacity: 0.8;
+}
+
+.trainer-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.trainer-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid #dee2e6;
 }
 
 .trainer-name {

@@ -6,21 +6,40 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-comments"></i>
-                        @if(auth()->check() && auth()->user()->hasRole('Trainer'))
-                            My Recommendations
-                        @else
-                            Recommendations for My Children
-                        @endif
-                    </h3>
-                    @if(auth()->check() && auth()->user()->hasRole('Trainer'))
-                        <div class="card-tools">
-                            <a href="{{ route('frontend.recommendations.create') }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus"></i> Create New Recommendation
-                            </a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="card-title">
+                                <i class="fas fa-comments"></i>
+                                @if($child)
+                                    Recommendations for {{ $child->name }}
+                                @elseif(auth()->check() && auth()->user()->hasRole('Trainer'))
+                                    My Recommendations
+                                @else
+                                    Recommendations for My Children
+                                @endif
+                            </h3>
+                            @if($child)
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-child me-1"></i>
+                                    Age: {{ $child->age }} years | 
+                                    <i class="fas fa-user me-1"></i>
+                                    Parent: {{ $child->user->name }}
+                                </p>
+                            @endif
                         </div>
-                    @endif
+                        <div class="d-flex gap-2">
+                            @if($child)
+                                <a href="{{ route('frontend.children.index') }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-arrow-left"></i> Back to Children
+                                </a>
+                            @endif
+                            @if(auth()->check() && auth()->user()->hasRole('Trainer'))
+                                <a href="{{ route('frontend.recommendations.create') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Create New Recommendation
+                                </a>
+                            @endif
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     @if($recommendations->count() > 0)
@@ -81,6 +100,14 @@
                                                         </small>
                                                     </div>
                                                 @endif
+                                                @if($recommendation->responses->count() > 0)
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-comments mr-1"></i>
+                                                            {{ $recommendation->responses->count() }} response(s)
+                                                        </small>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                         
@@ -119,7 +146,13 @@
                     @else
                         <div class="text-center py-5">
                             <i class="fas fa-comments fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No recommendations found</h5>
+                            <h5 class="text-muted">
+                                @if($child)
+                                    No recommendations found for {{ $child->name }}
+                                @else
+                                    No recommendations found
+                                @endif
+                            </h5>
                             @if(auth()->check() && auth()->user()->hasRole('Trainer'))
                                 <p class="text-muted">Start by creating your first recommendation for a student.</p>
                                 <a href="{{ route('frontend.recommendations.create') }}" class="btn btn-primary">

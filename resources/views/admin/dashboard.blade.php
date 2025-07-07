@@ -207,10 +207,13 @@
     <!-- Statistics Row -->
     <div class="row">
         <!-- Revenue by Category -->
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-md-12">
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Revenue by Category</h6>
+                    <a href="{{ route('admin.categories.index') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt me-1"></i>View More
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -225,7 +228,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($revenueByCategory as $category)
+                                @foreach($revenueByCategory->take(5) as $category)
                                 <tr>
                                     <td>{{ $category->name ?? 'Uncategorized' }}</td>
                                     <td>${{ number_format($category->actual_revenue, 2) }}</td>
@@ -242,16 +245,24 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        @if($revenueByCategory->count() > 5)
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Showing 5 of {{ $revenueByCategory->count() }} categories</small>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Revenue by Trainer -->
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-md-12">
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Revenue by Trainer</h6>
+                    <a href="{{ route('admin.trainers.index') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt me-1"></i>View More
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -266,7 +277,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($revenueByTrainer as $trainer)
+                                @foreach($revenueByTrainer->take(5) as $trainer)
                                 <tr>
                                     <td>{{ $trainer->name ?? 'Unnamed Trainer' }}</td>
                                     <td>${{ number_format($trainer->actual_revenue, 2) }}</td>
@@ -283,6 +294,11 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        @if($revenueByTrainer->count() > 5)
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Showing 5 of {{ $revenueByTrainer->count() }} trainers</small>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -292,10 +308,13 @@
     <!-- Recent Activities Row -->
     <div class="row">
         <!-- Recent Bookings -->
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-md-12">
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Recent Bookings</h6>
+                    <a href="{{ route('admin.bookings.index') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt me-1"></i>View More
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -309,13 +328,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($recentBookings as $booking)
+                                @foreach($recentBookings->take(5) as $booking)
                                 <tr>
                                     <td>{{ $booking->user->name ?? 'Unknown User' }}</td>
                                     <td>
                                         @if($booking->schedule)
                                             {{ $booking->schedule->category->name ?? 'Uncategorized' }} 
-                                            with {{ optional($booking->schedule->trainer)->user->name ?? 'Unnamed Trainer' }}
+                                            with {{ optional($booking->schedule->trainer)->name ?? 'Unnamed Trainer' }}
                                         @else
                                             Deleted Schedule
                                         @endif
@@ -330,16 +349,24 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        @if($recentBookings->count() > 5)
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Showing 5 of {{ $recentBookings->count() }} recent bookings</small>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Recent Payments -->
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-md-12">
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Recent Payments</h6>
+                    <a href="{{ route('admin.payments.index') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt me-1"></i>View More
+                    </a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -353,7 +380,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($recentPayments as $payment)
+                                @foreach($recentPayments->take(5) as $payment)
                                 <tr>
                                     <td>{{ optional($payment->booking->user)->name ?? 'Unknown User' }}</td>
                                     <td>${{ number_format($payment->amount, 2) }}</td>
@@ -367,6 +394,72 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        @if($recentPayments->count() > 5)
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Showing 5 of {{ $recentPayments->count() }} recent payments</small>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Recommendations and Responses Row -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Recommendations & Responses</h6>
+                    <a href="{{ route('admin.recommendations.index') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt me-1"></i>View More
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Child</th>
+                                    <th>Trainer</th>
+                                    <th>Recommendation</th>
+                                    <th>Parent Response</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if(isset($recentRecommendations) && $recentRecommendations->count() > 0)
+                                    @foreach($recentRecommendations->take(5) as $recommendation)
+                                    <tr>
+                                        <td>{{ $recommendation->child->name ?? 'Unknown Child' }}</td>
+                                        <td>{{ optional($recommendation->trainer)->name ?? 'Unknown Trainer' }}</td>
+                                        <td>
+                                            <div class="text-truncate" style="max-width: 200px;" title="{{ $recommendation->content }}">
+                                                {{ Str::limit($recommendation->content, 50) }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if($recommendation->responses->count() > 0)
+                                                <span class="badge badge-success">{{ $recommendation->responses->count() }} response(s)</span>
+                                            @else
+                                                <span class="badge badge-secondary">No response</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $recommendation->created_at->format('M d, Y') }}</td>
+                                    </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No recommendations found</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                        @if(isset($recentRecommendations) && $recentRecommendations->count() > 5)
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Showing 5 of {{ $recentRecommendations->count() }} recent recommendations</small>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

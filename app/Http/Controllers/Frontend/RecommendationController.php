@@ -10,6 +10,7 @@ use App\Notifications\NewRecommendationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
+use App\Models\RecommendationResponse;
 
 class RecommendationController extends Controller
 {
@@ -17,22 +18,43 @@ class RecommendationController extends Controller
     {
         $user = auth()->user();
         
+        // Check if filtering by specific child
+        $childId = request('child_id');
+        
         if ($user->hasRole('Trainer')) {
             // Trainers see their own recommendations
-            $recommendations = Recommendation::with(['child', 'attachments'])
-                ->where('trainer_id', $user->id)
-                ->latest()
-                ->paginate(10);
+            $query = Recommendation::with(['child', 'attachments', 'responses'])
+                ->where('trainer_id', $user->id);
+                
+            if ($childId) {
+                $query->where('child_id', $childId);
+            }
+            
+            $recommendations = $query->latest()->paginate(10);
         } else {
             // Parents see recommendations for their children
             $childIds = $user->children->pluck('id');
-            $recommendations = Recommendation::with(['trainer', 'child', 'attachments'])
-                ->whereIn('child_id', $childIds)
-                ->latest()
-                ->paginate(10);
+            $query = Recommendation::with(['trainer', 'child', 'attachments', 'responses'])
+                ->whereIn('child_id', $childIds);
+                
+            if ($childId) {
+                // Ensure the child belongs to the authenticated user
+                if (!in_array($childId, $childIds->toArray())) {
+                    abort(403, 'You can only view recommendations for your children.');
+                }
+                $query->where('child_id', $childId);
+            }
+            
+            $recommendations = $query->latest()->paginate(10);
         }
 
-        return view('frontend.recommendations.index', compact('recommendations'));
+        // Get the specific child if filtering
+        $child = null;
+        if ($childId) {
+            $child = Child::find($childId);
+        }
+
+        return view('frontend.recommendations.index', compact('recommendations', 'child'));
     }
 
     public function create()
@@ -103,6 +125,9 @@ class RecommendationController extends Controller
         } else {
             abort_if($recommendation->child->user_id !== $user->id, 403, 'You can only view recommendations for your children.');
         }
+
+        // Load responses with the recommendation
+        $recommendation->load(['responses.user', 'attachments']);
 
         // Mark as read if parent is viewing
         if (!$user->hasRole('Trainer') && !$recommendation->isRead()) {
@@ -187,5 +212,59 @@ class RecommendationController extends Controller
         $attachment->delete();
 
         return back()->with('success', 'Attachment deleted successfully!');
+    }
+
+    public function storeResponse(Request $request, Recommendation $recommendation)
+    {
+        $user = auth()->user();
+        
+        // Check if user can respond to this recommendation
+        if ($user->hasRole('Trainer')) {
+            abort_if($recommendation->trainer_id !== $user->id, 403, 'You can only respond to your own recommendations.');
+        } else {
+            abort_if($recommendation->child->user_id !== $user->id, 403, 'You can only respond to recommendations for your children.');
+        }
+
+        $validated = $request->validate([
+            'content' => 'required|string|min:10',
+            'is_public' => 'boolean',
+        ]);
+
+        $validated['user_id'] = $user->id;
+        $validated['recommendation_id'] = $recommendation->id;
+        $validated['is_public'] = $request->has('is_public');
+
+        $response = $recommendation->responses()->create($validated);
+
+        // Send notification to the other party
+        try {
+            if ($user->hasRole('Trainer')) {
+                // Trainer responded, notify parent
+                $recommendation->child->user->notify(new \App\Notifications\RecommendationResponseNotification($response));
+            } else {
+                // Parent responded, notify trainer
+                $recommendation->trainer->notify(new \App\Notifications\RecommendationResponseNotification($response));
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Failed to send response notification: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Response posted successfully!');
+    }
+
+    public function deleteResponse(RecommendationResponse $response)
+    {
+        $user = auth()->user();
+        
+        // Check if user can delete this response
+        if ($user->hasRole('Trainer')) {
+            abort_if($response->user_id !== $user->id, 403, 'You can only delete your own responses.');
+        } else {
+            abort_if($response->user_id !== $user->id, 403, 'You can only delete your own responses.');
+        }
+
+        $response->delete();
+
+        return back()->with('success', 'Response deleted successfully!');
     }
 }

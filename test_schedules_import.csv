@@ -1,0 +1,6 @@
+title,description,trainer_id,category_id,type,start_date,end_date,start_time,end_time,price,max_participants,is_featured,status,allow_unlimited_bookings,is_discounted,discount_percentage,location
+Yoga Class,Morning yoga session for beginners,1,1,group,2025-01-15,2025-01-15,09:00:00,10:00:00,25.00,20,0,active,0,0,0,Main Studio
+Pilates Session,Intermediate pilates class,1,1,group,2025-01-16,2025-01-16,14:00:00,15:00:00,30.00,15,1,active,0,0,0,Studio A
+Personal Training,One-on-one training session,1,2,private,2025-01-17,2025-01-17,16:00:00,17:00:00,50.00,1,0,active,0,0,0,Private Room
+Zumba Dance,High energy dance workout,1,1,group,2025-01-18,2025-01-18,18:00:00,19:00:00,20.00,25,0,active,0,1,10.00,Main Studio
+Strength Training,Weight training session,1,2,group,2025-01-19,2025-01-19,07:00:00,08:00:00,35.00,12,1,active,0,0,0,Weight Room 

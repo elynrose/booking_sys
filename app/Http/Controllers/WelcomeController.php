@@ -13,24 +13,33 @@ class WelcomeController extends Controller
         // Get site settings
         $siteSettings = SiteSettings::first();
 
-        // Get top 5 group classes (active, featured, and upcoming)
+        // Get top 3 group classes (active, featured, and upcoming)
         $groupClasses = Schedule::with(['trainer.user', 'category'])
             ->where('type', 'group')
             ->where('status', '=', 'active')
             ->orderBy('is_featured', 'desc')
             ->orderBy('start_date', 'asc')
-            ->take(5)
+            ->take(3)
             ->get();
 
-        // Get top 5 private classes (active, featured, and upcoming)
+        // Get top 3 private classes (active, featured, and upcoming)
         $privateClasses = Schedule::with(['trainer.user', 'category'])
             ->where('type', 'private')
             ->where('status', '=', 'active')
             ->orderBy('is_featured', 'desc')
             ->orderBy('start_date', 'asc')
-            ->take(5)
+            ->take(3)
             ->get();
 
-        return view('welcome', compact('siteSettings', 'groupClasses', 'privateClasses'));
+        // Get top 3 special classes (active, featured, and upcoming)
+        $specialClasses = Schedule::with(['trainer.user', 'category'])
+            ->where('type', 'special')
+            ->where('status', '=', 'active')
+            ->orderBy('is_featured', 'desc')
+            ->orderBy('start_date', 'asc')
+            ->take(3)
+            ->get();
+
+        return view('welcome', compact('siteSettings', 'groupClasses', 'privateClasses', 'specialClasses'));
     }
 }

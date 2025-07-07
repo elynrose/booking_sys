@@ -9,6 +9,11 @@ Route::get('userVerification/{token}', 'UserVerificationController@approve')->na
 // Authentication routes (temporarily without rate limiting for testing)
 Auth::routes();
 
+// CAPTCHA routes
+Route::get('captcha/refresh', function() {
+    return response()->json(['captcha' => captcha_img()]);
+})->name('captcha.refresh');
+
 // Check-in routes (public access for basic checkin)
 Route::middleware(['rate.limit:checkin'])->group(function () {
     Route::get('/checkin', [App\Http\Controllers\Frontend\CheckinController::class, 'index'])->name('frontend.checkins.index');
@@ -36,6 +41,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('/users/{user}/verify-email', [App\Http\Controllers\Admin\UsersController::class, 'verifyEmail'])->name('users.verify-email');
     Route::resource('roles', 'RolesController');
     Route::resource('permissions', 'PermissionsController');
+    // Schedule CSV Import routes (must come before resource route to avoid conflicts)
+    Route::get('schedules/import', [App\Http\Controllers\Admin\ScheduleController::class, 'importForm'])->name('schedules.import');
+    Route::post('schedules/import/parse', [App\Http\Controllers\Admin\ScheduleController::class, 'parseCsvImport'])->name('schedules.parse-csv');
+    Route::post('schedules/import/process', [App\Http\Controllers\Admin\ScheduleController::class, 'processCsvImport'])->name('schedules.process-csv');
+    Route::get('schedules/import/template', [App\Http\Controllers\Admin\ScheduleController::class, 'downloadTemplate'])->name('schedules.download-template');
+    
     Route::resource('schedules', 'ScheduleController');
     Route::resource('trainers', 'TrainerController');
     Route::resource('bookings', 'BookingController');
@@ -68,6 +79,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     // Category routes
     Route::resource('categories', CategoryController::class);
+
+    // Schedule Type routes
+    Route::resource('schedule-types', App\Http\Controllers\Admin\ScheduleTypeController::class);
+    Route::post('schedule-types/{scheduleType}/toggle-status', [App\Http\Controllers\Admin\ScheduleTypeController::class, 'toggleStatus'])->name('schedule-types.toggle-status');
+
+    // Recommendations routes
+    Route::resource('recommendations', App\Http\Controllers\Admin\RecommendationController::class)->except(['create', 'store', 'edit', 'update']);
 
     // Trainer Availability routes
     Route::get('trainer-availability', [App\Http\Controllers\Admin\TrainerAvailabilityController::class, 'index'])->name('trainer-availability.index');
@@ -136,6 +154,10 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     // Recommendation routes
     Route::resource('recommendations', App\Http\Controllers\Frontend\RecommendationController::class);
     Route::delete('recommendations/attachments/{attachment}', [App\Http\Controllers\Frontend\RecommendationController::class, 'deleteAttachment'])->name('recommendations.delete-attachment');
+    
+    // Recommendation Response routes
+    Route::post('recommendations/{recommendation}/responses', [App\Http\Controllers\Frontend\RecommendationController::class, 'storeResponse'])->name('recommendations.responses.store');
+    Route::delete('recommendations/responses/{response}', [App\Http\Controllers\Frontend\RecommendationController::class, 'deleteResponse'])->name('recommendations.responses.destroy');
 
     // Payment routes
     Route::get('/payments', [App\Http\Controllers\Frontend\PaymentController::class, 'index'])->name('payments.index');
@@ -150,6 +172,12 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::delete('/payments/{payment}', [App\Http\Controllers\Frontend\PaymentController::class, 'destroy'])->name('payments.destroy');
     Route::get('/bookings/payment/success', [App\Http\Controllers\Frontend\PaymentController::class, 'success'])->name('bookings.payment.success');
 
+    // Trainer Review routes
+    Route::get('/trainer-reviews/create', [App\Http\Controllers\Frontend\TrainerReviewController::class, 'createWithSelection'])->name('trainer-reviews.create-with-selection');
+    Route::get('/trainer-reviews/create/{trainer}', [App\Http\Controllers\Frontend\TrainerReviewController::class, 'create'])->name('trainer-reviews.create');
+    Route::post('/trainer-reviews/{trainer}', [App\Http\Controllers\Frontend\TrainerReviewController::class, 'store'])->name('trainer-reviews.store');
+    Route::get('/trainer-reviews/my-reviews', [App\Http\Controllers\Frontend\TrainerReviewController::class, 'myReviews'])->name('trainer-reviews.my-reviews');
+    Route::get('/trainer-reviews/trainer/{trainer}', [App\Http\Controllers\Frontend\TrainerReviewController::class, 'trainerReviews'])->name('trainer-reviews.trainer-reviews');
 
 });
 

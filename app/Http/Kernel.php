@@ -50,5 +50,6 @@ class Kernel extends HttpKernel
         '2fa'              => \App\Http\Middleware\TwoFactorMiddleware::class,
         'role'             => \App\Http\Middleware\CheckRole::class,
         'rate.limit'       => \App\Http\Middleware\RateLimitMiddleware::class,
+        'antispam'         => \App\Http\Middleware\AntiSpamMiddleware::class,
     ];
 }

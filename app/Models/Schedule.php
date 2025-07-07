@@ -31,6 +31,7 @@ class Schedule extends Model
         'allow_unlimited_bookings',
         'is_discounted',
         'discount_percentage',
+        'discount_expiry_date',
         'location',
     ];
 
@@ -43,6 +44,7 @@ class Schedule extends Model
         'allow_unlimited_bookings' => 'boolean',
         'is_discounted' => 'boolean',
         'discount_percentage' => 'decimal:2',
+        'discount_expiry_date' => 'datetime',
     ];
 
     public function category()
@@ -225,11 +227,23 @@ class Schedule extends Model
     }
 
     /**
+     * Check if discount is expired
+     */
+    public function isDiscountExpired()
+    {
+        if (!$this->discount_expiry_date) {
+            return false;
+        }
+        
+        return Carbon::now()->isAfter($this->discount_expiry_date);
+    }
+
+    /**
      * Get the discounted price
      */
     public function getDiscountedPriceAttribute()
     {
-        if (!$this->is_discounted || !$this->discount_percentage) {
+        if (!$this->hasValidDiscount()) {
             return $this->price;
         }
 
@@ -242,7 +256,7 @@ class Schedule extends Model
      */
     public function getDiscountAmountAttribute()
     {
-        if (!$this->is_discounted || !$this->discount_percentage) {
+        if (!$this->hasValidDiscount()) {
             return 0;
         }
 
@@ -250,7 +264,15 @@ class Schedule extends Model
     }
 
     /**
-     * Check if schedule has a discount
+     * Check if schedule has a valid discount (not expired)
+     */
+    public function hasValidDiscount()
+    {
+        return $this->hasDiscount() && !$this->isDiscountExpired();
+    }
+
+    /**
+     * Check if schedule has a discount (including expired ones)
      */
     public function hasDiscount()
     {
@@ -262,6 +284,34 @@ class Schedule extends Model
      */
     public function getCurrentPriceAttribute()
     {
-        return $this->hasDiscount() ? $this->discounted_price : $this->price;
+        return $this->hasValidDiscount() ? $this->discounted_price : $this->price;
+    }
+
+    /**
+     * Get discount expiry status
+     */
+    public function getDiscountStatusAttribute()
+    {
+        if (!$this->hasDiscount()) {
+            return 'no_discount';
+        }
+        
+        if ($this->isDiscountExpired()) {
+            return 'expired';
+        }
+        
+        return 'active';
+    }
+
+    /**
+     * Get time until discount expires
+     */
+    public function getTimeUntilExpiryAttribute()
+    {
+        if (!$this->discount_expiry_date || $this->isDiscountExpired()) {
+            return null;
+        }
+        
+        return Carbon::now()->diffForHumans($this->discount_expiry_date, true);
     }
 }

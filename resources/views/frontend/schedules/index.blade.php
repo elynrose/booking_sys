@@ -93,7 +93,7 @@
                     @endif
                     
                     <!-- Discount Badge - Top Right Corner -->
-                    @if($schedule->hasDiscount())
+                    @if($schedule->hasValidDiscount())
                         <div class="position-absolute" style="top: 10px; right: 10px; z-index: 3;">
                             <span class="badge badge-danger shadow-sm" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
                                 {{ $schedule->discount_percentage }}% OFF
@@ -125,6 +125,36 @@
                         <p class="card-text text-muted mb-2">
                             <i class="fas fa-user-tie"></i> {{ $schedule->trainer->user->name }}
                         </p>
+                        @if($schedule->trainer->reviews_count > 0)
+                            <div class="mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= $schedule->trainer->average_rating)
+                                                <i class="fas fa-star text-warning"></i>
+                                            @else
+                                                <i class="far fa-star text-muted"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span class="text-muted small">
+                                        {{ number_format($schedule->trainer->average_rating, 1) }} 
+                                        ({{ $schedule->trainer->reviews_count }} {{ Str::plural('review', $schedule->trainer->reviews_count) }})
+                                    </span>
+                                </div>
+                            </div>
+                        @else
+                            <div class="mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="far fa-star text-muted"></i>
+                                        @endfor
+                                    </div>
+                                    <span class="text-muted small">No reviews yet</span>
+                                </div>
+                            </div>
+                        @endif
                     @endif
                     @if($schedule->location)
                         <p class="card-text text-muted mb-2">
@@ -144,7 +174,7 @@
                     </div>
                     <div class="mt-auto d-flex justify-content-between align-items-center">
                         <div>
-                            @if($schedule->hasDiscount())
+                            @if($schedule->hasValidDiscount())
                                 <span class="badge text-decoration-line-through text-muted" style="background-color: #6c757d;">${{ number_format($schedule->price, 2) }}</span>
                                 <span class="badge text-white" style="background-color: #dc3545;">${{ number_format($schedule->discounted_price, 2) }}</span>
                             @else

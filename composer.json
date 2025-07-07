@@ -17,6 +17,8 @@
         "laraveldaily/laravel-charts": "^0.1.29",
         "league/flysystem-aws-s3-v3": "^3.29",
         "league/flysystem-local": "^3.30",
+        "maatwebsite/excel": "^3.1",
+        "mews/captcha": "^3.4",
         "nuovo/spreadsheet-reader": "^0.5.11",
         "spatie/laravel-medialibrary": "^11.13",
         "spatie/laravel-permission": "^6.19",

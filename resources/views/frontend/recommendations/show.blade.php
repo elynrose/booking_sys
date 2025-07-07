@@ -141,6 +141,96 @@
                         </div>
                     @endif
 
+                    <!-- Responses Section -->
+                    <div class="mb-4">
+                        <h5>
+                            <i class="fas fa-comments mr-2"></i>
+                            Responses ({{ $recommendation->responses->count() }})
+                        </h5>
+                        
+                        <!-- Display existing responses -->
+                        @if($recommendation->responses->count() > 0)
+                            <div class="responses-container">
+                                @foreach($recommendation->responses as $response)
+                                    <div class="card mb-3 {{ $response->user_id === auth()->id() ? 'border-primary' : 'border-secondary' }}">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        <i class="fas fa-user mr-1"></i>
+                                                        {{ $response->user->name }}
+                                                        @if($response->user_id === auth()->id())
+                                                            <span class="badge badge-primary ml-1">You</span>
+                                                        @endif
+                                                    </h6>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock mr-1"></i>
+                                                        {{ $response->created_at->format('M d, Y H:i') }}
+                                                    </small>
+                                                </div>
+                                                @if($response->user_id === auth()->id())
+                                                    <form action="{{ route('frontend.recommendations.responses.destroy', $response) }}" 
+                                                          method="POST" 
+                                                          class="d-inline" 
+                                                          onsubmit="return confirm('Are you sure you want to delete this response?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                            <div class="response-content">
+                                                {!! $response->formatted_content !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-3">
+                                <i class="fas fa-comments fa-2x text-muted mb-2"></i>
+                                <p class="text-muted mb-0">No responses yet. Be the first to respond!</p>
+                            </div>
+                        @endif
+
+                        <!-- Add Response Form -->
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-reply mr-2"></i>
+                                    Add Your Response
+                                </h6>
+                                <form action="{{ route('frontend.recommendations.responses.store', $recommendation) }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <textarea name="content" 
+                                                  class="form-control @error('content') is-invalid @enderror" 
+                                                  rows="4" 
+                                                  placeholder="Share your thoughts, questions, or feedback about this recommendation..."
+                                                  required>{{ old('content') }}</textarea>
+                                        @error('content')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="is_public" name="is_public" value="1" {{ old('is_public', true) ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="is_public">
+                                                Make this response public
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane mr-1"></i>
+                                        Post Response
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Read Status -->
                     @if(!auth()->user()->hasRole('Trainer') && !$recommendation->isRead())
                         <div class="alert alert-info">

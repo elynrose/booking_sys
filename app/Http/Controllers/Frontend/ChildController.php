@@ -7,6 +7,7 @@ use App\Models\Child;
 use Illuminate\Http\Request;
 use Gate;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Storage;
 
 class ChildController extends Controller
 {
@@ -37,7 +38,18 @@ class ChildController extends Controller
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female,other',
             'notes' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'address' => 'nullable|string|max:1000',
+            'parent_consent' => 'boolean',
         ]);
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $path = $file->store('children/photos', 's3'); // Store on cloud disk
+            \Storage::disk('s3')->setVisibility($path, 'public');
+            $validated['photo'] = $path;
+        }
 
         $child = Child::create([
             'user_id' => auth()->id(),
@@ -45,6 +57,9 @@ class ChildController extends Controller
             'date_of_birth' => $validated['date_of_birth'],
             'gender' => $validated['gender'],
             'notes' => $validated['notes'],
+            'photo' => $validated['photo'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'parent_consent' => $validated['parent_consent'] ?? false,
         ]);
 
         return redirect()->route('frontend.children.index')
@@ -89,7 +104,22 @@ class ChildController extends Controller
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female,other',
             'notes' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'address' => 'nullable|string|max:1000',
+            'parent_consent' => 'boolean',
         ]);
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($child->photo) {
+                Storage::disk('s3')->delete($child->photo);
+            }
+            $file = $request->file('photo');
+            $path = $file->store('children/photos', 's3'); // Store on cloud disk
+            \Storage::disk('s3')->setVisibility($path, 'public');
+            $validated['photo'] = $path;
+        }
 
         $child->update($validated);
 
@@ -104,6 +134,11 @@ class ChildController extends Controller
         // Check if user owns this child
         if ($child->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
+        }
+
+        // Delete photo if exists
+        if ($child->photo) {
+            Storage::disk('s3')->delete($child->photo);
         }
 
         $child->delete();

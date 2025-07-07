@@ -9,7 +9,7 @@
                     <h4 class="mb-0">Add Child</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('frontend.children.store') }}" method="POST">
+                    <form action="{{ route('frontend.children.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
                         <div class="mb-3">
@@ -79,11 +79,54 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="photo" class="form-label">Photo</label>
+                            <input type="file" 
+                                   class="form-control @error('photo') is-invalid @enderror" 
+                                   id="photo" 
+                                   name="photo" 
+                                   accept="image/*">
+                            <div class="form-text">Upload a photo of your child (optional, max 2MB)</div>
+                            @error('photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control @error('address') is-invalid @enderror" 
+                                      id="address" 
+                                      name="address" 
+                                      rows="3" 
+                                      placeholder="Enter your child's address">{{ old('address') }}</textarea>
+                            @error('address')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input @error('parent_consent') is-invalid @enderror" 
+                                       type="checkbox" 
+                                       name="parent_consent" 
+                                       id="parent_consent" 
+                                       value="1" 
+                                       {{ old('parent_consent') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="parent_consent">
+                                    I give consent for my child to participate in activities and receive recommendations from trainers
+                                </label>
+                            </div>
+                            @error('parent_consent')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="notes" class="form-label">Notes</label>
                             <textarea class="form-control @error('notes') is-invalid @enderror" 
                                       id="notes" 
                                       name="notes" 
-                                      rows="3">{{ old('notes') }}</textarea>
+                                      rows="3" 
+                                      placeholder="Any additional notes about your child">{{ old('notes') }}</textarea>
                             @error('notes')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

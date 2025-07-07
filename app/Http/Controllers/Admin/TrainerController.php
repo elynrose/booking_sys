@@ -164,7 +164,7 @@ class TrainerController extends Controller
             'bio' => 'nullable|string',
             'payment_method' => 'required|in:check,paypal,venmo,cashapp',
             'payment_details' => 'required|string',
-            'profile_picture' => 'nullable|image|max:2048',
+            'profile_picture' => 'nullable|image|max:5120',
             'schedules' => 'nullable|array',
             'schedules.*' => 'exists:schedules,id',
             'is_active' => 'boolean'

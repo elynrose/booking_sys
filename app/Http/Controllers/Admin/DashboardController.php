@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\Schedule;
 use App\Models\Trainer;
 use App\Models\User;
+use App\Models\Recommendation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,9 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         abort_if(Gate::denies('dashboard_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        // Debug log to confirm method is being called
+        \Log::info('DashboardController@index called');
 
         $siteTimezone = \App\Models\SiteSettings::getTimezone();
 
@@ -188,6 +192,18 @@ class DashboardController extends Controller
 
         $recentPayments = $recentPaymentsQuery->latest()->take(5)->get();
 
+        // Get recent recommendations with responses
+        try {
+            $recentRecommendations = Recommendation::with(['child', 'trainer', 'responses'])
+                ->latest()
+                ->take(5)
+                ->get();
+            \Log::info('Recent recommendations loaded successfully', ['count' => $recentRecommendations->count()]);
+        } catch (\Exception $e) {
+            \Log::error('Error loading recent recommendations: ' . $e->getMessage());
+            $recentRecommendations = collect(); // Fallback to empty collection
+        }
+
         return view('admin.dashboard', compact(
             'startDate',
             'endDate',
@@ -214,7 +230,7 @@ class DashboardController extends Controller
             'dailyBookings',
             'recentBookings',
             'recentPayments',
-            
+            'recentRecommendations',
         ));
     }
 

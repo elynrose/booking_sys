@@ -191,7 +191,12 @@
                                     @endcan
                                     @can('trainer_access')
                                     <a class="dropdown-item" href="{{ route('admin.trainer-calendar.index') }}">
-                                        <i class="fas fa-calendar-week"></i> Trainer Calendar
+                                        <i class="fas fa-calendar"></i> Trainer Calendar
+                                    </a>
+                                    @endcan
+                                    @can('category_access')
+                                    <a class="dropdown-item" href="{{ route('admin.schedule-types.index') }}">
+                                        <i class="fas fa-tag"></i> Schedule Types
                                     </a>
                                     @endcan
                                 </div>
@@ -219,6 +224,7 @@
                                 </a>
                             </li>
                             @endcan
+
                             @can('user_access')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.users.index') }}">

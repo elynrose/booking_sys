@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Gate;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\SiteSettings;
 
 class TrainerCalendarController extends Controller
 {
@@ -17,37 +18,38 @@ class TrainerCalendarController extends Controller
     {
         abort_if(Gate::denies('trainer_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $siteTimezone = \App\Models\SiteSettings::getTimezone();
+        $siteTimezone = SiteSettings::getTimezone();
         
-        // Get the requested month/year or default to current month
-        $year = $request->input('year', Carbon::now($siteTimezone)->year);
-        $month = $request->input('month', Carbon::now($siteTimezone)->month);
-        
+        // Get current month or requested month
+        $year = $request->get('year', now()->year);
+        $month = $request->get('month', now()->month);
         $currentDate = Carbon::createFromDate($year, $month, 1, $siteTimezone);
-        $startOfMonth = $currentDate->copy()->startOfMonth();
-        $endOfMonth = $currentDate->copy()->endOfMonth();
         
-        // Get all trainers with their availability for the month
-        $trainers = Trainer::with(['user', 'availabilities' => function($query) use ($startOfMonth, $endOfMonth) {
-            $query->whereBetween('date', [$startOfMonth->format('Y-m-d'), $endOfMonth->format('Y-m-d')])
-                  ->where('status', 'available')
-                  ->orderBy('date')
-                  ->orderBy('start_time');
-        }])->get();
-        
-        // Get calendar data for the month
-        $calendarData = $this->generateCalendarData($currentDate, $trainers);
-        
-        // Get navigation data
+        // Get previous and next month for navigation
         $previousMonth = $currentDate->copy()->subMonth();
         $nextMonth = $currentDate->copy()->addMonth();
         
+        // Get trainers with their availabilities for the current month
+        $trainers = Trainer::with(['user', 'availabilities' => function($query) use ($currentDate) {
+            $query->whereBetween('date', [
+                $currentDate->copy()->startOfMonth(),
+                $currentDate->copy()->endOfMonth()
+            ]);
+        }])->get();
+        
+        // Generate colors for each trainer
+        $trainerColors = $this->generateTrainerColors($trainers);
+        
+        // Generate calendar data
+        $calendarData = $this->generateCalendarData($currentDate, $trainers);
+        
         return view('admin.trainer-calendar.index', compact(
-            'trainers',
+            'currentDate', 
+            'previousMonth', 
+            'nextMonth', 
+            'trainers', 
             'calendarData',
-            'currentDate',
-            'previousMonth',
-            'nextMonth'
+            'trainerColors'
         ));
     }
     
@@ -76,7 +78,12 @@ class TrainerCalendarController extends Controller
                 
                 // Get trainers available on this day
                 foreach ($trainers as $trainer) {
-                    $dayAvailabilities = $trainer->availabilities->where('date', $currentDay->format('Y-m-d'));
+                    $dayAvailabilities = $trainer->availabilities->filter(function($availability) use ($currentDay) {
+                        $availabilityDate = $availability->date instanceof \Carbon\Carbon
+                            ? $availability->date
+                            : \Carbon\Carbon::parse($availability->date);
+                        return $availabilityDate->format('Y-m-d') === $currentDay->format('Y-m-d');
+                    });
                     
                     if ($dayAvailabilities->count() > 0) {
                         $dayData['trainers'][] = [
@@ -94,6 +101,53 @@ class TrainerCalendarController extends Controller
         }
         
         return $calendar;
+    }
+    
+    /**
+     * Generate different colors for each trainer
+     */
+    private function generateTrainerColors($trainers)
+    {
+        $colors = [
+            '#d4edda', // Light green
+            '#d1ecf1', // Light cyan
+            '#d4edda', // Light green (duplicate, will be replaced)
+            '#fff3cd', // Light yellow
+            '#f8d7da', // Light red
+            '#e2e3e5', // Light gray
+            '#d1ecf1', // Light cyan (duplicate, will be replaced)
+            '#f8d7da', // Light red (duplicate, will be replaced)
+            '#fff3cd', // Light yellow (duplicate, will be replaced)
+            '#e2e3e5', // Light gray (duplicate, will be replaced)
+            '#d4edda', // Light green (duplicate, will be replaced)
+            '#f8d7da', // Light red (duplicate, will be replaced)
+        ];
+        
+        // Create more unique colors
+        $uniqueColors = [
+            '#d4edda', // Light green
+            '#d1ecf1', // Light cyan
+            '#fff3cd', // Light yellow
+            '#f8d7da', // Light red
+            '#e2e3e5', // Light gray
+            '#cce5ff', // Light blue
+            '#d4edda', // Light green
+            '#f8d7da', // Light red
+            '#fff3cd', // Light yellow
+            '#e2e3e5', // Light gray
+            '#d1ecf1', // Light cyan
+            '#cce5ff', // Light blue
+        ];
+        
+        $trainerColors = [];
+        $colorIndex = 0;
+        
+        foreach ($trainers as $trainer) {
+            $trainerColors[$trainer->id] = $uniqueColors[$colorIndex % count($uniqueColors)];
+            $colorIndex++;
+        }
+        
+        return $trainerColors;
     }
     
     public function getAvailabilityData(Request $request)

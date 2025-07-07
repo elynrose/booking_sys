@@ -78,12 +78,12 @@
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-5 mb-3">Choose Your Workout</h2>
-            <p class="lead text-muted">Select between group classes or individual training sessions</p>
+            <p class="lead text-muted">Select between group classes, individual training, or special classes</p>
         </div>
 
         <div class="row g-4">
             <!-- Group Classes -->
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card h-100 shadow-sm hover-card">
                     <div class="card-body p-4 d-flex flex-column">
                         <div class="d-flex align-items-center mb-4">
@@ -131,7 +131,7 @@
             </div>
 
             <!-- Individual Training -->
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card h-100 shadow-sm hover-card">
                     <div class="card-body p-4 d-flex flex-column">
                         <div class="d-flex align-items-center mb-4">
@@ -173,6 +173,54 @@
                         </ul>
                         <a href="{{ route('frontend.schedules.index', ['type' => 'private']) }}" class="btn btn-primary w-100 mt-auto">
                             <i class="fas fa-calendar-check me-2"></i>View Individual Schedule
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Classes -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm hover-card">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 me-4" style="width: 64px; height: 64px;">
+                                <i class="fas fa-star fa-2x text-white"></i>
+                            </div>
+                            <h3 class="pl-2 h4 mb-0">Special Classes</h3>
+                        </div>
+                        <p class="text-muted mb-4">Experience unique and specialized training sessions designed for specific goals. <span class="badge bg-primary">{{ $specialClasses->count() }} classes available</span></p>
+                        <ul class="list-unstyled mb-4 flex-grow-1">
+                            @forelse($specialClasses as $class)
+                                <li class="mb-3 d-flex align-items-start">
+                                    <i class="fas fa-check-circle text-primary me-3 mt-1"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold text-dark">{{ $class->title }}</div>
+                                        @if($class->trainer && $class->trainer->user)
+                                            <div class="text-muted small">with {{ $class->trainer->user->name }}</div>
+                                        @endif
+                                        @if($class->location)
+                                            <div class="text-muted small">
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                {{ $class->location }}
+                                            </div>
+                                        @endif
+                                        @if($class->start_date)
+                                            <div class="text-muted small">
+                                                <i class="fas fa-calendar-alt me-1"></i>
+                                                {{ $class->start_date->format('M d, Y') }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </li>
+                            @empty
+                                <li class="mb-3 d-flex align-items-center">
+                                    <i class="fas fa-info-circle text-muted me-3"></i>
+                                    <span class="text-muted">No special classes available at the moment</span>
+                                </li>
+                            @endforelse
+                        </ul>
+                        <a href="{{ route('frontend.schedules.index', ['type' => 'special']) }}" class="btn btn-primary w-100 mt-auto">
+                            <i class="fas fa-calendar-check me-2"></i>View Special Schedule
                         </a>
                     </div>
                 </div>

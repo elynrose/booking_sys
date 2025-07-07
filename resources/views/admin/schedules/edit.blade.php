@@ -281,6 +281,23 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="discount_expiry_date" class="form-label">Discount Expiry Date & Time</label>
+                                    <input type="datetime-local" 
+                                           class="form-control @error('discount_expiry_date') is-invalid @enderror" 
+                                           id="discount_expiry_date" 
+                                           name="discount_expiry_date" 
+                                           value="{{ old('discount_expiry_date', $schedule->discount_expiry_date ? $schedule->discount_expiry_date->format('Y-m-d\TH:i') : '') }}">
+                                    <div class="form-text">Set when the discount should expire (leave empty for no expiry)</div>
+                                    @error('discount_expiry_date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select @error('status') is-invalid @enderror" 
