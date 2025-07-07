@@ -125,12 +125,12 @@
                         <p class="card-text text-muted mb-2">
                             <i class="fas fa-user-tie"></i> {{ $schedule->trainer->user->name }}
                         </p>
-                        @if($schedule->trainer->reviews_count > 0)
+                        @if(isset($schedule->trainer_rating_data) && $schedule->trainer_rating_data['reviews_count'] > 0)
                             <div class="mb-2">
                                 <div class="d-flex align-items-center">
                                     <div class="me-2">
                                         @for($i = 1; $i <= 5; $i++)
-                                            @if($i <= $schedule->trainer->average_rating)
+                                            @if($i <= $schedule->trainer_rating_data['average_rating'])
                                                 <i class="fas fa-star text-warning"></i>
                                             @else
                                                 <i class="far fa-star text-muted"></i>
@@ -138,8 +138,8 @@
                                         @endfor
                                     </div>
                                     <span class="text-muted small">
-                                        {{ number_format($schedule->trainer->average_rating, 1) }} 
-                                        ({{ $schedule->trainer->reviews_count }} {{ Str::plural('review', $schedule->trainer->reviews_count) }})
+                                        {{ number_format($schedule->trainer_rating_data['average_rating'], 1) }} 
+                                        ({{ $schedule->trainer_rating_data['reviews_count'] }} {{ Str::plural('review', $schedule->trainer_rating_data['reviews_count']) }})
                                     </span>
                                 </div>
                             </div>

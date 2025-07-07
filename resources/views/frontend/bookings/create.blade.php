@@ -100,6 +100,23 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card border-0 bg-light mb-3">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="is_unlimited_group_class" name="is_unlimited_group_class" value="1">
+                                                <label class="form-check-label" for="is_unlimited_group_class">
+                                                    <strong>Unlimited Group Class</strong>
+                                                    <br>
+                                                    <small class="text-muted">Check this if you want unlimited check-ins for this booking. This allows you to attend as many sessions as you want without session limits.</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-md-12">
                                 <div class="card border-0 bg-light mb-3">
                                     <div class="card-body">

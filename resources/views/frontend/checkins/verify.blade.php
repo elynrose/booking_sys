@@ -225,13 +225,13 @@
                                                         <span class="text-success fw-bold">Unlimited Access</span>
                                                     </div>
                                                     
-                                                    @if(isset($booking->trainer_availability))
+                                                    @if(isset($booking->trainer_availability_data))
                                                         <div class="trainer-availability-info mt-3">
                                                             <h6 class="text-primary mb-2">
                                                 <i class="fas fa-user-tie me-2"></i>Trainer Availability
                                             </h6>
                                             
-                                            @if($booking->trainer_availability['today_available'])
+                                            @if($booking->trainer_availability_data['today_available'])
                                                 <div class="alert alert-success mb-2">
                                                     <i class="fas fa-check-circle me-2"></i>
                                                     <strong>Available Now!</strong> Trainer is currently available for this class.
@@ -240,28 +240,28 @@
                                                 <div class="alert alert-warning mb-2">
                                                     <i class="fas fa-clock me-2"></i>
                                                     <strong>Not Available Now</strong>
-                                                    @if($booking->trainer_availability['next_available'])
-                                                        <br>Next available: {{ \Carbon\Carbon::parse($booking->trainer_availability['next_available']->date)->format('l, M d') }} at {{ \Carbon\Carbon::parse($booking->trainer_availability['next_available']->start_time)->format('g:i A') }}
+                                                    @if($booking->trainer_availability_data['next_available'])
+                                                                                                                  <br>Next available: {{ \Carbon\Carbon::parse($booking->trainer_availability_data['next_available']->date)->format('l, M d') }} at {{ \Carbon\Carbon::parse($booking->trainer_availability_data['next_available']->start_time)->format('g:i A') }}
                                                     @else
                                                         <br>No upcoming sessions found this month.
                                                     @endif
                                                 </div>
                                             @endif
                                             
-                                            @if($booking->trainer_availability['monthly_availability']->count() > 0)
+                                            @if($booking->trainer_availability_data['monthly_availability']->count() > 0)
                                                 <div class="monthly-availability">
                                                     <small class="text-muted d-block mb-2">
                                                         <i class="fas fa-calendar me-1"></i>Available this month:
                                                     </small>
                                                     <div class="availability-dates">
-                                                        @foreach($booking->trainer_availability['monthly_availability']->take(5) as $availability)
+                                                        @foreach($booking->trainer_availability_data['monthly_availability']->take(5) as $availability)
                                                             <span class="badge bg-info me-1 mb-1">
                                                                 {{ \Carbon\Carbon::parse($availability->date)->format('M d') }} 
                                                                 {{ \Carbon\Carbon::parse($availability->start_time)->format('g:i A') }}
                                                             </span>
                                                         @endforeach
-                                                        @if($booking->trainer_availability['monthly_availability']->count() > 5)
-                                                            <span class="badge bg-secondary">+{{ $booking->trainer_availability['monthly_availability']->count() - 5 }} more</span>
+                                                        @if($booking->trainer_availability_data['monthly_availability']->count() > 5)
+                                                                                                                         <span class="badge bg-secondary">+{{ $booking->trainer_availability_data['monthly_availability']->count() - 5 }} more</span>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -304,7 +304,7 @@
                                                     </button>
                                                 @elseif($classHasStarted && !$classHasEnded)
                                                     @if($booking->schedule->allow_unlimited_bookings)
-                                                        @if(isset($booking->trainer_availability) && $booking->trainer_availability['today_available'])
+                                                        @if(isset($booking->trainer_availability_data) && $booking->trainer_availability_data['today_available'])
                                                             <form action="{{ route('frontend.checkins.checkin') }}" method="POST">
                                                                 @csrf
                                                                 <input type="hidden" name="booking_id" value="{{ $booking->id }}">

@@ -69,11 +69,15 @@ class SchedulesController extends Controller
         foreach ($schedules as $schedule) {
             // Calculate trainer rating if trainer exists
             if ($schedule->trainer && $schedule->trainer->reviews->count() > 0) {
-                $schedule->trainer->average_rating = round($schedule->trainer->reviews->avg('rating'), 1);
-                $schedule->trainer->reviews_count = $schedule->trainer->reviews->count();
+                $schedule->trainer_rating_data = [
+                    'average_rating' => round($schedule->trainer->reviews->avg('rating'), 1),
+                    'reviews_count' => $schedule->trainer->reviews->count()
+                ];
             } else {
-                $schedule->trainer->average_rating = 0;
-                $schedule->trainer->reviews_count = 0;
+                $schedule->trainer_rating_data = [
+                    'average_rating' => 0,
+                    'reviews_count' => 0
+                ];
             }
         }
 

@@ -157,7 +157,8 @@ class CheckinController extends Controller
                     ->orderBy('start_time')
                     ->get();
 
-                $booking->trainer_availability = [
+                // Store trainer availability data for this specific booking
+                $booking->trainer_availability_data = [
                     'today_available' => $todayAvailability,
                     'next_available' => $nextAvailable,
                     'monthly_availability' => $monthlyAvailability
@@ -217,8 +218,8 @@ class CheckinController extends Controller
                 ->with('error', 'Cannot check in for future classes. This class starts in ' . $timeUntilStart . '.');
         }
 
-        // Check if sessions_remaining is 0 or less (only for non-unlimited schedules)
-        if (!$booking->schedule->allow_unlimited_bookings && $booking->sessions_remaining <= 0) {
+        // Check if sessions_remaining is 0 or less (only for non-unlimited bookings)
+        if (!$booking->is_unlimited_group_class && $booking->sessions_remaining <= 0) {
             return redirect()->route('frontend.checkins.index')
                 ->with('error', 'You have no sessions remaining for this booking.');
         }
@@ -417,8 +418,8 @@ class CheckinController extends Controller
             'checkout_time' => Carbon::now($siteTimezone)->utc()
         ]);
 
-        // Decrement sessions_remaining by 1 (only for non-unlimited schedules)
-        if (!$booking->schedule->allow_unlimited_bookings) {
+        // Decrement sessions_remaining by 1 (only for non-unlimited bookings)
+        if (!$booking->is_unlimited_group_class) {
             $booking->decrement('sessions_remaining');
         }
 
@@ -467,8 +468,8 @@ class CheckinController extends Controller
             'checkout_time' => Carbon::now($siteTimezone)->utc()
         ]);
 
-        // Decrement sessions_remaining by 1 (only for non-unlimited schedules)
-        if (!$booking->schedule->allow_unlimited_bookings) {
+        // Decrement sessions_remaining by 1 (only for non-unlimited bookings)
+        if (!$booking->is_unlimited_group_class) {
             $booking->decrement('sessions_remaining');
         }
 
@@ -519,8 +520,8 @@ class CheckinController extends Controller
             'checkout_time' => Carbon::now($siteTimezone)->utc()
         ]);
 
-        // Decrement sessions_remaining by 1 (only for non-unlimited schedules)
-        if (!$booking->schedule->allow_unlimited_bookings) {
+        // Decrement sessions_remaining by 1 (only for non-unlimited bookings)
+        if (!$booking->is_unlimited_group_class) {
             $booking->decrement('sessions_remaining');
         }
 

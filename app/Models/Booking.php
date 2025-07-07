@@ -16,6 +16,7 @@ class Booking extends Model
         'schedule_id',
         'child_id',
         'sessions_remaining',
+        'is_unlimited_group_class',
         'status',
         'check_in_code',
         'is_paid',
@@ -30,6 +31,7 @@ class Booking extends Model
 
     protected $casts = [
         'is_paid' => 'boolean',
+        'is_unlimited_group_class' => 'boolean',
         'checkin_time' => 'datetime',
         'checkout_time' => 'datetime',
         'total_cost' => 'decimal:2',
@@ -76,6 +78,12 @@ class Booking extends Model
 
     public function canCheckIn()
     {
+        // For unlimited group classes, sessions_remaining doesn't matter
+        if ($this->is_unlimited_group_class) {
+            return $this->is_paid && $this->status === 'confirmed';
+        }
+        
+        // For regular bookings, check sessions_remaining
         return $this->is_paid && $this->sessions_remaining > 0 && $this->status === 'confirmed';
     }
 
@@ -87,6 +95,11 @@ class Booking extends Model
     public function isLastSession()
     {
         return $this->sessions_remaining === 1;
+    }
+
+    public function isUnlimitedGroupClass()
+    {
+        return $this->is_unlimited_group_class;
     }
 
     public function canBeCancelled()

@@ -141,6 +141,7 @@ class BookingController extends Controller
                 'child_id' => $request->child_id,
                 'status' => 'pending',
                 'sessions_remaining' => $request->sessions,
+                'is_unlimited_group_class' => $request->has('is_unlimited_group_class'),
                 'total_cost' => $schedule->current_price * $request->sessions
             ]);
          

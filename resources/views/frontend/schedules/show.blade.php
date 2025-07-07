@@ -131,12 +131,12 @@
                             <div>
                                 <h6 class="mb-1">{{ $schedule->trainer->user->name }}</h6>
                                 <small class="text-muted">Professional Trainer</small>
-                                @if($schedule->trainer->reviews_count > 0)
+                                @if(isset($schedule->trainer_rating_data) && $schedule->trainer_rating_data['reviews_count'] > 0)
                                     <div class="mt-2">
                                         <div class="d-flex align-items-center">
                                             <div class="me-2">
                                                 @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= $schedule->trainer->average_rating)
+                                                    @if($i <= $schedule->trainer_rating_data['average_rating'])
                                                         <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
                                                     @else
                                                         <i class="far fa-star text-muted" style="font-size: 12px;"></i>
@@ -144,8 +144,8 @@
                                                 @endfor
                                             </div>
                                             <span class="text-muted small">
-                                                {{ number_format($schedule->trainer->average_rating, 1) }} 
-                                                ({{ $schedule->trainer->reviews_count }} {{ Str::plural('review', $schedule->trainer->reviews_count) }})
+                                                {{ number_format($schedule->trainer_rating_data['average_rating'], 1) }} 
+                                                ({{ $schedule->trainer_rating_data['reviews_count'] }} {{ Str::plural('review', $schedule->trainer_rating_data['reviews_count']) }})
                                             </span>
                                         </div>
                                     </div>
