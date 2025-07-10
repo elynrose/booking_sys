@@ -46,7 +46,7 @@ class ScheduleFactory extends Factory
 
         return [
             'title' => $selectedClass,
-            'slug' => Str::slug($selectedClass),
+            'slug' => Str::slug($selectedClass) . '-' . $this->faker->unique()->numberBetween(1000, 9999),
             'type' => $this->faker->randomElement(['group', 'private']),
             'description' => $description,
             'photo' => null, // Will be set by media library if needed
@@ -57,7 +57,7 @@ class ScheduleFactory extends Factory
             'max_participants' => $this->faker->randomElement([8, 10, 12, 15, 20]),
             'current_participants' => $this->faker->numberBetween(0, 8),
             'price' => $this->faker->randomElement([25, 30, 35, 40, 45, 50]),
-            'trainer_id' => $this->faker->numberBetween(1, 5),
+            'trainer_id' => \App\Models\Trainer::inRandomOrder()->first()?->id ?? null,
             'status' => $this->faker->randomElement(['active', 'active', 'active', 'inactive']), // Mostly active
             'is_featured' => $this->faker->boolean(20), // 20% chance of being featured
             'category_id' => Category::inRandomOrder()->first()->id ?? 1,

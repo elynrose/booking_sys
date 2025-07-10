@@ -40,6 +40,8 @@ class PaymentFactory extends Factory
             'schedule_id' => Schedule::inRandomOrder()->first()->id ?? 1,
             'booking_id' => Booking::inRandomOrder()->first()->id ?? 1,
             'amount' => $this->faker->randomFloat(2, 25, 150),
+            'currency' => 'USD',
+            'payment_method' => $this->faker->randomElement(['stripe', 'zelle', 'cash', 'paypal']),
             'description' => $this->faker->randomElement($paymentDescriptions),
             'status' => $status,
             'payment_date' => $this->faker->dateTimeBetween('-1 month', 'now'),

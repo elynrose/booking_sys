@@ -29,8 +29,8 @@ class AdminRolePermissionSeeder extends Seeder
         
         if ($adminUser) {
             // Remove any existing roles and assign admin role
-            $adminUser->roles()->detach();
-            $adminUser->roles()->attach($adminRole);
+            $adminUser->syncRoles([]);
+            $adminUser->assignRole('Admin');
             $this->command->info('Admin role assigned to admin@example.com');
         } else {
             $this->command->warn('Admin user (admin@example.com) not found. Please create admin user first.');
@@ -39,8 +39,8 @@ class AdminRolePermissionSeeder extends Seeder
         // Assign roles to other users if they exist
         $trainerUser = User::where('email', 'trainer@example.com')->first();
         if ($trainerUser && $trainerRole) {
-            $trainerUser->roles()->detach();
-            $trainerUser->roles()->attach($trainerRole);
+            $trainerUser->syncRoles([]);
+            $trainerUser->assignRole('Trainer');
             $this->command->info('Trainer role assigned to trainer@example.com');
         }
 
@@ -48,7 +48,7 @@ class AdminRolePermissionSeeder extends Seeder
         $usersWithoutRoles = User::whereDoesntHave('roles')->get();
         if ($userRole && $usersWithoutRoles->count() > 0) {
             foreach ($usersWithoutRoles as $user) {
-                $user->roles()->attach($userRole);
+                $user->assignRole('User');
             }
             $this->command->info("User role assigned to {$usersWithoutRoles->count()} users without roles");
         }

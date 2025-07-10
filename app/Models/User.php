@@ -180,11 +180,6 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Schedule::class, 'instructor_id');
     }
 
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
-    }
-
     public function trainer()
     {
         return $this->hasOne(Trainer::class);

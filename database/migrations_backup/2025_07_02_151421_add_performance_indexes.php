@@ -59,44 +59,44 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->dropIndex(['user_id', 'status']);
-            $table->dropIndex(['schedule_id', 'status']);
-            $table->dropIndex(['payment_status']);
-            $table->dropIndex(['created_at']);
+            // $table->dropIndex(['user_id', 'status']);
+            // $table->dropIndex(['schedule_id', 'status']);
+            // $table->dropIndex(['payment_status']);
+            // $table->dropIndex(['created_at']);
         });
 
         Schema::table('payments', function (Blueprint $table) {
-            $table->dropIndex(['booking_id']);
-            $table->dropIndex(['user_id']);
-            $table->dropIndex(['status']);
-            $table->dropIndex(['created_at']);
+            // $table->dropIndex(['booking_id']);
+            // $table->dropIndex(['user_id']);
+            // $table->dropIndex(['status']);
+            // $table->dropIndex(['created_at']);
         });
 
         Schema::table('checkins', function (Blueprint $table) {
-            $table->dropIndex(['booking_id']);
-            $table->dropIndex(['checkin_time']);
+            // $table->dropIndex(['booking_id']);
+            // $table->dropIndex(['checkin_time']);
         });
 
         Schema::table('schedules', function (Blueprint $table) {
-            $table->dropIndex(['trainer_id']);
-            $table->dropIndex(['status']);
-            $table->dropIndex(['start_time']);
-            $table->dropIndex(['end_time']);
+            // $table->dropIndex(['trainer_id']);
+            // $table->dropIndex(['status']);
+            // $table->dropIndex(['start_time']);
+            // $table->dropIndex(['end_time']);
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->dropIndex(['email']);
-            $table->dropIndex(['created_at']);
+            // $table->dropIndex(['email']);
+            // $table->dropIndex(['created_at']);
         });
 
         Schema::table('children', function (Blueprint $table) {
-            $table->dropIndex(['user_id']);
+            // $table->dropIndex(['user_id']);
         });
 
         Schema::table('recommendations', function (Blueprint $table) {
-            $table->dropIndex(['trainer_id']);
-            $table->dropIndex(['child_id']);
-            $table->dropIndex(['created_at']);
+            // $table->dropIndex(['trainer_id']);
+            // $table->dropIndex(['child_id']);
+            // $table->dropIndex(['created_at']);
         });
     }
 };

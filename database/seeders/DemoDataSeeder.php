@@ -47,7 +47,10 @@ class DemoDataSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]);
-            $trainer->roles()->attach($trainerRole);
+        }
+
+        if (!$trainer->hasRole('Trainer')) {
+            $trainer->assignRole('Trainer');
         }
 
         // Create schedules

@@ -53,16 +53,16 @@ class UsersTableSeeder extends Seeder
         );
 
         // Assign roles
-        if ($adminRole && !$admin->roles()->where('roles.id', $adminRole->id)->exists()) {
-            $admin->roles()->attach($adminRole);
+        if ($adminRole && !$admin->hasRole('Admin')) {
+            $admin->assignRole('Admin');
         }
 
-        if ($userRole && !$parent->roles()->where('roles.id', $userRole->id)->exists()) {
-            $parent->roles()->attach($userRole);
+        if ($userRole && !$parent->hasRole('User')) {
+            $parent->assignRole('User');
         }
 
-        if ($trainerRole && !$trainer->roles()->where('roles.id', $trainerRole->id)->exists()) {
-            $trainer->roles()->attach($trainerRole);
+        if ($trainerRole && !$trainer->hasRole('Trainer')) {
+            $trainer->assignRole('Trainer');
         }
 
         // Also create the old admin account for backward compatibility
@@ -77,8 +77,8 @@ class UsersTableSeeder extends Seeder
             ]
         );
 
-        if ($adminRole && !$oldAdmin->roles()->where('roles.id', $adminRole->id)->exists()) {
-            $oldAdmin->roles()->attach($adminRole);
+        if ($adminRole && !$oldAdmin->hasRole('Admin')) {
+            $oldAdmin->assignRole('Admin');
         }
     }
 }

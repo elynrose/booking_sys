@@ -38,19 +38,19 @@ class RoleAssignmentSeeder extends Seeder
 
         foreach ($users as $user) {
             // Remove any existing roles
-            $user->roles()->detach();
+            $user->syncRoles([]);
             
             // Assign role based on email or user ID
             if ($user->email === 'admin@example.com' || $user->id === 1) {
-                $user->roles()->attach($adminRole);
+                $user->assignRole('Admin');
                 $adminCount++;
                 $this->command->info("Admin role assigned to: {$user->name} ({$user->email})");
             } elseif ($user->email === 'trainer@example.com' || $user->email === 'trainer@greenstreet.com') {
-                $user->roles()->attach($trainerRole);
+                $user->assignRole('Trainer');
                 $trainerCount++;
                 $this->command->info("Trainer role assigned to: {$user->name} ({$user->email})");
             } else {
-                $user->roles()->attach($userRole);
+                $user->assignRole('User');
                 $userCount++;
                 $this->command->info("User role assigned to: {$user->name} ({$user->email})");
             }

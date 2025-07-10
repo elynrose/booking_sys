@@ -41,10 +41,9 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
-        $adminRole = Role::where('name', 'Admin')->first();
-        if ($adminRole && !$admin->roles()->where('name', 'Admin')->exists()) {
-            $admin->roles()->attach($adminRole);
-        }
+        
+        // Assign admin role
+        $admin->assignRole('Admin');
 
         // Create trainer user
         $trainer = User::firstOrCreate([
@@ -54,18 +53,24 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
-        $trainerRole = Role::where('name', 'Trainer')->first();
-        if ($trainerRole && !$trainer->roles()->where('name', 'Trainer')->exists()) {
-            $trainer->roles()->attach($trainerRole);
-        }
+        
+        // Assign trainer role
+        $trainer->assignRole('Trainer');
+
+        // Ensure at least one Trainer model exists for the user
+        \App\Models\Trainer::firstOrCreate([
+            'user_id' => $trainer->id
+        ], [
+            'bio' => 'Default trainer bio',
+            'is_active' => true,
+        ]);
 
         // Create regular users with realistic names
         $users = User::factory()->count(10)->create();
-        $userRole = Role::where('name', 'User')->first();
+        
+        // Assign user role to all factory-created users
         foreach ($users as $user) {
-            if ($userRole && !$user->roles()->where('name', 'User')->exists()) {
-                $user->roles()->attach($userRole);
-            }
+            $user->assignRole('User');
         }
 
         // Seed Schedules with realistic gym activities
@@ -79,5 +84,10 @@ class DatabaseSeeder extends Seeder
 
         // Seed Payments
         Payment::factory()->count(20)->create();
+
+        // Verify all user emails after users are created
+        $this->call([
+            VerifyAllEmailsSeeder::class,
+        ]);
     }
 }
